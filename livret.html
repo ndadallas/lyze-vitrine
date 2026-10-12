@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Livret d'accueil — Lyze</title>
+  <meta name="description" content="Tout ce qu'il faut savoir pour votre séjour Lyze : arrivée, départ, propreté, contacts, Wi-Fi et bonnes adresses.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;400&family=Gloock&family=Instrument+Sans:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>document.documentElement.classList.add('js')</script>
+  <script src="assets/js/main.js" defer></script>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-qr" viewBox="0 0 128 128"><rect width="128" height="128" fill="#F6F0E4"/><g fill="#15110E"><rect x="8" y="8" width="34" height="34"/><rect x="86" y="8" width="34" height="34"/><rect x="8" y="86" width="34" height="34"/></g><g fill="#F6F0E4"><rect x="14" y="14" width="22" height="22"/><rect x="92" y="14" width="22" height="22"/><rect x="14" y="92" width="22" height="22"/></g><g fill="#15110E"><rect x="18" y="18" width="14" height="14"/><rect x="96" y="18" width="14" height="14"/><rect x="18" y="96" width="14" height="14"/></g><text x="64" y="70" text-anchor="middle" font-family="Instrument Sans, sans-serif" font-weight="600" font-size="14" fill="#15110E" opacity=".35">QR</text></symbol>
+    <symbol id="i-fb" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8z"/></symbol>
+    <symbol id="i-ig" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></g><circle cx="17.5" cy="6.5" r=".8" fill="currentColor"/></symbol>
+    <symbol id="i-tt" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.5 3 2.5 5 5.5 5"/></g></symbol>
+    <symbol id="i-tel" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="#A23B2A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M4 12l5 5L20 6"/></symbol>
+  </svg>
+
+  <header class="bar">
+    <a class="bar-logo" href="index.html">Lyze</a>
+    <nav class="bar-nav" aria-label="Navigation principale">
+      <a href="index.html">Accueil</a>
+      <a href="index.html#biens">Nos biens</a>
+      <a href="index.html#destinations">Destinations</a>
+      <a href="livret.html" aria-current="page">Livret d'accueil</a>
+      <a href="histoire.html">Notre histoire</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="lien-proprio" href="connexion.html">Espace propriétaire →</a>
+    <button class="burger" type="button" data-ouvre-menu aria-label="Ouvrir le menu"><span></span><span></span></button>
+  </header>
+
+  <div class="menu" id="menu" hidden>
+    <button class="menu-fermer" type="button" data-ferme-menu>Fermer</button>
+    <a href="index.html">Accueil</a>
+    <a href="index.html#biens">Nos biens</a>
+    <a href="index.html#destinations">Destinations</a>
+    <a href="livret.html">Livret d'accueil</a>
+    <a href="histoire.html">Notre histoire</a>
+    <a href="#contact">Contact</a>
+    <a class="lien-proprio" href="connexion.html">Espace propriétaire →</a>
+  </div>
+
+  <main>
+    <section class="livret-hero">
+      <div class="texte">
+        <span class="eyebrow eyebrow--brique">Livret d'accueil</span>
+        <div class="titre-lettrine" role="heading" aria-level="1" aria-label="Bienvenue chez vous">
+          <span class="lettrine" data-encre aria-hidden="true">B</span>
+          <span class="h1" aria-hidden="true">ienvenue<br>chez vous</span>
+        </div>
+        <p class="lead">Tout ce qu'il faut savoir pour votre séjour, au même endroit. Gardez cette page dans vos favoris ou scannez le QR code dans l'entrée.</p>
+        <label class="selecteur">
+          <select data-choix-bien aria-label="Choisir votre logement">
+            <option>Villa [Nom] — Marrakech</option>
+            <option>Appartement [Nom] — El Jadida</option>
+            <option>Riad [Nom] — Marrakech</option>
+          </select>
+          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="#2B1D15" stroke-width="2" d="M5 9l7 7 7-7"/></svg>
+        </label>
+      </div>
+      <figure><img class="photo" src="https://images.unsplash.com/photo-1518439532222-5dcc881e74b8?w=1400&q=80&auto=format&fit=crop" alt="Thé à la menthe servi sur une table" fetchpriority="high"></figure>
+    </section>
+
+    <div class="blocs">
+      <section class="bloc-livret" data-apparait>
+        <span class="num">01</span>
+        <h2>Arrivée &amp; départ</h2>
+        <div class="horaires">
+          <div><small>ARRIVÉE</small><strong>à partir de [15h00]</strong></div>
+          <div><small>DÉPART</small><strong>avant [11h00]</strong></div>
+        </div>
+        <p class="note">Les clés vous sont remises par [prénom] ou dans la boîte à clés (code envoyé le jour J). Arrivée tardive : prévenez-nous par téléphone.</p>
+      </section>
+
+      <section class="bloc-livret" data-apparait>
+        <span class="num">02</span>
+        <h2>Propreté</h2>
+        <ul class="checks">
+          <li><svg width="16" height="16" aria-hidden="true"><use href="#i-check"/></svg>Ménage complet et linge propre à votre arrivée</li>
+          <li><svg width="16" height="16" aria-hidden="true"><use href="#i-check"/></svg>Merci de sortir les poubelles avant le départ</li>
+          <li><svg width="16" height="16" aria-hidden="true"><use href="#i-check"/></svg>Vaisselle lavée et rangée</li>
+          <li><svg width="16" height="16" aria-hidden="true"><use href="#i-check"/></svg>Ménage en cours de séjour sur demande</li>
+        </ul>
+      </section>
+
+      <section class="bloc-livret bloc-livret--large urgence" data-apparait>
+        <div>
+          <span class="num">03</span>
+          <h2>Un problème ?<br>Appelez-nous.</h2>
+          <p>Fuite, coupure, clé perdue : ne cherchez pas, on s'en occupe.<br>Pas de message, un appel suffit — 7j/7.</p>
+        </div>
+        <div>
+          <a class="appel" href="tel:+212000000000"><svg aria-hidden="true"><use href="#i-tel"/></svg>+212 [téléphone]</a>
+          <p class="numeros">Urgences au Maroc : Police 19 · Pompiers / ambulance 15 · Gendarmerie 177</p>
+        </div>
+      </section>
+
+      <section class="bloc-livret" data-apparait>
+        <span class="num">04</span>
+        <h2>Infos pratiques</h2>
+        <dl class="infos">
+          <div><dt>Wi-Fi</dt><dd>[Nom du réseau]</dd></div>
+          <div><dt>Mot de passe</dt><dd>[mot de passe]</dd></div>
+          <div><dt>Adresse</dt><dd>[adresse du bien]</dd></div>
+          <div><dt>Contact Lyze</dt><dd>+212 [téléphone]</dd></div>
+          <div><dt>Email</dt><dd>[email]@lyze.ma</dd></div>
+          <div><dt>Parking</dt><dd>[instructions]</dd></div>
+        </dl>
+      </section>
+
+      <section class="bloc-livret bloc-livret--sombre" data-apparait>
+        <span class="num">05</span>
+        <h2>Où manger</h2>
+        <div class="adresses">
+          <a href="#"><strong>[Nom du restaurant]</strong><small>Cuisine marocaine · 5 min à pied</small><em>Itinéraire →</em></a>
+          <a href="#"><strong>[Nom du café]</strong><small>Petit-déjeuner, terrasse · 8 min</small><em>Itinéraire →</em></a>
+          <a href="#"><strong>[Nom du rooftop]</strong><small>Dîner, vue médina · 12 min en taxi</small><em>Itinéraire →</em></a>
+          <a href="#"><strong>[Nom du marché]</strong><small>Fruits, pain, épices · 4 min</small><em>Itinéraire →</em></a>
+        </div>
+      </section>
+
+      <section class="suivez" data-apparait>
+        <div>
+          <h2>Suivez Lyze</h2>
+          <p>Partagez vos photos avec @lyze — on reposte nos préférées.</p>
+        </div>
+        <div class="qr-liste">
+          <div class="qr-item"><svg class="qr" role="img" aria-label="QR code Facebook (à générer)"><use href="#i-qr"/></svg><a href="#"><svg class="ico" aria-hidden="true"><use href="#i-fb"/></svg>Facebook</a></div>
+          <div class="qr-item"><svg class="qr" role="img" aria-label="QR code Instagram (à générer)"><use href="#i-qr"/></svg><a href="#"><svg class="ico" aria-hidden="true"><use href="#i-ig"/></svg>Instagram</a></div>
+          <div class="qr-item"><svg class="qr" role="img" aria-label="QR code TikTok (à générer)"><use href="#i-qr"/></svg><a href="#"><svg class="ico" aria-hidden="true"><use href="#i-tt"/></svg>TikTok</a></div>
+          <div class="qr-item"><svg class="qr" role="img" aria-label="QR code téléphone (à générer)"><use href="#i-qr"/></svg><a href="tel:+212000000000"><svg class="ico" aria-hidden="true"><use href="#i-tel"/></svg>Téléphone</a></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="pied-page" id="contact">
+    <div class="wrap">
+      <div class="pied-grille">
+        <div>
+          <span class="eyebrow eyebrow--clair">Contact</span>
+          <h2>Une question,<br>une réservation ?</h2>
+          <a class="pied-tel" href="tel:+212000000000">+212 [téléphone]</a>
+          <a class="pied-mail" href="mailto:contact@lyze.ma">[email]@lyze.ma</a>
+        </div>
+      </div>
+      <div class="pied-bas">
+        <a class="logo" href="index.html">Lyze</a>
+        <nav aria-label="Pied de page">
+          <a href="index.html#biens">Nos biens</a>
+          <a href="index.html#destinations">Destinations</a>
+          <a href="livret.html">Livret d'accueil</a>
+          <a href="histoire.html">Notre histoire</a>
+          <a href="connexion.html">Espace propriétaire</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
