@@ -52,3 +52,6 @@ next-env.d.ts
 
 # sauvegardes locales d avant nettoyage (photos)
 /storage-avant-nettoyage/
+
+# base Postgres locale (PGlite)
+/.localdb/

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mes biens — Espace propriétaire Lyze</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;400&family=Gloock&family=Instrument+Sans:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/espace.css">
+  <script src="assets/js/espace.js" defer></script>
+</head>
+<body class="espace">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-coche" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M4 12l5 5L20 6"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M5 9l7 7 7-7"/></symbol>
+    <symbol id="i-depot" viewBox="0 0 24 24"><g fill="none" stroke="#A23B2A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></g></symbol>
+  </svg>
+
+  <div class="app">
+    <aside class="side">
+      <a class="logo" href="index.html">Lyze</a>
+      <span class="role">ESPACE PROPRIÉTAIRE</span>
+      <nav aria-label="Espace propriétaire">
+        <a href="#">Tableau de bord</a>
+        <a href="#" aria-current="page">Mes biens</a>
+        <a href="#calendrier">Calendrier</a>
+        <a href="#photos">Photos</a>
+        <a href="#">Documents</a>
+        <a href="#">Paramètres</a>
+      </nav>
+      <div class="bas">
+        <span>Connecté·e : <strong>[Prénom Nom]</strong></span>
+        <a href="index.html">Se déconnecter</a>
+      </div>
+    </aside>
+
+    <main class="contenu">
+      <h1>Mes biens</h1>
+
+      <div class="outils" id="calendrier">
+        <label class="champ-app select">
+          <select data-filtre-bien aria-label="Bien affiché"></select>
+          <svg width="14" height="14" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </label>
+        <div class="champ-app mois-nav">
+          <button type="button" data-mois="-1" aria-label="Mois précédent">‹</button>
+          <span data-mois-titre></span>
+          <button type="button" data-mois="1" aria-label="Mois suivant">›</button>
+        </div>
+        <div class="legende-app">
+          <span><i class="l-vert" style="color:var(--creme)"><svg width="12" height="12"><use href="#i-coche"/></svg></i>Réservation sélectionnée</span>
+          <span><i class="l-brique"></i>Loué / complet</span>
+          <span><i class="l-libre"></i>Libre</span>
+        </div>
+      </div>
+
+      <div class="grille-app">
+        <section class="panneau liste" aria-labelledby="titre-liste">
+          <span class="titre-p" id="titre-liste">Vos biens</span>
+          <p class="aide-p">Cliquez sur un bien pour voir son calendrier</p>
+          <ul data-liste-biens></ul>
+          <div class="stats" data-stats></div>
+        </section>
+
+        <section class="panneau cal" aria-label="Calendrier du mois">
+          <div class="cal-entete"><span>Lun</span><span>Mar</span><span>Mer</span><span>Jeu</span><span>Ven</span><span>Sam</span><span>Dim</span></div>
+          <div class="cal-jours" data-jours></div>
+        </section>
+
+        <section class="panneau detail" aria-live="polite" data-detail></section>
+      </div>
+
+      <section class="panneau photos" id="photos">
+        <h2>Photos du bien</h2>
+        <p class="aide-p">Glissez vos photos ici pour les ajouter à l'annonce. Faites-les glisser pour changer l'ordre.</p>
+        <div class="photos-grille">
+          <label class="depot" data-depot>
+            <svg width="40" height="40" aria-hidden="true"><use href="#i-depot"/></svg>
+            <strong>Déposez vos photos</strong>
+            <small>ou parcourir — JPG, PNG, 10 Mo max</small>
+            <input type="file" accept="image/*" multiple hidden data-fichiers>
+          </label>
+          <div class="vignettes" data-vignettes></div>
+        </div>
+      </section>
+
+      <p class="demo-bandeau">Version de démonstration — données fictives, rien n'est enregistré.</p>
+    </main>
+  </div>
+</body>
+</html>
