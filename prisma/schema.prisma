@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  OWNER
+}
+
+enum BookingKind {
+  RESERVED
+  BLOCKED
+}
+
+// Un compte = un propriétaire (client de Lyze) ou la gérante (ADMIN).
+// Pas d'inscription publique : les comptes sont créés depuis /admin.
+model User {
+  id           String    @id @default(cuid())
+  username     String    @unique
+  passwordHash String
+  role         Role      @default(OWNER)
+  firstName    String
+  lastName     String
+  email        String?
+  phone        String?
+  active       Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  sessions   Session[]
+  properties Property[]
+}
+
+// Le cookie contient un jeton aléatoire ; seule son empreinte SHA-256 est stockée.
+model Session {
+  id        String   @id // empreinte SHA-256 du jeton
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// Anti brute-force : tentatives échouées par identifiant.
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  username  String
+  createdAt DateTime @default(now())
+
+  @@index([username, createdAt])
+}
+
+model Property {
+  id        String   @id @default(cuid())
+  ownerId   String
+  name      String
+  city      String
+  createdAt DateTime @default(now())
+
+  owner    User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  bookings Booking[]
+  photos   Photo[]
+
+  @@index([ownerId])
+}
+
+// Photo d'un bien, stockée en base (l'hébergement Vercel n'a pas de disque persistant).
+// position 0 = photo de couverture. Toujours lire avec un select sans `data` sauf pour servir l'image.
+model Photo {
+  id         String   @id @default(cuid())
+  propertyId String
+  data       Bytes
+  mimeType   String
+  position   Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId, position])
+}
+
+// Une réservation (avec montant reversé au propriétaire) ou un blocage (travaux, usage perso...).
+// endDate = jour de départ (exclu) : une réservation du 2 au 4 = nuits du 2 et du 3.
+model Booking {
+  id         String      @id @default(cuid())
+  propertyId String
+  kind       BookingKind @default(RESERVED)
+  startDate  DateTime
+  endDate    DateTime
+  guestName  String?
+  amount     Int         @default(0) // MAD, montant net propriétaire
+  note       String?
+  createdAt  DateTime    @default(now())
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId, startDate])
+}

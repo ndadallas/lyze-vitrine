@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lyze — Conciergerie et gestion locative au Maroc</title>
+  <meta name="description" content="Villas et appartements choisis un à un à El Jadida, Casablanca et Marrakech. Réservez en direct, sur Airbnb ou Booking.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;400&family=Gloock&family=Instrument+Sans:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>document.documentElement.classList.add('js')</script>
+  <script src="assets/js/main.js" defer></script>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-qr" viewBox="0 0 128 128"><rect width="128" height="128" fill="#F6F0E4"/><g fill="#15110E"><rect x="8" y="8" width="34" height="34"/><rect x="86" y="8" width="34" height="34"/><rect x="8" y="86" width="34" height="34"/></g><g fill="#F6F0E4"><rect x="14" y="14" width="22" height="22"/><rect x="92" y="14" width="22" height="22"/><rect x="14" y="92" width="22" height="22"/></g><g fill="#15110E"><rect x="18" y="18" width="14" height="14"/><rect x="96" y="18" width="14" height="14"/><rect x="18" y="96" width="14" height="14"/></g><text x="64" y="70" text-anchor="middle" font-family="Instrument Sans, sans-serif" font-weight="600" font-size="14" fill="#15110E" opacity=".35">QR</text></symbol>
+    <symbol id="i-fb" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8z"/></symbol>
+    <symbol id="i-ig" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></g><circle cx="17.5" cy="6.5" r=".8" fill="currentColor"/></symbol>
+    <symbol id="i-tt" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.5 3 2.5 5 5.5 5"/></g></symbol>
+    <symbol id="i-tel" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></symbol>
+  </svg>
+
+  <!-- Barre compacte qui apparaît au défilement -->
+  <header class="bar bar--flottante">
+    <a class="bar-logo" href="index.html">Lyze</a>
+    <nav class="bar-nav" aria-label="Navigation (barre)">
+      <a href="index.html" aria-current="page">Accueil</a>
+      <a href="#services">Nos services</a>
+      <a href="#destinations">Où nous gérons</a>
+      <a href="livret.html">Livret d'accueil</a>
+      <a href="histoire.html">Notre histoire</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="lien-proprio" href="/connexion">Espace propriétaire →</a>
+    <button class="burger" type="button" data-ouvre-menu aria-label="Ouvrir le menu"><span></span><span></span></button>
+  </header>
+
+  <div class="menu" id="menu" hidden>
+    <button class="menu-fermer" type="button" data-ferme-menu>Fermer</button>
+    <a href="index.html">Accueil</a>
+    <a href="#services">Nos services</a>
+    <a href="#destinations">Où nous gérons</a>
+    <a href="livret.html">Livret d'accueil</a>
+    <a href="histoire.html">Notre histoire</a>
+    <a href="#contact">Contact</a>
+    <a class="lien-proprio" href="/connexion">Espace propriétaire →</a>
+  </div>
+
+  <header class="masthead">
+    <div class="masthead-top">
+      <span class="villes">El Jadida &nbsp;·&nbsp; Casablanca &nbsp;·&nbsp; Marrakech</span>
+      <div class="droite">
+        <span>+212 [téléphone]</span>
+        <a class="lien-proprio" href="/connexion">Espace propriétaire →</a>
+      </div>
+    </div>
+    <a class="masthead-logo" href="index.html">Lyze</a>
+    <p class="masthead-tag">Conciergerie &amp; gestion locative — Maroc</p>
+    <nav class="nav-grille" aria-label="Navigation principale">
+      <a href="index.html" aria-current="page">Accueil</a>
+      <a href="#services">Nos services</a>
+      <a href="#destinations">Où nous gérons</a>
+      <a href="livret.html">Livret d'accueil</a>
+      <a href="histoire.html">Notre histoire</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <img src="https://images.unsplash.com/photo-1775548537077-a3d68821e60c?w=2400&q=80&auto=format&fit=crop" alt="Villa avec piscine gérée au Maroc" fetchpriority="high">
+      <div class="hero-contenu">
+        <span class="eyebrow">Conciergerie au Maroc</span>
+        <h1>Votre bien,<br>entre de bonnes mains.</h1>
+        <p class="hero-texte">Lyze gère votre villa ou votre appartement à El Jadida, Casablanca et Marrakech : annonces, voyageurs, ménage et entretien. Vous percevez les revenus, nous nous occupons du reste.</p>
+      </div>
+      <form class="resa" data-resa>
+        <label><span>Ville du bien</span>
+          <select name="ville">
+            <option>El Jadida</option>
+            <option>Casablanca</option>
+            <option>Marrakech</option>
+          </select>
+        </label>
+        <label><span>Type de bien</span>
+          <select name="type">
+            <option>Villa</option>
+            <option selected>Appartement</option>
+            <option>Riad</option>
+          </select>
+        </label>
+        <label><span>Chambres</span>
+          <select name="chambres">
+            <option>1</option>
+            <option selected>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5 et plus</option>
+          </select>
+        </label>
+        <label><span>Formule</span>
+          <select name="formule">
+            <option>Gestion complète</option>
+            <option>Ménage et accueil seulement</option>
+            <option>Je me renseigne</option>
+          </select>
+        </label>
+        <button type="submit">Confier mon bien</button>
+      </form>
+    </section>
+
+    <!-- Intro — univers (composition calée sur la maquette) -->
+    <section class="intro compo" aria-label="L'univers Lyze">
+      <div class="scene">
+        <span class="eyebrow abs lbl" style="left:8.33cqw">(01)&nbsp; Notre métier</span>
+        <span class="eyebrow abs lbl" style="left:45.83cqw">(02)&nbsp; Nos services</span>
+        <span class="eyebrow abs lbl" style="left:81.94cqw">(03)&nbsp; Contact</span>
+
+        <h2 class="compo-desktop" aria-label="Valoriser votre maison, la confier à ceux qui en prennent soin">
+          <span class="lettrine abs" style="left:6.67cqw;top:6.67cqw" data-encre aria-hidden="true">V</span>
+          <span class="bloc abs" style="left:17.36cqw;top:10.42cqw" aria-hidden="true">Aloriser<br>votre maison</span>
+          <span class="bloc abs" style="left:36.11cqw;top:21.67cqw" aria-hidden="true">La confier à<br>ceux qui en</span>
+          <span class="lettrine abs" style="left:61.8cqw;top:21.67cqw" data-encre aria-hidden="true">P</span>
+          <span class="bloc abs" style="left:69.5cqw;top:26.8cqw" aria-hidden="true">rennent soin</span>
+        </h2>
+        <h2 class="compo-mobile"><span class="lettrine" data-encre>V</span>aloriser votre maison, la confier à ceux qui en <span class="lettrine" data-encre>p</span>rennent soin</h2>
+
+        <div class="texte">
+          <p>Mise en location, accueil des voyageurs, ménage, linge et entretien : notre équipe sur place s'occupe de tout. Vous suivez chaque séjour depuis votre espace propriétaire.</p>
+          <a class="btn btn--ligne" href="#services">Découvrir nos services</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Destinations -->
+    <section class="destinations compo" id="destinations">
+      <div class="scene">
+        <span class="eyebrow abs">Trois villes où nous gérons vos biens</span>
+        <span class="grand-mot abs" data-glisse aria-hidden="true">GESTION</span>
+
+        <article class="ville abs" style="left:8.33cqw;top:22.92cqw" data-apparait>
+          <figure style="height:30.56cqw"><img src="https://images.unsplash.com/photo-1646868727699-232ee40daac7?w=1000&q=80&auto=format&fit=crop" alt="Cité portugaise d'El Jadida" loading="lazy"></figure>
+          <h3>El Jadida</h3>
+          <p>La cité portugaise et l'océan</p>
+        </article>
+        <article class="ville abs" style="left:37.5cqw;top:20.14cqw" data-apparait>
+          <figure style="height:36.11cqw"><img src="https://images.unsplash.com/photo-1740602550091-0943d7cfb720?w=1000&q=80&auto=format&fit=crop" alt="Casablanca face à l'océan" loading="lazy"></figure>
+          <h3>Casablanca</h3>
+          <p>Art déco, corniche et vie urbaine</p>
+        </article>
+        <article class="ville abs" style="left:66.67cqw;top:22.92cqw" data-apparait>
+          <figure style="height:30.56cqw"><img src="https://images.unsplash.com/photo-1549140600-78c9b8275e9d?w=1000&q=80&auto=format&fit=crop" alt="Arcades d'un palais de Marrakech" loading="lazy"></figure>
+          <h3>Marrakech</h3>
+          <p>Riads, médina et jardins</p>
+        </article>
+
+        <span class="grand-mot grand-mot--contour abs compo-desktop" data-glisse aria-hidden="true">GESTION</span>
+      </div>
+    </section>
+
+    <!-- Nos services -->
+    <section class="biens wrap" id="services">
+      <div class="biens-tete">
+        <div>
+          <span class="eyebrow">(02)&nbsp; Nos services</span>
+          <h2 class="titre-section">Tout,<br>sauf les soucis.</h2>
+        </div>
+        <p class="lead">Une gestion complète, de la première annonce au départ du dernier voyageur. Vous choisissez ce que vous nous confiez, nous vous rendons des comptes à chaque séjour.</p>
+      </div>
+      <div class="grille-biens">
+        <a class="carte-bien" href="#contact" data-apparait>
+          <figure>
+            <img class="photo" src="https://images.unsplash.com/photo-1708804654353-7ef66cba7776?w=1000&q=80&auto=format&fit=crop" alt="Villa avec piscine entretenue" loading="lazy">
+            <span class="tag">Inclus</span>
+          </figure>
+          <h3>Mise en location</h3>
+          <p class="lieu">Annonces et réservations</p>
+          <p class="caps">Photos, textes, calendrier et prix ajustés à la saison</p>
+          <p class="pied"><span>Formule gestion complète</span><b>Nous contacter →</b></p>
+        </a>
+        <a class="carte-bien" href="#contact" data-apparait>
+          <figure>
+            <img class="photo" src="https://images.unsplash.com/photo-1612600870196-5757968822bd?w=1000&q=80&auto=format&fit=crop" alt="Appartement préparé pour les voyageurs" loading="lazy">
+            <span class="tag">Inclus</span>
+          </figure>
+          <h3>Accueil &amp; ménage</h3>
+          <p class="lieu">Remise des clés, linge et ménage</p>
+          <p class="caps">Check-in, linge hôtelier et ménage entre chaque séjour</p>
+          <p class="pied"><span>Formule gestion complète</span><b>Nous contacter →</b></p>
+        </a>
+        <a class="carte-bien" href="#contact" data-apparait>
+          <figure>
+            <img class="photo" src="https://images.unsplash.com/photo-1628642004970-1da51c8c7dec?w=1000&q=80&auto=format&fit=crop" alt="Patio de riad entretenu" loading="lazy">
+            <span class="tag">Inclus</span>
+          </figure>
+          <h3>Entretien &amp; suivi</h3>
+          <p class="lieu">Petites réparations et contrôles</p>
+          <p class="caps">Contrôles, interventions et rapports</p>
+          <p class="pied"><span>Formule gestion complète</span><b>Nous contacter →</b></p>
+        </a>
+      </div>
+    </section>
+
+    <!-- Espace propriétaires -->
+    <section class="proprio" aria-labelledby="titre-proprio">
+      <div class="proprio-texte">
+        <span class="eyebrow eyebrow--brique">Propriétaires</span>
+        <h2 id="titre-proprio">Vos biens,<br>réunis au même endroit.</h2>
+        <p>Vous nous confiez votre villa ou votre appartement ? Votre espace personnel rassemble tous vos biens : réservations, photos, documents et revenus, consultables à tout moment.</p>
+        <ol class="points">
+          <li><span>01</span>Un calendrier unique : Airbnb, Booking et réservations directes</li>
+          <li><span>02</span>Photos, documents et revenus de chaque bien</li>
+          <li><span>03</span>Un accès personnel, créé pour vous par Lyze</li>
+        </ol>
+        <a class="btn btn--plein" href="/connexion">Accéder à mon espace →</a>
+      </div>
+      <div class="proprio-visuel">
+        <div class="apercu" data-apparait aria-label="Aperçu de l'espace propriétaire">
+          <span class="eyebrow eyebrow--brique">Espace propriétaire</span>
+          <p class="titre">Mes biens</p>
+          <p class="sous">3 biens</p>
+          <div class="ligne-bien">
+            <img src="https://images.unsplash.com/photo-1708804654353-7ef66cba7776?w=200&q=80&auto=format&fit=crop" alt="" loading="lazy">
+            <div><strong>Villa [Nom]</strong><small>Marrakech · [x] chambres</small></div>
+            <span class="pastille pastille--vert">Occupé</span>
+          </div>
+          <div class="ligne-bien">
+            <img src="https://images.unsplash.com/photo-1565020244281-fe53df7df170?w=200&q=80&auto=format&fit=crop" alt="" loading="lazy">
+            <div><strong>Appartement [Nom]</strong><small>Casablanca · [x] chambres</small></div>
+            <span class="pastille pastille--brique">Réservé</span>
+          </div>
+          <div class="ligne-bien">
+            <img src="https://images.unsplash.com/photo-1628642393776-70a715f2cc40?w=200&q=80&auto=format&fit=crop" alt="" loading="lazy">
+            <div><strong>Riad [Nom]</strong><small>El Jadida · [x] chambres</small></div>
+            <span class="pastille pastille--libre">Libre</span>
+          </div>
+          <div class="apercu-total"><span>Revenus du mois</span><strong>[montant] MAD</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Notre histoire — teaser -->
+    <section class="histoire-teaser wrap">
+      <figure data-apparait><img class="photo" src="https://images.unsplash.com/photo-1505576391880-b3f9d713dc4f?w=900&q=80&auto=format&fit=crop" alt="Arcades orangées d'une maison marocaine" loading="lazy"></figure>
+      <div>
+        <span class="eyebrow eyebrow--clair">(04)&nbsp; Notre histoire</span>
+        <blockquote>« Tout a commencé<br>par une maison<br>que l'on aimait trop<br>pour la laisser vide. »</blockquote>
+        <p>L'histoire de Barka, de la France au Maroc — et de Lyze.</p>
+        <a class="btn btn--clair" href="histoire.html">Lire notre histoire</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pied-page" id="contact">
+    <div class="wrap">
+      <div class="pied-grille">
+        <div>
+          <span class="eyebrow eyebrow--clair">Contact</span>
+          <h2>Un bien<br>à nous confier ?</h2>
+          <a class="pied-tel" href="tel:+212000000000">+212 [téléphone]</a>
+          <a class="pied-mail" href="mailto:contact@lyze.ma">[email]@lyze.ma</a>
+        </div>
+        <div>
+          <span class="eyebrow eyebrow--clair">Scannez pour nous suivre</span>
+          <div class="qr-liste">
+            <div class="qr-item"><svg class="qr" role="img" aria-label="QR code Facebook (à générer)"><use href="#i-qr"/></svg><a href="#"><svg class="ico" aria-hidden="true"><use href="#i-fb"/></svg>Facebook</a></div>
+            <div class="qr-item"><svg class="qr" role="img" aria-label="QR code Instagram (à générer)"><use href="#i-qr"/></svg><a href="#"><svg class="ico" aria-hidden="true"><use href="#i-ig"/></svg>Instagram</a></div>
+            <div class="qr-item"><svg class="qr" role="img" aria-label="QR code TikTok (à générer)"><use href="#i-qr"/></svg><a href="#"><svg class="ico" aria-hidden="true"><use href="#i-tt"/></svg>TikTok</a></div>
+            <div class="qr-item"><svg class="qr" role="img" aria-label="QR code téléphone (à générer)"><use href="#i-qr"/></svg><a href="tel:+212000000000"><svg class="ico" aria-hidden="true"><use href="#i-tel"/></svg>Téléphone</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="pied-bas">
+        <a class="logo" href="index.html">Lyze</a>
+        <nav aria-label="Pied de page">
+          <a href="#services">Nos services</a>
+          <a href="#destinations">Où nous gérons</a>
+          <a href="livret.html">Livret d'accueil</a>
+          <a href="histoire.html">Notre histoire</a>
+          <a href="/connexion">Espace propriétaire</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
