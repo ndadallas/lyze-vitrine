@@ -188,3 +188,6 @@ button.jour { cursor: pointer; }
 .plateforme img { display: block; flex: none; border-radius: 3px; }
 .jour .etiquette { display: inline-flex; align-items: center; gap: 5px; }
 .jour .etiquette .plateforme img { background: #fff; padding: 1px; box-sizing: content-box; }
+
+/* Simulateur de revenus dans l'espace (styles .calcul repris de style.css) */
+.simulateur .calcul { width: 100%; max-width: 640px; padding: 0; margin-top: 12px; background: none; }

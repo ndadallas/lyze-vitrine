@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/espace.css">
   <script src="assets/js/espace.js" defer></script>
+  <script src="assets/js/main.js" defer></script>
 </head>
 <body class="espace">
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -28,6 +29,7 @@
         <a href="#" aria-current="page">Mes biens</a>
         <a href="#calendrier">Calendrier</a>
         <a href="#photos">Photos</a>
+        <a href="#revenus">Simulateur</a>
         <a href="#">Documents</a>
         <a href="#">Paramètres</a>
       </nav>
@@ -85,6 +87,30 @@
           </label>
           <div class="vignettes" data-vignettes></div>
         </div>
+      </section>
+
+      <section class="panneau simulateur" id="revenus">
+        <h2>Simulateur de revenus</h2>
+      <form class="calcul" data-calcul data-commission="20" aria-labelledby="titre-calcul" onsubmit="return false">
+        <p class="titre" id="titre-calcul">Combien vous rapporte une nuit&nbsp;?</p>
+        <label class="calcul-prix">
+          <span class="ligne-prix"><span>Prix de la nuit</span>
+            <span class="saisie"><input type="number" min="0" max="10000" step="50" value="1200" inputmode="numeric" data-prix-saisie aria-label="Prix de la nuit en dirhams"><small>MAD</small></span>
+          </span>
+          <input type="range" min="200" max="10000" step="50" value="1200" data-prix aria-label="Curseur du prix de la nuit">
+        </label>
+        <fieldset>
+          <legend>Plateformes utilisées</legend>
+          <div class="plats">
+            <label class="plat"><input type="checkbox" name="plateforme" data-nom="Airbnb" data-taux="15.5" data-logo="assets/img/plateformes/airbnb.svg" checked><img src="assets/img/plateformes/airbnb.svg" alt=""><b>Airbnb</b><small>15,5 %</small></label>
+            <label class="plat"><input type="checkbox" name="plateforme" data-nom="Booking" data-taux="15" data-logo="assets/img/plateformes/booking.svg" checked><img src="assets/img/plateformes/booking.svg" alt=""><b>Booking</b><small>15 %</small></label>
+            <label class="plat"><input type="checkbox" name="plateforme" data-nom="Expedia" data-taux="15" data-logo="assets/img/plateformes/expedia.svg"><img src="assets/img/plateformes/expedia.svg" alt=""><b>Expedia</b><small>15 %</small></label>
+            <label class="plat"><input type="checkbox" name="plateforme" data-nom="Direct" data-taux="0" data-logo="assets/img/plateformes/direct.svg"><img src="assets/img/plateformes/direct.svg" alt=""><b>Direct</b><small>0 %</small></label>
+          </div>
+        </fieldset>
+        <ul class="resultats" data-resultats aria-live="polite"></ul>
+        <p class="note-calcul">Montant net par nuit pour le propriétaire : frais de la plateforme retirés du prix, puis commission Lyze de 20 % sur le reste. Taux indicatifs, hors frais de ménage et taxe de séjour.</p>
+      </form>
       </section>
 
       <p class="demo-bandeau">Version de démonstration — données fictives, rien n'est enregistré.</p>

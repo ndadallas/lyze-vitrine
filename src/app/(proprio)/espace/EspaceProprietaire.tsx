@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { logout } from "@/app/actions/auth";
 import { PhotoManager, type PhotoItem } from "@/components/PhotoManager";
+import { Simulateur } from "@/components/Simulateur";
 import { DAY_MS, daysInMonth, formatMAD, monthStart, parseDay } from "@/lib/dates";
 import { monthStats, nights } from "@/lib/stats";
 import { LogoPlateforme, PLATEFORMES, type Plateforme } from "@/lib/plateformes";
@@ -105,6 +106,7 @@ export function EspaceProprietaire({ nom, aujourdhui, biens }: Props) {
           <a href="#haut" aria-current="page">Mes biens</a>
           <a href="#calendrier">Calendrier</a>
           <a href="#photos">Photos</a>
+          <a href="#revenus">Simulateur</a>
         </nav>
         <div className="bas">
           <span>
@@ -242,6 +244,11 @@ export function EspaceProprietaire({ nom, aujourdhui, biens }: Props) {
             </section>
           </>
         )}
+
+        <section className="panneau simulateur" id="revenus">
+          <h2>Simulateur de revenus</h2>
+          <Simulateur />
+        </section>
       </main>
     </div>
   );
