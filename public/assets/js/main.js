@@ -302,7 +302,11 @@
     });
     document.body.appendChild(pointsEcrans);
     // Accueil = grand en-tête + photo sur exactement un écran, quelle que soit la hauteur de l'en-tête (plus haute en arabe)
-    var mesurerEnTete = function () { if (masthead && masthead.offsetHeight) racine.style.setProperty('--haut-masthead', masthead.offsetHeight + 'px'); };
+    var mesurerEnTete = function () {
+      if (masthead && masthead.offsetHeight) racine.style.setProperty('--haut-masthead', masthead.offsetHeight + 'px');
+      var barre = document.querySelector('.bar'); // barre fixe de l'accueil ou barre du haut des autres pages
+      if (barre && barre.offsetHeight) racine.style.setProperty('--barre', barre.offsetHeight + 'px');
+    };
     mesurerEnTete();
     if (document.fonts) document.fonts.ready.then(mesurerEnTete);
     window.addEventListener('resize', mesurerEnTete);

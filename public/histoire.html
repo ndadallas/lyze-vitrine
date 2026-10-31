@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;400&family=Gloock&family=Instrument+Sans:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
-  <script>document.documentElement.classList.add('js')</script>
+  <script>document.documentElement.classList.add('js', 'ecrans')</script>
   <script src="assets/js/main.js" defer></script>
 </head>
 <body class="histoire">
@@ -50,6 +50,7 @@
   </div>
 
   <main>
+    <div class="histoire-debut" id="debut" data-ecran="Notre histoire">
     <header class="histoire-tete wrap">
       <span class="eyebrow eyebrow--brique" style="letter-spacing:.34em">Notre histoire</span>
       <h1>De la France<br>au Maroc.</h1>
@@ -58,8 +59,9 @@
     <figure class="histoire-ouverture" data-apparait>
       <img class="photo" src="https://images.unsplash.com/photo-1527769668487-5804e45fed2a?w=2200&q=80&auto=format&fit=crop" alt="Patio d'un riad vu depuis l'étage" fetchpriority="high">
     </figure>
+    </div>
 
-    <section class="chapitres">
+    <section class="chapitres" id="parcours" data-ecran="Le parcours">
       <div class="chapitre-texte">
         <span class="eyebrow eyebrow--brique">(01)&nbsp; La France</span>
         <div class="lettrine-ligne">
@@ -72,13 +74,13 @@
       <figure class="f3" data-apparait><img class="photo" src="https://images.unsplash.com/photo-1505577058444-a3dab90d4253?w=1100&q=80&auto=format&fit=crop" alt="Intérieur blanc et bleu d'une maison marocaine" loading="lazy"></figure>
     </section>
 
-    <section class="citation">
+    <section class="citation" id="citation" data-ecran="En ses mots">
       <blockquote>« [Une phrase de Barka, en ses mots, qui résume l'esprit Lyze.] »</blockquote>
       <p>— Barka, fondatrice</p>
     </section>
   </main>
 
-  <footer class="pied-page" id="contact">
+  <footer class="pied-page" id="contact" data-ecran="Contact">
     <div class="wrap">
       <div class="pied-grille">
         <div>

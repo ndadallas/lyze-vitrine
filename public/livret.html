@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;400&family=Gloock&family=Instrument+Sans:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
-  <script>document.documentElement.classList.add('js')</script>
+  <script>document.documentElement.classList.add('js', 'ecrans')</script>
   <script src="assets/js/main.js" defer></script>
 </head>
 <body>
@@ -51,7 +51,7 @@
   </div>
 
   <main>
-    <section class="livret-hero">
+    <section class="livret-hero" id="bienvenue" data-ecran="Bienvenue">
       <div class="texte">
         <span class="eyebrow eyebrow--brique">Livret d'accueil</span>
         <div class="titre-lettrine" role="heading" aria-level="1" aria-label="Bienvenue chez vous">
@@ -71,7 +71,7 @@
       <figure><img class="photo" src="https://images.unsplash.com/photo-1518439532222-5dcc881e74b8?w=1400&q=80&auto=format&fit=crop" alt="Thé à la menthe servi sur une table" fetchpriority="high"></figure>
     </section>
 
-    <div class="blocs">
+    <div class="blocs" id="sejour" data-ecran="Votre séjour">
       <section class="bloc-livret" data-apparait>
         <span class="num">01</span>
         <h2>Arrivée &amp; départ</h2>
@@ -105,6 +105,9 @@
         </div>
       </section>
 
+    </div>
+
+    <div class="blocs" id="infos" data-ecran="Infos pratiques">
       <section class="bloc-livret" data-apparait>
         <span class="num">04</span>
         <h2>Infos pratiques</h2>
@@ -144,7 +147,7 @@
     </div>
   </main>
 
-  <footer class="pied-page" id="contact">
+  <footer class="pied-page" id="contact" data-ecran="Contact">
     <div class="wrap">
       <div class="pied-grille">
         <div>

@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;400&family=Gloock&family=Instrument+Sans:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
-  <script>document.documentElement.classList.add('js')</script>
+  <script>document.documentElement.classList.add('js', 'ecrans')</script>
   <script src="assets/js/main.js" defer></script>
 </head>
 <body>
@@ -50,7 +50,7 @@
   </div>
 
   <main>
-    <div class="mosaique">
+    <div class="mosaique" id="photos" data-ecran="Photos">
       <figure><img class="photo" src="https://images.unsplash.com/photo-1708804654353-7ef66cba7776?w=1600&q=80&auto=format&fit=crop" alt="Piscine et transats de la villa" fetchpriority="high"></figure>
       <figure><img class="photo" src="https://images.unsplash.com/photo-1565020244281-fe53df7df170?w=1000&q=80&auto=format&fit=crop" alt="Patio avec bassin"></figure>
       <figure><img class="photo" src="https://images.unsplash.com/photo-1628642393776-70a715f2cc40?w=700&q=80&auto=format&fit=crop" alt="Porte sculptée sur un mur rose"></figure>
@@ -58,7 +58,7 @@
       <a class="btn" href="#">Voir les 24 photos</a>
     </div>
 
-    <div class="fiche">
+    <div class="fiche" id="fiche" data-ecran="Le bien">
       <div>
         <span class="eyebrow eyebrow--brique">Marrakech — Palmeraie</span>
         <h1>Villa [Nom]</h1>
@@ -103,7 +103,7 @@
     </div>
   </main>
 
-  <footer class="pied-page" id="contact">
+  <footer class="pied-page" id="contact" data-ecran="Contact">
     <div class="wrap">
       <div class="pied-grille">
         <div>

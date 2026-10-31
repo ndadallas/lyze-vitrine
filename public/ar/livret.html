@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/style.css">
-  <script>document.documentElement.classList.add('js')</script>
+  <script>document.documentElement.classList.add('js', 'ecrans')</script>
   <script src="../assets/js/main.js" defer></script>
 </head>
 <body>
@@ -51,7 +51,7 @@
   </div>
 
   <main>
-    <section class="livret-hero">
+    <section class="livret-hero" id="bienvenue" data-ecran="مرحبا">
       <div class="texte">
         <span class="eyebrow eyebrow--brique">دليل الضيافة</span>
         <div class="titre-lettrine">
@@ -70,7 +70,7 @@
       <figure><img class="photo" src="https://images.unsplash.com/photo-1518439532222-5dcc881e74b8?w=1400&q=80&auto=format&fit=crop" alt="شاي بالنعناع على طاولة" fetchpriority="high"></figure>
     </section>
 
-    <div class="blocs">
+    <div class="blocs" id="sejour" data-ecran="إقامتك">
       <section class="bloc-livret" data-apparait>
         <span class="num">01</span>
         <h2>الوصول والمغادرة</h2>
@@ -104,6 +104,9 @@
         </div>
       </section>
 
+    </div>
+
+    <div class="blocs" id="infos" data-ecran="معلومات عملية">
       <section class="bloc-livret" data-apparait>
         <span class="num">04</span>
         <h2>معلومات عملية</h2>
@@ -143,7 +146,7 @@
     </div>
   </main>
 
-  <footer class="pied-page" id="contact">
+  <footer class="pied-page" id="contact" data-ecran="اتصل بنا">
     <div class="wrap">
       <div class="pied-grille">
         <div>

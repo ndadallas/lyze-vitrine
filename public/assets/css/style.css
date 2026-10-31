@@ -882,3 +882,64 @@ html.ecrans .destinations.destinations.actif:not(.hero) { margin-inline: auto; }
   html.ecrans .services.actif .biens-tete .lead { display: none; }
   html.ecrans .services.actif .services-grille { margin-top: 20px; }
 }
+
+/* Pages Bien, Histoire, Livret en écrans (même système que l'accueil) */
+html.ecrans .histoire-debut.histoire-debut.actif { display: flex; flex-direction: column; padding-bottom: clamp(16px, 3vh, 32px); }
+html.ecrans .histoire-debut .histoire-tete { padding-top: 0; }
+html.ecrans .histoire-debut .histoire-tete h1 { font-size: clamp(44px, 10vh, 150px); margin-top: 1.5vh; }
+html.ecrans .histoire-debut .histoire-ouverture { flex: 1; min-height: 0; aspect-ratio: auto; margin: clamp(16px, 3vh, 40px) var(--gutter) 0; }
+html.ecrans .histoire-debut .histoire-ouverture img { height: 100%; }
+html.ecrans .citation.actif { padding-inline: var(--gutter); }
+html.ecrans .fiche .carte-resa { position: static; }
+@media (min-width: 761px) {
+  html.ecrans .mosaique.actif { grid-template-rows: repeat(2, minmax(0, 1fr)); align-content: stretch; padding: clamp(12px, 2vh, 24px) 40px; }
+  html.ecrans .mosaique.actif .btn { bottom: clamp(20px, 3vh, 36px); }
+  html.ecrans .fiche.actif { padding: clamp(12px, 3vh, 40px) var(--gutter); align-items: center; }
+  html.ecrans .fiche.actif > div:first-child { display: grid; grid-template-columns: 1fr 1fr; column-gap: 48px; align-items: start; }
+  html.ecrans .fiche.actif > div:first-child > :not(.bloc) { grid-column: 1 / -1; }
+  html.ecrans .fiche.actif h1 { font-size: clamp(40px, 7vh, 84px); }
+  html.ecrans .fiche.actif .bloc { margin-top: clamp(16px, 3vh, 40px) !important; }
+  html.ecrans .fiche.actif .calendriers { gap: 24px; margin-top: 16px; }
+  html.ecrans .chapitres.actif { grid-template-columns: 1.3fr 1fr 1fr 1fr; column-gap: clamp(16px, 2vw, 40px); align-items: center; padding: clamp(16px, 3vh, 48px) var(--gutter); }
+  html.ecrans .chapitres.actif figure, html.ecrans .chapitres.actif .f2, html.ecrans .chapitres.actif .f3 { grid-column: auto; grid-row: 1; margin-top: 0; aspect-ratio: auto; height: min(62vh, 640px); }
+  html.ecrans .chapitres.actif .f2 { margin-top: 8vh; }
+  html.ecrans .chapitres.actif .f3 { margin-top: -8vh; }
+  html.ecrans .chapitres.actif .chapitre-texte .lettrine { font-size: clamp(80px, 12vh, 150px); }
+  html.ecrans .chapitres.actif .chapitre-texte p { font-size: clamp(18px, 2.6vh, 28px); margin-top: 3vh; }
+  html.ecrans .livret-hero.actif { min-height: 0; align-content: stretch; padding: 0; }
+  html.ecrans .livret-hero.actif .texte { padding-block: clamp(20px, 5vh, 90px); align-self: center; }
+  html.ecrans .livret-hero.actif figure { height: 100%; }
+  html.ecrans .blocs.actif { padding: clamp(12px, 3vh, 48px) var(--gutter); gap: clamp(10px, 1.6vh, 20px); }
+  html.ecrans .blocs.actif .bloc-livret { padding: clamp(16px, 2.6vh, 32px) 32px; }
+  html.ecrans .blocs.actif .bloc-livret h2 { font-size: clamp(24px, 3.4vh, 34px); }
+  html.ecrans .blocs.actif .suivez { padding: clamp(16px, 2.6vh, 40px) 40px; }
+  html.ecrans .blocs.actif .suivez .qr, html.ecrans .blocs.actif .suivez .qr-item { width: clamp(64px, 10vh, 120px); }
+  html.ecrans .blocs.actif .suivez .qr { height: clamp(64px, 10vh, 120px); }
+}
+@media (min-width: 761px) {
+  html.ecrans .fiche.actif { grid-template-columns: minmax(0, 1fr) 320px; gap: 40px; }
+  html.ecrans .fiche.actif > div:first-child { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); column-gap: 40px; }
+  html.ecrans .fiche.actif .specs { padding-bottom: 14px; font-size: clamp(14px, 1.2vw, 20px); }
+  html.ecrans .fiche.actif .description { font-size: clamp(17px, 2.2vh, 24px); }
+  html.ecrans .fiche.actif .equipements { grid-template-columns: 1fr 1fr; row-gap: 10px; margin-top: 16px; }
+  html.ecrans .fiche.actif .calendriers { flex-wrap: nowrap; gap: 20px; }
+  html.ecrans .fiche.actif .mois { flex: 1; min-width: 0; }
+  html.ecrans .fiche.actif .mois h3 { font-size: 20px; }
+  html.ecrans .fiche.actif .mois .jours { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; margin-top: 8px; }
+  html.ecrans .fiche.actif .mois .jours span { height: clamp(22px, 3.4vh, 34px); font-size: 13px; }
+  html.ecrans .fiche.actif .legende { margin-top: 12px; }
+  html.ecrans .fiche.actif .carte-resa { padding: 24px; }
+}
+@media (min-width: 761px) and (max-height: 920px) {
+  html.ecrans .blocs.actif .suivez .qr { display: none; }
+  html.ecrans .blocs.actif .suivez .qr-item a { margin-top: 0; }
+  html.ecrans .blocs.actif .suivez .qr-liste { align-items: center; }
+  html.ecrans .blocs.actif .infos { display: grid; grid-template-columns: 1fr 1fr; column-gap: 24px; }
+}
+@media (min-width: 761px) and (max-height: 920px) {
+  html.ecrans .blocs.actif .infos { margin-top: 12px; }
+  html.ecrans .blocs.actif .infos div { padding-block: 8px; }
+  html.ecrans .blocs.actif .adresses { margin-top: 12px; }
+  html.ecrans .blocs.actif .adresses a { padding-block: 8px; }
+  html.ecrans .blocs.actif .suivez h2 { font-size: 28px; }
+}
