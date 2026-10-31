@@ -769,3 +769,19 @@ html[lang="ar"] .intro .texte { padding-bottom: 6cqw; }
 .histoire-teaser p { color: var(--brun); }
 .histoire-teaser .btn--clair { border-color: var(--brunF); color: var(--brunF); }
 .histoire-teaser .btn--clair:hover { background: var(--brique); border-color: var(--brique); color: var(--creme); }
+
+/* Pied de page clair : ni noir ni rouge (retour client) */
+.pied-page { background: var(--creme); color: var(--brunF); border-top: 1px solid rgba(74, 52, 38, .15); }
+.pied-page .eyebrow--clair { color: var(--brique); }
+.pied-tel { color: var(--brique); }
+.pied-tel:hover { color: var(--rouge-f); }
+.pied-mail, .pied-bas nav a, .contact-form label > span, .contact-form .etat { color: var(--brun); }
+.pied-bas nav a:hover { color: var(--brique); }
+.pied-bas { border-top-color: rgba(74, 52, 38, .15); }
+.pied-page .qr { background: var(--sable); }
+.contact-form input, .contact-form select, .contact-form textarea { border-color: rgba(74, 52, 38, .25); background: #fff; color: var(--brunF); }
+.contact-form input:focus, .contact-form select:focus, .contact-form textarea:focus { border-color: var(--brique); }
+.contact-form .etat.ok { color: var(--brunF); }
+.contact-form .etat.erreur { color: var(--brique); }
+.pied-page .btn--plein { background: var(--brique); color: var(--creme); }
+.pied-page .btn--plein:hover { background: var(--rouge-f); }
