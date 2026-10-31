@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireOwner } from "@/lib/auth";
 import { addMonths, monthStart, toDayString, today } from "@/lib/dates";
@@ -9,6 +10,7 @@ export const metadata: Metadata = { title: "Mes biens" };
 
 export default async function EspacePage() {
   const user = await requireOwner();
+  if (!user.onboardedAt) redirect("/espace/bienvenue"); // fiche de première connexion
   const now = today();
   const month = monthStart(now.getUTCFullYear(), now.getUTCMonth());
   // Fenêtre consultable dans le calendrier : 12 mois en arrière, 18 mois en avant.
@@ -40,6 +42,7 @@ export default async function EspacePage() {
       au: toDayString(b.endDate),
       initiale: b.kind === "RESERVED" ? (b.guestName?.trim().charAt(0) || "V").toUpperCase() : null,
       montant: b.kind === "RESERVED" ? b.amount : 0,
+      plateforme: b.platform,
     })),
   }));
 

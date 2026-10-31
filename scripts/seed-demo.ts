@@ -39,16 +39,16 @@ async function main() {
   await db.booking.createMany({
     data: [
       // Mois précédent (pour la comparaison)
-      { propertyId: mer.id, startDate: day(-20), endDate: day(-15), guestName: "Karim", amount: 4200 },
-      { propertyId: studio.id, startDate: day(-10), endDate: day(-6), guestName: "Léa", amount: 2400 },
+      { propertyId: mer.id, startDate: day(-20), endDate: day(-15), guestName: "Karim", platform: "AIRBNB", amount: 4200 },
+      { propertyId: studio.id, startDate: day(-10), endDate: day(-6), guestName: "Léa", platform: "BOOKING", amount: 2400 },
       // Mois en cours
-      { propertyId: mer.id, startDate: day(1), endDate: day(4), guestName: "Sofia", amount: 2700 },
-      { propertyId: mer.id, startDate: day(13), endDate: day(18), guestName: "Marc", amount: 4600 },
-      { propertyId: mer.id, startDate: day(24), endDate: day(28), guestName: "Yasmine", amount: 3900 },
-      { propertyId: studio.id, startDate: day(5), endDate: day(9), guestName: "Hugo", amount: 2300 },
-      { propertyId: studio.id, startDate: day(19), endDate: day(22), guestName: "Nora", amount: 1800 },
+      { propertyId: mer.id, startDate: day(1), endDate: day(4), guestName: "Sofia", platform: "AIRBNB", amount: 2700 },
+      { propertyId: mer.id, startDate: day(13), endDate: day(18), guestName: "Marc", platform: "BOOKING", amount: 4600 },
+      { propertyId: mer.id, startDate: day(24), endDate: day(28), guestName: "Yasmine", platform: "DIRECT", amount: 3900 },
+      { propertyId: studio.id, startDate: day(5), endDate: day(9), guestName: "Hugo", platform: "AIRBNB", amount: 2300 },
+      { propertyId: studio.id, startDate: day(19), endDate: day(22), guestName: "Nora", platform: "EXPEDIA", amount: 1800 },
       { propertyId: villa.id, kind: "BLOCKED", startDate: day(8), endDate: day(10), note: "entretien" },
-      { propertyId: villa.id, startDate: day(26), endDate: day(33), guestName: "Thomas", amount: 9800 },
+      { propertyId: villa.id, startDate: day(26), endDate: day(33), guestName: "Thomas", platform: "BOOKING", amount: 9800 },
     ],
   });
   await db.$disconnect();

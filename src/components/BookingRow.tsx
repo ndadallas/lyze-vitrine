@@ -4,10 +4,12 @@ import { useState } from "react";
 import { deleteBooking, updateBooking } from "@/app/(gestion)/admin/actions";
 import { ActionForm } from "@/components/ActionForm";
 import { ConfirmButton } from "@/components/ConfirmButton";
+import { CODES_PLATEFORMES, LogoPlateforme, PLATEFORMES, type Plateforme } from "@/lib/plateformes";
 
 export type BookingRowData = {
   id: string;
   kind: "RESERVED" | "BLOCKED";
+  platform: Plateforme;
   startDate: string; // "2026-10-02"
   endDate: string; // jour de départ, exclu
   guestName: string | null;
@@ -31,6 +33,7 @@ export function BookingRow({ b }: { b: BookingRowData }) {
           <span className={b.kind === "RESERVED" ? "pill pill-occupied" : "pill pill-blocked"}>
             {b.kind === "RESERVED" ? "Réservé" : "Bloqué"}
           </span>
+          {b.kind === "RESERVED" && <LogoPlateforme code={b.platform} />}
         </td>
         <td style={{ whiteSpace: "nowrap" }}>{b.datesLabel}</td>
         <td>{b.nights}</td>
@@ -63,6 +66,14 @@ export function BookingRow({ b }: { b: BookingRowData }) {
                 <select id={`${p}-kind`} name="kind" defaultValue={b.kind}>
                   <option value="RESERVED">Réservation</option>
                   <option value="BLOCKED">Blocage (travaux, usage perso…)</option>
+                </select>
+              </div>
+              <div className="field">
+                <label htmlFor={`${p}-platform`}>Plateforme</label>
+                <select id={`${p}-platform`} name="platform" defaultValue={b.platform}>
+                  {CODES_PLATEFORMES.map((c) => (
+                    <option key={c} value={c}>{PLATEFORMES[c].nom}</option>
+                  ))}
                 </select>
               </div>
               <div className="field">

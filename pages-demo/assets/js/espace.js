@@ -130,7 +130,8 @@
         if (d === 1 || +jour === +date(r.du)) {
           var et = document.createElement('span');
           et.className = 'etiquette';
-          et.textContent = choisie ? abrege(r.client) : 'Complet';
+          et.innerHTML = '<span class="plateforme" title="' + r.source + '">' + logo(r.source, 14) + '</span>';
+          if (choisie) et.appendChild(document.createTextNode(abrege(r.client)));
           el.appendChild(et);
         }
         el.addEventListener('click', (function (resa) {
@@ -139,6 +140,12 @@
       }
       box.appendChild(el);
     }
+  }
+
+  // Logo de la plateforme d'origine (Airbnb, Booking, Direct…)
+  function logo(source, taille) {
+    var f = { Airbnb: 'airbnb', Booking: 'booking', Expedia: 'expedia', Direct: 'direct' }[source];
+    return f ? '<img src="assets/img/plateformes/' + f + '.svg" alt="" width="' + taille + '" height="' + taille + '">' : '';
   }
 
   function rendreDetail() {
@@ -155,7 +162,7 @@
       '<dl>' +
       '<div><dt>Séjour</dt><dd>' + court(du) + ' → ' + court(au) + ' (' + nuits(r) + ' nuits)</dd></div>' +
       '<div><dt>Voyageurs</dt><dd>' + r.voyageurs + '</dd></div>' +
-      '<div><dt>Source</dt><dd>' + r.source + '</dd></div>' +
+      '<div><dt>Plateforme</dt><dd><span class="plateforme">' + logo(r.source, 18) + r.source + '</span></dd></div>' +
       '<div><dt>Montant</dt><dd>[montant] MAD</dd></div>' +
       '<div><dt>Statut</dt><dd class="ok">Réservé <svg width="14" height="14" aria-hidden="true"><use href="#i-coche"/></svg></dd></div>' +
       '</dl>' +

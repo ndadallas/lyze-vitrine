@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { addDays, formatMAD, formatShortDate, toDayString, today } from "@/lib/dates";
 import { photoUrl } from "@/lib/photos";
+import { CODES_PLATEFORMES, PLATEFORMES } from "@/lib/plateformes";
 import { nights } from "@/lib/stats";
 import { ActionForm } from "@/components/ActionForm";
 import { BookingRow } from "@/components/BookingRow";
@@ -84,6 +85,12 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
           <div><dt>Identifiant</dt><dd><code>{owner.username}</code></dd></div>
           <div><dt>WhatsApp</dt><dd>{owner.phone || "—"}</dd></div>
           <div><dt>Email</dt><dd>{owner.email || "—"}</dd></div>
+          <div><dt>Adresse</dt><dd>{[owner.address, owner.country].filter(Boolean).join(" — ") || "—"}</dd></div>
+          <div><dt>Contact préféré</dt><dd>{owner.contactPreference || "—"}</dd></div>
+          <div>
+            <dt>Fiche de bienvenue</dt>
+            <dd>{owner.onboardedAt ? `Remplie le ${lastLogin.format(owner.onboardedAt)}` : "Pas encore remplie"}</dd>
+          </div>
           <div>
             <dt>Dernière connexion</dt>
             <dd>{owner.lastLoginAt ? lastLogin.format(owner.lastLoginAt) : "Jamais connecté"}</dd>
@@ -293,6 +300,14 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
                         </select>
                       </div>
                       <div className="field">
+                        <label htmlFor="add-platform">Plateforme</label>
+                        <select id="add-platform" name="platform" defaultValue="AIRBNB">
+                          {CODES_PLATEFORMES.map((c) => (
+                            <option key={c} value={c}>{PLATEFORMES[c].nom}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="field">
                         <label htmlFor="add-start">Arrivée</label>
                         <input id="add-start" name="startDate" type="date" required />
                       </div>
@@ -335,6 +350,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
                               b={{
                                 id: b.id,
                                 kind: b.kind,
+                                platform: b.platform,
                                 startDate: toDayString(b.startDate),
                                 endDate: toDayString(b.endDate),
                                 guestName: b.guestName,

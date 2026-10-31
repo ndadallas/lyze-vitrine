@@ -5,6 +5,7 @@ import { logout } from "@/app/actions/auth";
 import { PhotoManager, type PhotoItem } from "@/components/PhotoManager";
 import { DAY_MS, daysInMonth, formatMAD, monthStart, parseDay } from "@/lib/dates";
 import { monthStats, nights } from "@/lib/stats";
+import { LogoPlateforme, PLATEFORMES, type Plateforme } from "@/lib/plateformes";
 
 export type ResaEspace = {
   id: string;
@@ -13,6 +14,7 @@ export type ResaEspace = {
   au: string; // départ (exclu), "2026-11-16"
   initiale: string | null;
   montant: number;
+  plateforme: Plateforme;
 };
 
 export type BienEspace = {
@@ -211,6 +213,10 @@ export function EspaceProprietaire({ nom, aujourdhui, biens }: Props) {
                           {court(jour(resa.du))} → {court(jour(resa.au))} ({nights(versStats(resa))} nuits)
                         </dd>
                       </div>
+                      <div>
+                        <dt>Plateforme</dt>
+                        <dd><LogoPlateforme code={resa.plateforme} taille={18} /></dd>
+                      </div>
                       <div><dt>Montant</dt><dd>{resa.montant > 0 ? formatMAD(resa.montant) : "—"}</dd></div>
                       <div>
                         <dt>Statut</dt>
@@ -280,12 +286,17 @@ function Calendrier({
           key={d}
           type="button"
           className={`jour ${choisie ? "reserve" : "loue"}`}
-          aria-label={`${d} ${MOIS[m]} : réservé`}
+          aria-label={`${d} ${MOIS[m]} : réservé via ${PLATEFORMES[r.plateforme].nom}`}
           onClick={() => onChoisir(r.id)}
         >
           {d}
           {choisie && <IconeCoche className="coche" />}
-          {debutOuPremier && <span className="etiquette">{choisie ? `${r.initiale}.` : "Complet"}</span>}
+          {debutOuPremier && (
+            <span className="etiquette">
+              <LogoPlateforme code={r.plateforme} avecNom={false} taille={14} />
+              {choisie && `${r.initiale}.`}
+            </span>
+          )}
         </button>,
       );
     }

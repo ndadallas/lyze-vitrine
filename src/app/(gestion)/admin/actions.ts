@@ -6,6 +6,7 @@ import * as z from "zod";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { formatShortDate, parseDay } from "@/lib/dates";
+import { CODES_PLATEFORMES } from "@/lib/plateformes";
 import { generatePassword, hashPassword, slugUsername } from "@/lib/passwords";
 import { revokeUserSessions } from "@/lib/session";
 
@@ -251,6 +252,7 @@ const BookingSchema = z
   .object({
     propertyId: z.string().min(1),
     kind: z.enum(["RESERVED", "BLOCKED"]),
+    platform: z.enum(CODES_PLATEFORMES, { error: "Plateforme invalide." }),
     startDate: z.string().transform((v, ctx) => {
       const d = parseDay(v);
       if (!d) ctx.addIssue({ code: "custom", message: "Date d'arrivée invalide." });
@@ -277,6 +279,7 @@ function parseBooking(formData: FormData) {
   return BookingSchema.safeParse({
     propertyId: formData.get("propertyId") ?? "",
     kind: formData.get("kind") ?? "RESERVED",
+    platform: formData.get("platform") ?? "DIRECT",
     startDate: formData.get("startDate") ?? "",
     endDate: formData.get("endDate") ?? "",
     guestName: formData.get("guestName") ?? "",
@@ -344,6 +347,7 @@ export async function updateBooking(_prev: ActionState, formData: FormData): Pro
     where: { id },
     data: {
       kind: b.kind,
+      platform: b.platform,
       startDate: b.startDate,
       endDate: b.endDate,
       guestName: b.guestName,

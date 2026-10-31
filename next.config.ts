@@ -4,7 +4,10 @@ const nextConfig: NextConfig = {
   // Le site vitrine est en HTML statique dans public/ ; l'accueil est servi à la racine.
   async rewrites() {
     return {
-      beforeFiles: [{ source: "/", destination: "/index.html" }],
+      beforeFiles: [
+        { source: "/", destination: "/index.html" },
+        { source: "/ar", destination: "/ar/index.html" },
+      ],
       afterFiles: [],
       fallback: [],
     };

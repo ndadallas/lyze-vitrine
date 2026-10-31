@@ -17,6 +17,15 @@ enum BookingKind {
   BLOCKED
 }
 
+// Plateforme d'origine d'une réservation (logo affiché dans le calendrier).
+enum Platform {
+  DIRECT
+  AIRBNB
+  BOOKING
+  EXPEDIA
+  OTHER
+}
+
 // Un compte = un propriétaire (client de Lyze) ou la gérante (ADMIN).
 // Pas d'inscription publique : les comptes sont créés depuis /admin.
 model User {
@@ -28,6 +37,11 @@ model User {
   lastName     String
   email        String?
   phone        String?
+  // Fiche remplie par le propriétaire à sa première connexion (onboardedAt null = à remplir).
+  address           String?
+  country           String?
+  contactPreference String?
+  onboardedAt       DateTime?
   active       Boolean   @default(true)
   lastLoginAt  DateTime?
   createdAt    DateTime  @default(now())
@@ -93,6 +107,7 @@ model Booking {
   id         String      @id @default(cuid())
   propertyId String
   kind       BookingKind @default(RESERVED)
+  platform   Platform    @default(DIRECT)
   startDate  DateTime
   endDate    DateTime
   guestName  String?

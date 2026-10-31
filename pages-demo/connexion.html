@@ -48,7 +48,9 @@
       var bouton = form.querySelector('button');
       bouton.textContent = 'Connexion…';
       bouton.disabled = true;
-      setTimeout(function () { location.href = 'espace.html'; }, 500);
+      setTimeout(function () { var dejaVu = false;
+        try { dejaVu = localStorage.getItem('lyze-demo-bienvenue') === '1'; } catch (err) {}
+        location.href = dejaVu ? 'espace.html' : 'bienvenue.html'; }, 500);
     });
   </script>
 </body>
