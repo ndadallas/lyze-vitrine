@@ -943,3 +943,87 @@ html.ecrans .fiche .carte-resa { position: static; }
   html.ecrans .blocs.actif .adresses a { padding-block: 8px; }
   html.ecrans .blocs.actif .suivez h2 { font-size: 28px; }
 }
+
+/* ===== Accueil sobre v3 : 3 écrans empilés, bannière courte, rien de décoratif ===== */
+html.ecrans body { overflow: hidden; }
+html.ecrans .bar--flottante { transform: none; }
+.accueil .une.actif { padding: 0 0 clamp(10px, 2vh, 24px); align-content: start; gap: clamp(10px, 2.2vh, 28px); grid-template-rows: auto auto minmax(0, 1fr); }
+.accueil .une .hero { height: clamp(170px, 30vh, 380px); min-height: 0; max-height: none; display: grid; place-items: center; }
+.accueil .une .hero-contenu { padding: 0 16px; }
+.accueil .une .hero h1 { font-size: clamp(30px, 5.2vh, 60px); line-height: 1.05; }
+.accueil .une .hero-texte { font-size: 15px; margin-top: 10px; }
+.accueil .une .hero-points { bottom: 14px; }
+.accueil .services-grille { margin: 0 var(--gutter); border-top: 0; }
+.accueil .service { display: flex; align-items: center; gap: 14px; padding: 0 20px; }
+.accueil .service:first-child { padding-inline-start: 0; }
+.accueil .service svg { width: 26px; height: 26px; flex: none; }
+.accueil .service h3 { font-size: 19px; margin: 0; }
+.accueil .service p { font-size: 13px; margin-top: 2px; }
+.accueil .nos-biens { background: none; padding: 0 var(--gutter); min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 12px; }
+.accueil .biens-ligne { display: flex; justify-content: space-between; align-items: center; }
+.accueil .biens-ligne h2, .questions-contact h2 { font-family: var(--f-titre); font-weight: 400; font-size: clamp(22px, 3vh, 32px); }
+.accueil .carrousel-fleches button { width: 38px; height: 38px; }
+.accueil .carrousel, .accueil .carrousel-piste { height: 100%; min-height: 0; }
+.accueil .carrousel-piste { --carte: 22%; align-items: stretch; }
+.accueil .carte-logement { display: grid; grid-template-rows: minmax(0, 1fr) auto auto; min-height: 0; }
+.accueil .carte-logement figure { aspect-ratio: auto; height: auto; min-height: 0; }
+.accueil .carte-logement h3 { font-size: 18px; margin-top: 8px; }
+.accueil .carte-logement .lieu { font-size: 11px; margin-top: 2px; }
+
+.accueil .proprio { background: var(--sable); }
+.accueil .proprio-texte { background: none; display: grid; align-content: center; }
+.accueil .proprio-texte h2 { font-size: clamp(30px, 4.6vh, 48px); }
+.accueil .proprio-texte > p { font-size: 15px; margin-top: 16px; }
+.accueil .proprio-texte .btn { margin-top: 24px; justify-self: start; }
+.accueil .proprio-visuel { padding-block: clamp(12px, 3vh, 40px); padding-inline: 0 var(--gutter); }
+.accueil .calcul { border: 1px solid rgba(74, 52, 38, .15); padding: clamp(16px, 2.6vh, 30px) 28px; }
+.accueil .calcul .titre { font-size: clamp(22px, 3vh, 30px); margin-top: 0; }
+.accueil .calcul-prix { margin-top: 12px; }
+.accueil .calcul fieldset { margin-top: 12px; }
+.accueil .plat { padding: 8px 4px 6px; }
+.accueil .plat img { width: 22px; height: 22px; }
+.accueil .resultats { margin-top: 10px; }
+.accueil .resultats li { padding: 8px 0; }
+.accueil .resultats .tete strong { font-size: 22px; }
+
+.questions-contact { background: var(--creme); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(32px, 5vw, 96px); align-content: center; }
+.questions-contact.actif { align-content: safe center; }
+.questions-contact .faq { display: block; padding: 0; background: none; }
+.questions-contact .faq-liste { margin-top: 14px; }
+.questions-contact .faq summary { font-size: 17px; padding: clamp(8px, 1.3vh, 14px) 0; }
+.questions-contact .faq details p { font-size: 14px; padding-bottom: 12px; }
+.questions-contact .coordonnees { font-size: 14px; color: var(--brun); margin-top: 6px; }
+.questions-contact .coordonnees a:hover { color: var(--brique); }
+.questions-contact .contact-form { margin-top: 16px; gap: 12px 16px; }
+.questions-contact .contact-form textarea { min-height: clamp(70px, 12vh, 130px); }
+.pied-mini { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; margin-top: clamp(16px, 3vh, 40px); padding-top: 14px; border-top: 1px solid rgba(74, 52, 38, .15); font-size: 12px; color: var(--brun); }
+.pied-mini a:hover { color: var(--brique); }
+.pied-mini .ico { width: 18px; height: 18px; vertical-align: middle; }
+.pied-mini span { margin-inline-end: auto; }
+
+@media (max-width: 760px) {
+  .accueil .services-grille { grid-template-columns: 1fr; gap: 8px; }
+  .accueil .service, .accueil .service + .service { padding: 0; border: 0; }
+  .accueil .service p { display: none; }
+  .accueil .carrousel-piste { --carte: 62%; }
+  .accueil .proprio-visuel { padding: 0 16px 16px; }
+  .accueil .proprio-texte { padding: 20px 16px 12px; }
+  .accueil .proprio-texte > p { display: none; }
+  .questions-contact { grid-template-columns: 1fr; row-gap: 20px; padding-block: 16px; }
+}
+
+/* Plus sobre partout : les grands aplats rouges deviennent clairs, le rouge reste en accent */
+.citation { background: var(--sable2); color: var(--brunF); }
+.citation p { color: var(--brun); }
+.bloc-livret--sombre { background: var(--creme); color: var(--brunF); border-top: 3px solid var(--brique); }
+.bloc-livret--sombre .adresses a { border-top-color: rgba(74, 52, 38, .15); }
+.bloc-livret--sombre .adresses small, .bloc-livret--sombre .adresses em { color: var(--brun); }
+.bloc-livret--sombre .adresses a:hover em { color: var(--brique); }
+.suivez { background: var(--sable2); color: var(--brunF); }
+.suivez p { color: var(--brun); }
+.menu { background: var(--creme); color: var(--brunF); }
+.menu .lien-proprio { color: var(--brique); }
+.menu .lien-langue { color: var(--brunF); border-color: rgba(74, 52, 38, .4); }
+.menu-fermer { color: var(--brunF); }
+.accueil .nos-biens .carrousel { margin-top: 0; }
+html[data-ecran="accueil"] .points-ecrans button:not([aria-current="true"]) { border-color: var(--brunF); }

@@ -331,9 +331,11 @@
       if (!sansHistorique) history.replaceState(null, '', i ? '#' + s.id : location.pathname + location.search);
       ecranBloque = Date.now() + 800;
     };
+    // Un lien vers un bloc (#biens, #faq…) ouvre l'écran qui le contient
     var indexDe = function (id) {
-      for (var i = 0; i < ecrans.length; i++) if (ecrans[i].id === id) return i;
-      return -1;
+      var cible = id && document.getElementById(id);
+      var ecran = cible && cible.closest('[data-ecran]');
+      return ecran ? ecrans.indexOf(ecran) : -1;
     };
     window.allerEcran = function (id) { var i = indexDe(id); if (i > -1) montrerEcran(i); };
 
