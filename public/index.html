@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;400&family=Gloock&family=Instrument+Sans:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
-  <script>document.documentElement.classList.add('js')</script>
+  <script>document.documentElement.classList.add('js', 'ecrans')</script>
   <script src="assets/js/main.js" defer></script>
 </head>
 <body>
@@ -77,7 +77,7 @@
   </header>
 
   <main>
-    <section class="hero" aria-label="Lyze, conciergerie au Maroc">
+    <section class="hero" id="accueil" data-ecran="Accueil" aria-label="Lyze, conciergerie au Maroc">
       <div class="hero-slides" data-diaporama>
         <img class="actif" src="https://images.unsplash.com/photo-1775548537077-a3d68821e60c?w=2400&q=80&auto=format&fit=crop" alt="Villa avec piscine gérée au Maroc" fetchpriority="high">
         <img src="https://images.unsplash.com/photo-1708804654353-7ef66cba7776?w=2400&q=80&auto=format&fit=crop" alt="Piscine et transats d'une villa">
@@ -149,7 +149,7 @@
     </section>
 
     <!-- Nos services (sans photo : plus court) -->
-    <section class="services wrap" id="services">
+    <section class="services wrap" id="services" data-ecran="Nos services">
       <div class="biens-tete">
         <div>
           <span class="eyebrow">(02)&nbsp; Nos services</span>
@@ -177,7 +177,7 @@
     </section>
 
     <!-- Nos biens (carrousel) -->
-    <section class="nos-biens wrap" id="biens">
+    <section class="nos-biens wrap" id="biens" data-ecran="Nos biens">
       <div class="biens-tete">
         <div>
           <span class="eyebrow">(03)&nbsp; Nos biens</span>
@@ -225,7 +225,7 @@
     </section>
 
     <!-- Destinations -->
-    <section class="destinations compo" id="destinations">
+    <section class="destinations compo" id="destinations" data-ecran="Destinations">
       <div class="scene">
         <span class="eyebrow abs">Trois villes où nous gérons vos biens</span>
         <span class="grand-mot abs" data-glisse aria-hidden="true">GESTION</span>
@@ -251,7 +251,7 @@
     </section>
 
     <!-- Propriétaires + simulateur de revenus -->
-    <section class="proprio" aria-labelledby="titre-proprio" id="simulateur">
+    <section class="proprio" aria-labelledby="titre-proprio" id="simulateur" data-ecran="Propriétaires">
       <div class="proprio-texte">
         <span class="eyebrow eyebrow--brique">Propriétaires</span>
         <h2 id="titre-proprio">Vos biens,<br>réunis au même endroit.</h2>
@@ -290,11 +290,11 @@
     </section>
 
     <!-- FAQ -->
-    <section class="faq wrap" id="faq">
+    <section class="faq wrap" id="faq" data-ecran="Questions fréquentes">
       <div>
         <span class="eyebrow">(04)&nbsp; Questions fréquentes</span>
         <h2 class="titre-section">Vos questions,<br>nos réponses.</h2>
-        <p class="lead">Une autre question ? Écrivez-nous depuis le formulaire en bas de page.</p>
+        <p class="lead">Une autre question ? <a href="#contact">Écrivez-nous</a>.</p>
       </div>
       <div class="faq-liste">
         <details>
@@ -340,7 +340,7 @@
     </section>
   </main>
 
-  <footer class="pied-page" id="contact">
+  <footer class="pied-page" id="contact" data-ecran="Contact">
     <div class="wrap">
       <div class="pied-grille pied-grille--contact">
         <div>

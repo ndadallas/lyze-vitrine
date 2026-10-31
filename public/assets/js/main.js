@@ -35,7 +35,8 @@
 
   /* Apparitions au défilement + encre des lettrines */
   var aVoir = document.querySelectorAll('[data-apparait], [data-encre]');
-  if ('IntersectionObserver' in window && !reduit) {
+  // En mode écrans, rien ne défile : tout est visible d'emblée
+  if ('IntersectionObserver' in window && !reduit && !document.documentElement.classList.contains('ecrans')) {
     /* Une lettrine masquée par son clip-path n'est jamais vue comme "visible" par
        l'observer : on observe donc son bloc parent et on la révèle avec lui. */
     var cibles = new Map();
@@ -274,12 +275,115 @@
       var corps = T.resa(new FormData(resa));
       if (contact) {
         contact.elements.message.value = corps;
-        document.getElementById('contact').scrollIntoView({ behavior: reduit ? 'auto' : 'smooth' });
+        if (window.allerEcran) window.allerEcran('contact');
+        else document.getElementById('contact').scrollIntoView({ behavior: reduit ? 'auto' : 'smooth' });
         contact.elements.nom.focus({ preventScroll: true });
       } else {
         window.location.href = 'mailto:contact@lyze.ma?subject=' + encodeURIComponent('Lyze') + '&body=' + encodeURIComponent(corps);
       }
     });
+  }
+
+  /* Accueil en écrans : une section à la fois ; menu, pointsEcrans, molette, clavier et glissé pour passer de l'une à l'autre */
+  var ecrans = [].slice.call(document.querySelectorAll('[data-ecran]'));
+  if (ecrans.length && document.documentElement.classList.contains('ecrans')) {
+    var racine = document.documentElement;
+    var ecranCourant = -1, ecranBloque = 0;
+    var pointsEcrans = document.createElement('nav');
+    pointsEcrans.className = 'points-ecrans';
+    pointsEcrans.setAttribute('aria-label', arabe ? 'أقسام الصفحة' : 'Sections de la page');
+    ecrans.forEach(function (s, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.innerHTML = '<span>' + s.dataset.ecran + '</span>';
+      b.setAttribute('aria-label', s.dataset.ecran);
+      b.addEventListener('click', function () { montrerEcran(i); });
+      pointsEcrans.appendChild(b);
+    });
+    document.body.appendChild(pointsEcrans);
+    // Accueil = grand en-tête + photo sur exactement un écran, quelle que soit la hauteur de l'en-tête (plus haute en arabe)
+    var mesurerEnTete = function () { if (masthead && masthead.offsetHeight) racine.style.setProperty('--haut-masthead', masthead.offsetHeight + 'px'); };
+    mesurerEnTete();
+    if (document.fonts) document.fonts.ready.then(mesurerEnTete);
+    window.addEventListener('resize', mesurerEnTete);
+
+    var montrerEcran = function (i, sansHistorique) {
+      i = Math.max(0, Math.min(ecrans.length - 1, i));
+      if (i === ecranCourant) return;
+      if (ecranCourant > -1) ecrans[ecranCourant].classList.remove('actif');
+      ecranCourant = i;
+      var s = ecrans[i];
+      s.classList.add('actif');
+      s.scrollTop = 0;
+      racine.setAttribute('data-ecran', s.id);
+      window.scrollTo(0, 0);
+      [].forEach.call(pointsEcrans.children, function (b, j) { b.setAttribute('aria-current', j === i ? 'true' : 'false'); });
+      // Lien du menu correspondant à l'écran affiché
+      document.querySelectorAll('.bar-nav a, .nav-grille a').forEach(function (l) {
+        var h = l.getAttribute('href');
+        var surEcran = i === 0 ? h === 'index.html' : h === '#' + s.id;
+        if (surEcran) l.setAttribute('aria-current', 'page'); else l.removeAttribute('aria-current');
+      });
+      if (!sansHistorique) history.replaceState(null, '', i ? '#' + s.id : location.pathname + location.search);
+      ecranBloque = Date.now() + 800;
+    };
+    var indexDe = function (id) {
+      for (var i = 0; i < ecrans.length; i++) if (ecrans[i].id === id) return i;
+      return -1;
+    };
+    window.allerEcran = function (id) { var i = indexDe(id); if (i > -1) montrerEcran(i); };
+
+    // Liens internes (#services, index.html…) : changent d'écran au lieu de défiler
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href]');
+      if (!a) return;
+      var h = a.getAttribute('href');
+      var i = h === 'index.html' ? 0 : h.charAt(0) === '#' ? indexDe(h.slice(1)) : -1;
+      if (i < 0) return;
+      e.preventDefault();
+      montrerEcran(i);
+    });
+    window.addEventListener('hashchange', function () { var i = indexDe(location.hash.slice(1)); if (i > -1) montrerEcran(i, true); });
+
+    // Avance d'un écran seulement quand la section active est au bout (elle peut défiler un peu sur petit écran)
+    var auBout = function (sens) {
+      var s = ecrans[ecranCourant];
+      var boite = s.classList.contains('hero') ? document.scrollingElement : s;
+      return sens > 0 ? boite.scrollTop + boite.clientHeight >= boite.scrollHeight - 2 : boite.scrollTop <= 0;
+    };
+    var pasEcran = function (sens) {
+      var maintenant = Date.now();
+      // Tant que la molette (ou l'inertie du pavé tactile) continue, on reste sur l'écran : un geste = un écran
+      if (maintenant < ecranBloque) { ecranBloque = Math.max(ecranBloque, maintenant + 300); return false; }
+      if (!auBout(sens)) return false;
+      montrerEcran(ecranCourant + sens);
+      return true;
+    };
+    window.addEventListener('wheel', function (e) {
+      if (Math.abs(e.deltaY) < Math.abs(e.deltaX) || Math.abs(e.deltaY) < 4) return;
+      if (e.target.closest && e.target.closest('input[type="range"], textarea, select')) return;
+      var sens = e.deltaY > 0 ? 1 : -1;
+      if (!auBout(sens)) return;
+      e.preventDefault();
+      pasEcran(sens);
+    }, { passive: false });
+    document.addEventListener('keydown', function (e) {
+      if (e.target.closest && e.target.closest('input, textarea, select, [contenteditable]')) return;
+      var sens = { ArrowDown: 1, PageDown: 1, ' ': 1, ArrowUp: -1, PageUp: -1 }[e.key];
+      if (e.key === 'Home') { e.preventDefault(); return montrerEcran(0); }
+      if (e.key === 'End') { e.preventDefault(); return montrerEcran(ecrans.length - 1); }
+      if (sens && auBout(sens)) { e.preventDefault(); pasEcran(sens); }
+    });
+    var departY = null;
+    window.addEventListener('touchstart', function (e) { departY = e.touches[0].clientY; }, { passive: true });
+    window.addEventListener('touchend', function (e) {
+      if (departY === null) return;
+      var d = departY - e.changedTouches[0].clientY;
+      departY = null;
+      if (Math.abs(d) > 70) pasEcran(d > 0 ? 1 : -1);
+    }, { passive: true });
+
+    montrerEcran(Math.max(0, indexDe(location.hash.slice(1))), true);
   }
 
   /* Livret : le sélecteur change le nom du bien affiché */
