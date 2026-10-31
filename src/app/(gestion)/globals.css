@@ -1,8 +1,8 @@
 /* DA Lyze (site vitrine + espace propriétaire) : sable, brun, brique, Gloock + Instrument Sans.
    Les anciens noms de variables sont gardés pour ne pas toucher aux écrans. */
 :root {
-  --ink: #141210; /* brun foncé */
-  --ink-soft: #2a2623;
+  --ink: #4a3426; /* brun chaud (texte) : aucun noir */
+  --ink-soft: #6b4e3d;
   --ivory: #f1eadd; /* fond d'app */
   --ivory-deep: #e2d3ba; /* sable 2 */
   --card: #f6f0e4; /* crème */
@@ -147,7 +147,7 @@ ul {
   cursor: progress;
 }
 .btn-primary {
-  background: var(--ink);
+  background: var(--brass);
   color: var(--ivory);
   border-color: var(--ink);
 }
@@ -309,7 +309,7 @@ ul {
 }
 .auth-aside {
   position: relative;
-  background: var(--ink);
+  background: var(--brass);
   padding: 56px;
   display: flex;
   flex-direction: column;
@@ -354,7 +354,7 @@ ul {
 .sidebar {
   width: 260px;
   flex-shrink: 0;
-  background: var(--ink);
+  background: var(--brass);
   padding: 36px 20px;
   display: flex;
   flex-direction: column;
@@ -525,7 +525,7 @@ ul {
   width: 60px;
   height: 60px;
   border-radius: 2px;
-  background: linear-gradient(160deg, var(--ink), var(--brass-dark));
+  background: linear-gradient(160deg, var(--brass), var(--pine-light));
   flex-shrink: 0;
 }
 .property-body {
@@ -802,7 +802,7 @@ h1, h2, h3, h4 { font-weight: 400; letter-spacing: 0; }
 .logo-name { font-family: var(--font-script); font-size: 44px; line-height: 1.2; letter-spacing: 0; color: var(--card); }
 .logo-sub { font-size: 10px; letter-spacing: 0.3em; margin-top: 2px; color: var(--brass-light); }
 .btn-primary { background: var(--brass); border-color: var(--brass); color: var(--card); }
-.btn-primary:hover:not(:disabled) { background: var(--ink); border-color: var(--ink); }
+.btn-primary:hover:not(:disabled) { background: var(--pine-light); border-color: var(--pine-light); }
 .pill-free { background: rgba(79, 122, 74, 0.14); color: var(--vert); }
 .field input:focus, .field select:focus, .field textarea:focus { box-shadow: 0 0 0 3px rgba(215, 38, 46, 0.14); }
 .check input { accent-color: var(--brass); }

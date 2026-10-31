@@ -4,7 +4,7 @@ body.espace { background: var(--fond-app); }
 .app { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
 
 /* Barre latérale */
-.side { background: var(--brunF); color: var(--creme); padding: 28px 16px 32px; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
+.side { background: var(--brique); color: var(--creme); padding: 28px 16px 32px; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
 .side .logo { font-family: var(--f-script); font-size: 44px; line-height: 1.2; padding-left: 16px; }
 .side .role { font-size: 10px; font-weight: 500; letter-spacing: .3em; color: var(--sable2); padding-left: 18px; margin-top: 2px; }
 .side nav { display: grid; gap: 8px; margin-top: 46px; }
@@ -13,7 +13,7 @@ body.espace { background: var(--fond-app); }
 }
 .side nav a:hover { color: var(--creme); }
 .side nav a[aria-current="page"] { color: var(--creme); font-weight: 500; background: rgba(246, 240, 228, .08); }
-.side nav a[aria-current="page"]::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--brique); }
+.side nav a[aria-current="page"]::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--creme); }
 .side .bas { margin-top: auto; padding: 0 20px; display: grid; gap: 10px; font-size: 13px; color: rgba(246, 240, 228, .6); }
 .side .bas strong { color: var(--creme); font-weight: 500; }
 .side .bas a:hover { color: var(--creme); }
