@@ -176,12 +176,47 @@
     var prec = c.querySelector('[data-prec]');
     var suiv = c.querySelector('[data-suiv]');
     var sens = getComputedStyle(piste).direction === 'rtl' ? -1 : 1;
+    var auto = c.hasAttribute('data-auto') && !reduit;
+    if (auto) {
+      // Défilement continu sans fin : cartes dupliquées une fois, on revient d'une demi-piste quand on l'a parcourue
+      Array.prototype.slice.call(piste.children).forEach(function (el) {
+        var copie = el.cloneNode(true);
+        copie.setAttribute('aria-hidden', 'true');
+        copie.setAttribute('tabindex', '-1');
+        piste.appendChild(copie);
+      });
+      c.classList.add('auto');
+      var pos = 0, dernier = 0, pauseJusqua = 0, survol = false;
+      var pause = function () { pauseJusqua = performance.now() + 4000; };
+      c.addEventListener('mouseenter', function () { survol = true; });
+      c.addEventListener('mouseleave', function () { survol = false; });
+      c.addEventListener('focusin', pause);
+      piste.addEventListener('pointerdown', pause);
+      piste.addEventListener('wheel', pause, { passive: true });
+      var tour = function (t) {
+        var moitie = piste.scrollWidth / 2;
+        var reel = Math.abs(piste.scrollLeft);
+        if (Math.abs(reel - Math.round(pos)) > 2) pos = reel; // l'utilisateur a bougé la piste
+        var bouge = !survol && t > pauseJusqua && piste.offsetParent && dernier;
+        if (bouge) pos += (t - dernier) * 0.04; // ≈ 40 px/s
+        if (pos >= moitie) { pos -= moitie; bouge = true; }
+        // n'écrire que si on avance nous-mêmes : sinon on couperait le défilement doux des flèches
+        if (bouge) piste.scrollLeft = pos * sens;
+        dernier = t;
+        requestAnimationFrame(tour);
+      };
+      requestAnimationFrame(tour);
+    }
     var maj = function () {
+      if (auto) return; // piste sans fin : flèches toujours actives
       var x = Math.abs(piste.scrollLeft);
       prec.disabled = x < 4;
       suiv.disabled = x > piste.scrollWidth - piste.clientWidth - 4;
     };
-    var aller = function (d) { piste.scrollBy({ left: d * sens * piste.clientWidth * 0.9 }); };
+    var aller = function (d) {
+      if (auto) pause();
+      piste.scrollBy({ left: d * sens * piste.clientWidth * 0.9, behavior: 'smooth' });
+    };
     prec.addEventListener('click', function () { aller(-1); });
     suiv.addEventListener('click', function () { aller(1); });
     piste.addEventListener('scroll', function () { requestAnimationFrame(maj); }, { passive: true });
