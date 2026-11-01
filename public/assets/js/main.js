@@ -176,7 +176,7 @@
     var prec = c.querySelector('[data-prec]');
     var suiv = c.querySelector('[data-suiv]');
     var sens = getComputedStyle(piste).direction === 'rtl' ? -1 : 1;
-    var auto = c.hasAttribute('data-auto') && !reduit;
+    var auto = c.hasAttribute('data-auto'); // bouge toujours, demande client (pause seulement si on le manipule)
     if (auto) {
       // Défilement continu sans fin : cartes dupliquées une fois, on revient d'une demi-piste quand on l'a parcourue
       Array.prototype.slice.call(piste.children).forEach(function (el) {
@@ -186,10 +186,8 @@
         piste.appendChild(copie);
       });
       c.classList.add('auto');
-      var pos = 0, dernier = 0, pauseJusqua = 0, survol = false;
+      var pos = 0, dernier = 0, pauseJusqua = 0;
       var pause = function () { pauseJusqua = performance.now() + 4000; };
-      c.addEventListener('mouseenter', function () { survol = true; });
-      c.addEventListener('mouseleave', function () { survol = false; });
       c.addEventListener('focusin', pause);
       piste.addEventListener('pointerdown', pause);
       piste.addEventListener('wheel', pause, { passive: true });
@@ -197,7 +195,7 @@
         var moitie = piste.scrollWidth / 2;
         var reel = Math.abs(piste.scrollLeft);
         if (Math.abs(reel - Math.round(pos)) > 2) pos = reel; // l'utilisateur a bougé la piste
-        var bouge = !survol && t > pauseJusqua && piste.offsetParent && dernier;
+        var bouge = t > pauseJusqua && piste.offsetParent && dernier;
         if (bouge) pos += (t - dernier) * 0.04; // ≈ 40 px/s
         if (pos >= moitie) { pos -= moitie; bouge = true; }
         // n'écrire que si on avance nous-mêmes : sinon on couperait le défilement doux des flèches
