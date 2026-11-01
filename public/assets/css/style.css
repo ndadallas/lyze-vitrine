@@ -797,7 +797,7 @@ html.ecrans [data-ecran].actif:not(.hero) {
   display: grid; align-content: safe center;
   overflow-y: auto; overscroll-behavior: contain;
   padding-block: clamp(16px, 4vh, 48px);
-  animation: ecran-entre .5s var(--ease);
+  animation: ecran-entre .6s cubic-bezier(.65, 0, .35, 1) both;
 }
 html.ecrans .proprio.actif { display: grid; align-content: center; }
 html.ecrans .pied-page.actif { padding-block: clamp(16px, 4vh, 48px) 0; }
@@ -1047,5 +1047,7 @@ html[data-ecran="contact"] .cta-flottant { display: none; }
 [data-carrousel].auto .carrousel-piste { scroll-snap-type: none; scroll-behavior: auto; }
 
 /* Animation d'entrée de chaque écran (sans bloquer la molette : on peut enchaîner) */
-@keyframes ecran-entre { from { opacity: 0; transform: translateY(24px); } }
+@keyframes ecran-entre { from { opacity: 0; transform: translateY(calc(var(--sens, 1) * 35vh)); } }
 @media (prefers-reduced-motion: reduce) { html.ecrans [data-ecran].actif { animation: none; } }
+html.ecrans [data-ecran].actif.sortant { animation: ecran-sort .6s cubic-bezier(.65, 0, .35, 1) both; z-index: 0; pointer-events: none; }
+@keyframes ecran-sort { to { opacity: 0; transform: translateY(calc(var(--sens, 1) * -35vh)); } }

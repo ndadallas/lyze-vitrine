@@ -378,7 +378,18 @@
     var montrerEcran = function (i, sansHistorique) {
       i = Math.max(0, Math.min(ecrans.length - 1, i));
       if (i === ecranCourant) return;
-      if (ecranCourant > -1) ecrans[ecranCourant].classList.remove('actif');
+      // Transition « défilement » : l'ancien écran part dans le sens de la molette pendant que le nouveau arrive
+      racine.style.setProperty('--sens', i > ecranCourant ? 1 : -1);
+      ecrans.forEach(function (e) { if (e.classList.contains('sortant')) e.classList.remove('sortant', 'actif'); });
+      var ancien = ecranCourant > -1 ? ecrans[ecranCourant] : null;
+      if (ancien && ecranCourant > -1 && !reduit) {
+        ancien.classList.add('sortant');
+        setTimeout(function () {
+          if (!ancien.classList.contains('sortant')) return; // déjà nettoyé par une transition plus récente
+          ancien.classList.remove('sortant');
+          if (ancien !== ecrans[ecranCourant]) ancien.classList.remove('actif');
+        }, 600);
+      } else if (ancien) ancien.classList.remove('actif');
       ecranCourant = i;
       var s = ecrans[i];
       s.classList.add('actif');
