@@ -352,6 +352,7 @@
   if (ecrans.length && document.documentElement.classList.contains('ecrans')) {
     var racine = document.documentElement;
     var ecranCourant = -1;
+    var surAccueil = document.body.classList.contains('accueil');
     var pointsEcrans = document.createElement('nav');
     pointsEcrans.className = 'points-ecrans';
     pointsEcrans.setAttribute('aria-label', arabe ? 'أقسام الصفحة' : 'Sections de la page');
@@ -385,8 +386,8 @@
       racine.setAttribute('data-ecran', s.id);
       window.scrollTo(0, 0);
       [].forEach.call(pointsEcrans.children, function (b, j) { b.setAttribute('aria-current', j === i ? 'true' : 'false'); });
-      // Lien du menu correspondant à l'écran affiché
-      document.querySelectorAll('.bar-nav a, .nav-grille a').forEach(function (l) {
+      // Lien du menu correspondant à l'écran affiché (accueil seulement : ailleurs le lien de la page reste souligné)
+      if (surAccueil) document.querySelectorAll('.bar-nav a, .nav-grille a').forEach(function (l) {
         var h = l.getAttribute('href');
         var surEcran = i === 0 ? h === 'index.html' : h === '#' + s.id;
         if (surEcran) l.setAttribute('aria-current', 'page'); else l.removeAttribute('aria-current');
@@ -406,7 +407,7 @@
       var a = e.target.closest && e.target.closest('a[href]');
       if (!a) return;
       var h = a.getAttribute('href');
-      var i = h === 'index.html' ? 0 : h.charAt(0) === '#' ? indexDe(h.slice(1)) : -1;
+      var i = h === 'index.html' && surAccueil ? 0 : h.charAt(0) === '#' ? indexDe(h.slice(1)) : -1;
       if (i < 0) return;
       e.preventDefault();
       montrerEcran(i);
