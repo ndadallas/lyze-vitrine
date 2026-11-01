@@ -392,7 +392,7 @@
         if (surEcran) l.setAttribute('aria-current', 'page'); else l.removeAttribute('aria-current');
       });
       if (!sansHistorique) history.replaceState(null, '', i ? '#' + s.id : location.pathname + location.search);
-      ecranBloque = Date.now() + 800;
+      ecranBloque = Date.now() + 500; // laisse l'animation d'entrée se jouer
     };
     // Un lien vers un bloc (#biens, #faq…) ouvre l'écran qui le contient
     var indexDe = function (id) {
@@ -421,20 +421,23 @@
       return sens > 0 ? boite.scrollTop + boite.clientHeight >= boite.scrollHeight - 2 : boite.scrollTop <= 0;
     };
     var pasEcran = function (sens) {
-      var maintenant = Date.now();
-      // Tant que la molette (ou l'inertie du pavé tactile) continue, on reste sur l'écran : un geste = un écran
-      if (maintenant < ecranBloque) { ecranBloque = Math.max(ecranBloque, maintenant + 300); return false; }
-      if (!auBout(sens)) return false;
+      if (Date.now() < ecranBloque || !auBout(sens)) return false;
       montrerEcran(ecranCourant + sens);
       return true;
     };
+    // Molette : un cran = un écran. L'inertie du pavé tactile (petits deltas qui décroissent, sans pause) ne compte pas
+    var derniereMolette = 0, dernierDelta = 0;
     window.addEventListener('wheel', function (e) {
       if (Math.abs(e.deltaY) < Math.abs(e.deltaX) || Math.abs(e.deltaY) < 4) return;
       if (e.target.closest && e.target.closest('input[type="range"], textarea, select')) return;
       var sens = e.deltaY > 0 ? 1 : -1;
       if (!auBout(sens)) return;
       e.preventDefault();
-      pasEcran(sens);
+      var maintenant = Date.now(), d = Math.abs(e.deltaY);
+      var nouveauGeste = maintenant - derniereMolette > 150 || d > dernierDelta || d >= 100;
+      derniereMolette = maintenant;
+      dernierDelta = d;
+      if (nouveauGeste) pasEcran(sens);
     }, { passive: false });
     document.addEventListener('keydown', function (e) {
       if (e.target.closest && e.target.closest('input, textarea, select, [contenteditable]')) return;
