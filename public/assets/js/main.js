@@ -351,7 +351,7 @@
   var ecrans = [].slice.call(document.querySelectorAll('[data-ecran]'));
   if (ecrans.length && document.documentElement.classList.contains('ecrans')) {
     var racine = document.documentElement;
-    var ecranCourant = -1, ecranBloque = 0;
+    var ecranCourant = -1;
     var pointsEcrans = document.createElement('nav');
     pointsEcrans.className = 'points-ecrans';
     pointsEcrans.setAttribute('aria-label', arabe ? 'أقسام الصفحة' : 'Sections de la page');
@@ -392,7 +392,6 @@
         if (surEcran) l.setAttribute('aria-current', 'page'); else l.removeAttribute('aria-current');
       });
       if (!sansHistorique) history.replaceState(null, '', i ? '#' + s.id : location.pathname + location.search);
-      ecranBloque = Date.now() + 500; // laisse l'animation d'entrée se jouer
     };
     // Un lien vers un bloc (#biens, #faq…) ouvre l'écran qui le contient
     var indexDe = function (id) {
@@ -421,7 +420,7 @@
       return sens > 0 ? boite.scrollTop + boite.clientHeight >= boite.scrollHeight - 2 : boite.scrollTop <= 0;
     };
     var pasEcran = function (sens) {
-      if (Date.now() < ecranBloque || !auBout(sens)) return false;
+      if (!auBout(sens)) return false;
       montrerEcran(ecranCourant + sens);
       return true;
     };

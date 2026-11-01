@@ -797,14 +797,11 @@ html.ecrans [data-ecran].actif:not(.hero) {
   display: grid; align-content: safe center;
   overflow-y: auto; overscroll-behavior: contain;
   padding-block: clamp(16px, 4vh, 48px);
-  animation: ecran-entre .5s var(--ease);
 }
 html.ecrans .proprio.actif { display: grid; align-content: center; }
 html.ecrans .pied-page.actif { padding-block: clamp(16px, 4vh, 48px) 0; }
 html.ecrans .pied-page .pied-bas { margin-top: clamp(20px, 4vh, 48px); padding-block: 18px 22px; }
 html.ecrans .pied-page h2 { font-size: clamp(34px, 5.4vh, 64px); }
-@keyframes ecran-entre { from { opacity: 0; transform: translateY(24px); } }
-@media (prefers-reduced-motion: reduce) { html.ecrans [data-ecran].actif { animation: none; } }
 
 /* Points de navigation entre les écrans */
 .points-ecrans { position: fixed; inset-inline-end: 22px; top: 50%; transform: translateY(-50%); z-index: 45; display: grid; gap: 14px; }
