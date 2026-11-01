@@ -9,9 +9,9 @@
   --fond-app: #F1EADD;
   --brun: #6B4E3D;
   --brunF: #4A3426;
-  --brique: #D7262E;
+  --brique: #A51E24;
   --noir: #4A3426;
-  --rouge-f: #B01A21; /* rouge vif fonce (survols) */
+  --rouge-f: #841519; /* rouge vif fonce (survols) */
   --gris: #7A6A5A;
   --vert: #4F7A4A;
 
@@ -563,7 +563,7 @@ figure { margin: 0; }
 /* Connexion réelle (Next.js) */
 .connexion-form .souvenir { display: flex; align-items: center; gap: 10px; margin-top: 24px; font-size: 13px; color: var(--brun); cursor: pointer; }
 .connexion-form .souvenir input { width: 16px; height: 16px; accent-color: var(--brique); }
-.connexion-form .erreur { margin-top: 20px; max-width: 420px; padding: 12px 14px; border-left: 3px solid var(--brique); background: rgba(215, 38, 46, .08); color: var(--brunF); font-size: 14px; line-height: 1.5; }
+.connexion-form .erreur { margin-top: 20px; max-width: 420px; padding: 12px 14px; border-left: 3px solid var(--brique); background: rgba(165, 30, 36, .08); color: var(--brunF); font-size: 14px; line-height: 1.5; }
 .connexion-form .btn--plein:disabled { opacity: .6; cursor: wait; }
 
 /* =====================================================================

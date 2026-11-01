@@ -6,17 +6,17 @@
   --ivory: #f1eadd; /* fond d'app */
   --ivory-deep: #e2d3ba; /* sable 2 */
   --card: #f6f0e4; /* crème */
-  --brass: #D7262E; /* accent = brique */
+  --brass: #A51E24; /* accent = brique */
   --brass-light: #e2d3ba;
   --brass-dark: #3d3632; /* brun */
-  --pine: #D7262E;
-  --pine-light: #B01A21;
+  --pine: #A51E24;
+  --pine-light: #841519;
   --vert: #4f7a4a;
   --line: rgba(43, 29, 21, 0.12);
   --line-strong: rgba(43, 29, 21, 0.26);
   --muted: #7a6a5a;
   --muted-2: #9a8a78;
-  --danger: #D7262E;
+  --danger: #A51E24;
 
   --font-serif: var(--font-gloock), Georgia, serif;
   --font-sans: var(--font-instrument), system-ui, sans-serif;
@@ -804,7 +804,7 @@ h1, h2, h3, h4 { font-weight: 400; letter-spacing: 0; }
 .btn-primary { background: var(--brass); border-color: var(--brass); color: var(--card); }
 .btn-primary:hover:not(:disabled) { background: var(--pine-light); border-color: var(--pine-light); }
 .pill-free { background: rgba(79, 122, 74, 0.14); color: var(--vert); }
-.field input:focus, .field select:focus, .field textarea:focus { box-shadow: 0 0 0 3px rgba(215, 38, 46, 0.14); }
+.field input:focus, .field select:focus, .field textarea:focus { box-shadow: 0 0 0 3px rgba(165, 30, 36, 0.14); }
 .check input { accent-color: var(--brass); }
 .alert-success { background: rgba(79, 122, 74, 0.12); color: var(--vert); border-color: rgba(79, 122, 74, 0.3); }
 .sidebar-link.active { background: rgba(246, 240, 228, 0.08); color: var(--card); box-shadow: inset 3px 0 0 var(--brass); }
@@ -815,7 +815,7 @@ form.stack > .btn { align-self: flex-start; }
 
 /* ---------- Photos d'un bien (PhotoManager, mêmes classes que l'espace propriétaire) ---------- */
 .photos-grille { display: grid; grid-template-columns: 260px 1fr; gap: 16px; }
-.depot { border: 1.5px dashed rgba(215, 38, 46, 0.7); background: var(--ivory); min-height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; padding: 16px; transition: background 0.2s; }
+.depot { border: 1.5px dashed rgba(165, 30, 36, 0.7); background: var(--ivory); min-height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; padding: 16px; transition: background 0.2s; }
 .depot.survol, .depot:hover { background: var(--ivory-deep); }
 .depot.envoi { cursor: progress; opacity: 0.7; }
 .depot strong { font-size: 15px; font-weight: 500; margin-top: 12px; }
@@ -834,13 +834,13 @@ form.stack > .btn { align-self: flex-start; }
 .vignettes-vide { font-size: 14px; color: var(--muted); align-self: center; }
 .photos-message { margin-top: 10px; font-size: 13px; padding: 10px 12px; }
 .photos-message.ok { background: rgba(79, 122, 74, 0.12); color: var(--vert); }
-.photos-message.erreur { background: rgba(215, 38, 46, 0.08); color: var(--danger); }
+.photos-message.erreur { background: rgba(165, 30, 36, 0.08); color: var(--danger); }
 @media (hover: none) { .vignette-actions { opacity: 1; } }
 @media (max-width: 860px) { .photos-grille { grid-template-columns: minmax(0, 1fr); } .depot { min-height: 130px; } }
 
 /* ---------- Visionneuse (photo en grand) ---------- */
 .vignette-voir { all: unset; display: block; width: 100%; height: 100%; cursor: zoom-in; }
-.vignette-voir:focus-visible { outline: 2px solid #D7262E; outline-offset: -2px; }
+.vignette-voir:focus-visible { outline: 2px solid #A51E24; outline-offset: -2px; }
 .visionneuse { position: fixed; inset: 0; z-index: 100; background: rgba(21, 17, 14, .88); display: grid; place-items: center; padding: 24px; }
 .visionneuse-cadre { max-width: min(1200px, 100%); display: flex; flex-direction: column; gap: 12px; }
 .visionneuse-cadre img { max-width: 100%; max-height: calc(100vh - 140px); object-fit: contain; display: block; margin: 0 auto; }
@@ -849,8 +849,8 @@ form.stack > .btn { align-self: flex-start; }
 .visionneuse-boutons button { border: 1px solid rgba(246, 240, 228, .35); background: none; color: #F6F0E4; padding: 9px 14px; font: inherit; font-size: 13px; cursor: pointer; }
 .visionneuse-boutons button:hover:not(:disabled) { background: rgba(246, 240, 228, .12); }
 .visionneuse-boutons button:disabled { opacity: .35; cursor: default; }
-.visionneuse-boutons .suppr { border-color: #D7262E; background: #D7262E; }
-.visionneuse-boutons .suppr:hover { background: #B01A21 !important; }
+.visionneuse-boutons .suppr { border-color: #A51E24; background: #A51E24; }
+.visionneuse-boutons .suppr:hover { background: #841519 !important; }
 
 /* ---------- Fiche client rangée par bien ---------- */
 .fiche-resume { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px 24px; margin: 0; }
@@ -881,7 +881,7 @@ form.stack > .btn { align-self: flex-start; }
 .bien-partie-tete h4 { font-size: 19px; }
 .bien-partie-tete p { font-size: 13px; margin-top: 4px; line-height: 1.5; }
 .bien-detail .vignettes { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
-.zone-danger { border-color: rgba(215, 38, 46, 0.3); }
+.zone-danger { border-color: rgba(165, 30, 36, 0.3); }
 
 @media (max-width: 1100px) {
   .biens-admin { grid-template-columns: minmax(0, 1fr); }
