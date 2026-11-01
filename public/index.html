@@ -4,14 +4,20 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lyze — Conciergerie et gestion locative au Maroc</title>
-  <meta name="description" content="Villas et appartements choisis un à un à El Jadida, Casablanca et Marrakech. Réservez en direct, sur Airbnb ou Booking.">
+  <meta name="description" content="Conciergerie et gestion locative à El Jadida, Casablanca et Marrakech : mise en location sur Airbnb et Booking, accueil, ménage et entretien. Estimez vos revenus.">
+  <meta property="og:title" content="Lyze — Conciergerie et gestion locative au Maroc">
+  <meta property="og:description" content="Mise en location, accueil, ménage et entretien de votre bien à El Jadida, Casablanca et Marrakech.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1775548537077-a3d68821e60c?w=1200&h=630&q=80&auto=format&fit=crop">
+  <meta name="theme-color" content="#F6F0E4">
   <link rel="alternate" hreflang="ar" href="ar/index.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;400&family=Gloock&family=Instrument+Sans:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=7">
+  <link rel="stylesheet" href="assets/css/style.css?v=8">
   <script>document.documentElement.classList.add('js', 'ecrans')</script>
-  <script src="assets/js/main.js?v=7" defer></script>
+  <script src="assets/js/main.js?v=8" defer></script>
 </head>
 <body class="accueil">
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -67,6 +73,10 @@
         <div class="hero-contenu">
           <h1>Votre bien, entre de bonnes mains.</h1>
           <p class="hero-texte">Conciergerie et gestion locative à El Jadida, Casablanca et Marrakech.</p>
+          <div class="hero-actions">
+            <a class="btn btn--plein" href="#simulateur">Estimer mes revenus</a>
+            <a class="btn btn--clair" href="#contact">Être recontacté</a>
+          </div>
         </div>
       </div>
 
@@ -115,9 +125,16 @@
     <section class="proprio" id="simulateur" data-ecran="Propriétaires" aria-labelledby="titre-proprio">
       <div class="proprio-texte">
         <span class="eyebrow eyebrow--brique">Propriétaires</span>
-        <h2 id="titre-proprio">Vos biens,<br>réunis au même endroit.</h2>
-        <p>Réservations Airbnb, Booking et directes, photos et revenus : tout est dans votre espace propriétaire.</p>
-        <a class="btn btn--plein" href="/connexion">Accéder à mon espace →</a>
+        <h2 id="titre-proprio">Votre bien loué,<br>sans vous en occuper.</h2>
+        <ol class="etapes">
+          <li><h3>Premier échange</h3><p>Vous nous présentez votre bien, nous estimons ses revenus.</p></li>
+          <li><h3>Mise en ligne</h3><p>Annonces Airbnb et Booking, prix ajustés.</p></li>
+          <li><h3>Gestion au quotidien</h3><p>Accueil, ménage, entretien. Vous suivez réservations et revenus dans votre espace propriétaire.</p></li>
+        </ol>
+        <div class="proprio-actions">
+          <a class="btn btn--plein" href="#contact">Être recontacté</a>
+          <a class="lien-espace" href="/connexion">Déjà propriétaire ? Mon espace →</a>
+        </div>
       </div>
       <div class="proprio-visuel">
         <!-- shortcut: taux indicatifs et commission Lyze (data-commission) à confirmer par Lyze -->
