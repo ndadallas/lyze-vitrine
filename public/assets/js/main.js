@@ -101,6 +101,7 @@
   var T = {
     fr: {
       photo: 'Photo', devise: 'MAD', aucune: 'Cochez au moins une plateforme.',
+      bruts: 'Revenus bruts', parAn: 'par an', fraisDe: 'Frais', comLyze: 'Commission Lyze', apresFrais: 'après frais', recevez: 'Vous recevez',
       vousTouchez: 'vous touchez', envoi: 'Envoi…',
       ok: 'Merci, votre message est bien parti. Nous vous répondons rapidement.',
       invalide: 'Vérifiez les champs du formulaire.',
@@ -111,11 +112,13 @@
           + '\nChambres : ' + d.get('chambres') + '\nFormule : ' + d.get('formule') + '\n';
       },
       corps: function (d) {
-        return 'Nom : ' + d.nom + '\nE-mail : ' + d.email + '\nTéléphone : ' + d.telephone + '\n\n' + d.message;
+        return 'Nom : ' + d.nom + '\nE-mail : ' + d.email + '\nTéléphone : ' + d.telephone
+          + '\nVille du bien : ' + d.ville + '\nMeublé : ' + d.meuble + '\n\n' + d.message;
       }
     },
     ar: {
       photo: 'صورة', devise: 'درهم', aucune: 'اختر منصة واحدة على الأقل.',
+      bruts: 'المداخيل الإجمالية', parAn: 'في السنة', fraisDe: 'عمولة', comLyze: 'عمولة Lyze', apresFrais: 'بعد عمولة المنصة', recevez: 'صافي دخلك',
       vousTouchez: 'صافي دخلك', envoi: 'جارٍ الإرسال…',
       ok: 'شكرًا، وصلتنا رسالتك. سنتواصل معك قريبًا.',
       invalide: 'يرجى التحقق من حقول الاستمارة.',
@@ -126,7 +129,8 @@
           + '\nعدد الغرف: ' + d.get('chambres') + '\nالصيغة: ' + d.get('formule') + '\n';
       },
       corps: function (d) {
-        return 'الاسم: ' + d.nom + '\nالبريد الإلكتروني: ' + d.email + '\nالهاتف: ' + d.telephone + '\n\n' + d.message;
+        return 'الاسم: ' + d.nom + '\nالبريد الإلكتروني: ' + d.email + '\nالهاتف: ' + d.telephone
+          + '\nمدينة العقار: ' + d.ville + '\nمفروش: ' + d.meuble + '\n\n' + d.message;
       }
     }
   }[lang];
@@ -192,9 +196,25 @@
     var curseur = calcul.querySelector('[data-prix]');
     var saisie = calcul.querySelector('[data-prix-saisie]');
     var liste = calcul.querySelector('[data-resultats]');
+    var nuits = calcul.querySelector('[data-nuits]');
+    var nuitsSaisie = calcul.querySelector('[data-nuits-saisie]');
     var calculer = function () {
       var prix = Math.max(0, +curseur.value || 0);
       var html = '';
+      if (nuits) { // vitrine : une plateforme, détail sur l'année
+        var p = calcul.querySelector('input[name="plateforme"]:checked');
+        var n = Math.max(0, +nuits.value || 0);
+        var taux = p ? parseFloat(p.dataset.taux) : 0;
+        var brut = prix * n, frais = brut * taux / 100, lyze = (brut - frais) * commission / 100;
+        var ligne = function (titre, sous, val, classe) {
+          return '<li class="ligne-annee ' + (classe || '') + '"><span>' + titre + '<small>' + sous + '</small></span><strong>' + val + '</strong></li>';
+        };
+        liste.innerHTML = ligne(T.bruts, T.parAn, mad(brut))
+          + ligne(T.fraisDe + ' ' + (p ? p.dataset.nom : ''), nombre.format(taux) + ' %', '−' + mad(frais))
+          + ligne(T.comLyze, nombre.format(commission) + ' % ' + T.apresFrais, '−' + mad(lyze))
+          + ligne(T.recevez, T.parAn, mad(brut - frais - lyze), 'total');
+        return;
+      }
       calcul.querySelectorAll('input[name="plateforme"]:checked').forEach(function (p) {
         var taux = parseFloat(p.dataset.taux);
         var frais = prix * taux / 100;
@@ -213,6 +233,14 @@
       calculer();
     });
     saisie.addEventListener('change', function () { saisie.value = curseur.value; });
+    if (nuits) {
+      nuits.addEventListener('input', function () { nuitsSaisie.value = nuits.value; calculer(); });
+      nuitsSaisie.addEventListener('input', function () {
+        nuits.value = Math.min(+nuits.max, Math.max(0, Math.round(+nuitsSaisie.value || 0)));
+        calculer();
+      });
+      nuitsSaisie.addEventListener('change', function () { nuitsSaisie.value = nuits.value; });
+    }
     calcul.addEventListener('change', calculer);
     calculer();
   }
@@ -246,6 +274,8 @@
         nom: String(f.get('nom') || '').trim(),
         email: String(f.get('email') || '').trim(),
         telephone: tel ? f.get('indicatif') + ' ' + tel : '',
+        ville: String(f.get('ville') || ''),
+        meuble: String(f.get('meuble') || ''),
         message: String(f.get('message') || '').trim(),
         site: String(f.get('site') || ''),
         langue: lang

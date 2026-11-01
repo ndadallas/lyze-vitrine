@@ -7,7 +7,9 @@ const ContactSchema = z.object({
   nom: z.string().trim().min(1).max(120),
   email: z.email().max(200),
   telephone: z.string().trim().max(40).regex(/^[+\d\s.\-()]*$/),
-  message: z.string().trim().min(1).max(5000),
+  ville: z.string().trim().max(60).optional(),
+  meuble: z.string().trim().max(30).optional(),
+  message: z.string().trim().max(5000).optional(),
   site: z.string().max(200).optional(), // piège à robots : doit rester vide
   langue: z.enum(["fr", "ar"]).optional(),
 });
@@ -39,9 +41,11 @@ export async function POST(req: Request) {
     `Nom : ${d.nom}`,
     `E-mail : ${d.email}`,
     `Téléphone : ${d.telephone || "—"}`,
+    `Ville du bien : ${d.ville || "—"}`,
+    `Meublé : ${d.meuble || "—"}`,
     `Langue du site : ${d.langue === "ar" ? "arabe" : "français"}`,
     "",
-    d.message,
+    d.message || "(pas de message)",
   ].join("\n");
 
   const r = await fetch("https://api.resend.com/emails", {
@@ -51,7 +55,7 @@ export async function POST(req: Request) {
       from: process.env.CONTACT_FROM || "Site Lyze <onboarding@resend.dev>",
       to: [process.env.CONTACT_TO || "contact@lyze.ma"],
       reply_to: d.email,
-      subject: `Nouveau message du site — ${d.nom}`.slice(0, 150),
+      subject: `Demande de rappel — ${d.nom}${d.ville ? ` (${d.ville})` : ""}`.slice(0, 150),
       text: texte,
     }),
   }).catch(() => null);

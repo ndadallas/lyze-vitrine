@@ -121,24 +121,30 @@
       <div class="proprio-visuel">
         <!-- shortcut: taux indicatifs et commission Lyze (data-commission) à confirmer par Lyze -->
         <form class="calcul" data-calcul data-commission="20" aria-labelledby="titre-calcul" onsubmit="return false">
-          <p class="titre" id="titre-calcul">كم تدرّ عليك الليلة الواحدة؟</p>
+          <p class="titre" id="titre-calcul">قدّر مداخيلك</p>
           <label class="calcul-prix">
             <span class="ligne-prix"><span>ثمن الليلة</span>
               <span class="saisie"><input type="number" min="0" max="10000" step="50" value="1200" inputmode="numeric" data-prix-saisie aria-label="ثمن الليلة بالدرهم"><small>درهم</small></span>
             </span>
             <input type="range" min="200" max="10000" step="50" value="1200" data-prix aria-label="مؤشر ثمن الليلة">
           </label>
+          <label class="calcul-prix">
+            <span class="ligne-prix"><span>الليالي المؤجرة في السنة</span>
+              <span class="saisie"><input type="number" min="0" max="365" step="1" value="120" inputmode="numeric" data-nuits-saisie aria-label="عدد الليالي المؤجرة في السنة"><small>ليلة</small></span>
+            </span>
+            <input type="range" min="1" max="365" step="1" value="120" data-nuits aria-label="مؤشر عدد الليالي المؤجرة في السنة">
+          </label>
           <fieldset>
-            <legend>المنصات المستعملة</legend>
+            <legend>المنصة</legend>
             <div class="plats">
-              <label class="plat"><input type="checkbox" name="plateforme" data-nom="Airbnb" data-taux="15.5" data-logo="../assets/img/plateformes/airbnb.svg" checked><img src="../assets/img/plateformes/airbnb.svg" alt=""><b>Airbnb</b><small>15,5 %</small></label>
-              <label class="plat"><input type="checkbox" name="plateforme" data-nom="Booking" data-taux="15" data-logo="../assets/img/plateformes/booking.svg" checked><img src="../assets/img/plateformes/booking.svg" alt=""><b>Booking</b><small>15 %</small></label>
-              <label class="plat"><input type="checkbox" name="plateforme" data-nom="Expedia" data-taux="15" data-logo="../assets/img/plateformes/expedia.svg"><img src="../assets/img/plateformes/expedia.svg" alt=""><b>Expedia</b><small>15 %</small></label>
-              <label class="plat"><input type="checkbox" name="plateforme" data-nom="مباشر" data-taux="0" data-logo="../assets/img/plateformes/direct.svg"><img src="../assets/img/plateformes/direct.svg" alt=""><b>مباشر</b><small>0 %</small></label>
+              <label class="plat"><input type="radio" name="plateforme" data-nom="Airbnb" data-taux="15.5" checked><img src="../assets/img/plateformes/airbnb.svg" alt=""><b>Airbnb</b><small>15,5 %</small></label>
+              <label class="plat"><input type="radio" name="plateforme" data-nom="Booking" data-taux="15"><img src="../assets/img/plateformes/booking.svg" alt=""><b>Booking</b><small>15 %</small></label>
+              <label class="plat"><input type="radio" name="plateforme" data-nom="Expedia" data-taux="15"><img src="../assets/img/plateformes/expedia.svg" alt=""><b>Expedia</b><small>15 %</small></label>
+              <label class="plat"><input type="radio" name="plateforme" data-nom="الحجز المباشر" data-taux="0"><img src="../assets/img/plateformes/direct.svg" alt=""><b>مباشر</b><small>0 %</small></label>
             </div>
           </fieldset>
           <ul class="resultats" data-resultats aria-live="polite"></ul>
-          <p class="note-calcul">تُخصم عمولة المنصة من الثمن، ثم عمولة Lyze بنسبة 20٪ من الباقي. نسب تقريبية.</p>
+          <p class="note-calcul">تُحتسب عمولة Lyze بنسبة 20٪ بعد خصم عمولة المنصة. نسب تقريبية.</p>
         </form>
       </div>
     </section>
@@ -179,20 +185,26 @@
         </div>
       </div>
       <div class="contact">
-        <h2>راسلنا</h2>
-        <p class="coordonnees"><a href="tel:+212000000000" dir="ltr">+212 [الهاتف]</a> · <a href="mailto:contact@lyze.ma" dir="ltr">[email]@lyze.ma</a></p>
+        <h2>لنتحدث عن عقارك</h2>
+        <p class="coordonnees">اترك معلوماتك وسنتصل بك عبر واتساب. دون أي التزام.</p>
         <form class="contact-form" data-contact novalidate>
           <label><span>الاسم</span><input name="nom" required maxlength="120" autocomplete="name"></label>
           <label><span>البريد الإلكتروني</span><input name="email" type="email" required maxlength="200" autocomplete="email" dir="ltr"></label>
-          <label class="plein"><span>الهاتف</span>
+          <label class="plein"><span>الهاتف (واتساب)</span>
             <span class="tel-groupe">
               <select name="indicatif" data-indicatifs aria-label="رمز البلد"><option value="+212">المغرب (+212)</option></select>
               <input name="telephone" type="tel" maxlength="30" autocomplete="tel-national" aria-label="رقم الهاتف">
             </span>
           </label>
-          <label class="plein"><span>الرسالة</span><textarea name="message" required maxlength="5000"></textarea></label>
+          <label><span>مدينة العقار</span>
+            <select name="ville" required><option value="" disabled selected>اختر</option><option value="El Jadida">الجديدة</option><option value="Casablanca">الدار البيضاء</option><option value="Marrakech">مراكش</option><option value="Autre ville">مدينة أخرى</option></select>
+          </label>
+          <label><span>هل العقار مفروش؟</span>
+            <select name="meuble" required><option value="" disabled selected>اختر</option><option value="Oui">نعم</option><option value="Non">لا</option><option value="En partie">جزئيًا</option></select>
+          </label>
+          <label class="plein"><span>الرسالة (اختياري)</span><textarea name="message" maxlength="5000"></textarea></label>
           <label class="piege" aria-hidden="true">Site<input name="site" tabindex="-1" autocomplete="off"></label>
-          <button class="btn btn--plein" type="submit">إرسال</button>
+          <button class="btn btn--plein" type="submit">اطلب اتصالًا</button>
           <p class="etat" role="status"></p>
         </form>
       </div>
@@ -206,5 +218,6 @@
       </p>
     </section>
   </main>
+  <a class="cta-flottant" href="#contact">اطلب اتصالًا <svg aria-hidden="true" style="transform:scaleX(-1)"><use href="#i-fleche"/></svg></a>
 </body>
 </html>

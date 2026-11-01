@@ -1027,3 +1027,20 @@ html.ecrans .bar--flottante { transform: none; }
 .menu-fermer { color: var(--brunF); }
 .accueil .nos-biens .carrousel { margin-top: 0; }
 html[data-ecran="accueil"] .points-ecrans button:not([aria-current="true"]) { border-color: var(--brunF); }
+
+/* Simulateur annuel (vitrine) : détail ligne par ligne, total mis en avant */
+.resultats .ligne-annee { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.resultats .ligne-annee span { display: grid; font-size: 13px; font-weight: 600; }
+.resultats .ligne-annee small { font-size: 11px; font-weight: 400; color: var(--gris); }
+.resultats .ligne-annee strong { font-family: var(--f-titre); font-weight: 400; font-size: 22px; white-space: nowrap; }
+.resultats .ligne-annee.total { background: var(--brique); color: #fff; border: 0; padding-inline: 18px; margin-top: 6px; }
+.resultats .ligne-annee.total small { color: rgba(255, 255, 255, .8); }
+.resultats .ligne-annee.total strong { font-size: 30px; }
+
+/* Bouton flottant « Être recontacté » (accueil) */
+.cta-flottant { position: fixed; inset-inline-end: 20px; bottom: 20px; z-index: 40; display: inline-flex; align-items: center; gap: 10px; padding: 14px 20px; border-radius: 999px; background: var(--brique); color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; box-shadow: 0 8px 24px rgba(74, 52, 38, .25); transition: transform .2s var(--ease); }
+.cta-flottant:hover { transform: translateY(-2px); }
+.cta-flottant:focus-visible { outline: 2px solid var(--noir); outline-offset: 3px; }
+.cta-flottant svg { width: 16px; height: 16px; }
+html[data-ecran="contact"] .cta-flottant { display: none; }
+@media (max-width: 680px) { .cta-flottant { inset-inline-end: 12px; bottom: 12px; padding: 12px 16px; font-size: 13px; } }

@@ -122,24 +122,30 @@
       <div class="proprio-visuel">
         <!-- shortcut: taux indicatifs et commission Lyze (data-commission) à confirmer par Lyze -->
         <form class="calcul" data-calcul data-commission="20" aria-labelledby="titre-calcul" onsubmit="return false">
-          <p class="titre" id="titre-calcul">Combien vous rapporte une nuit&nbsp;?</p>
+          <p class="titre" id="titre-calcul">Estimez vos revenus</p>
           <label class="calcul-prix">
             <span class="ligne-prix"><span>Prix de la nuit</span>
               <span class="saisie"><input type="number" min="0" max="10000" step="50" value="1200" inputmode="numeric" data-prix-saisie aria-label="Prix de la nuit en dirhams"><small>MAD</small></span>
             </span>
             <input type="range" min="200" max="10000" step="50" value="1200" data-prix aria-label="Curseur du prix de la nuit">
           </label>
+          <label class="calcul-prix">
+            <span class="ligne-prix"><span>Nuits louées par an</span>
+              <span class="saisie"><input type="number" min="0" max="365" step="1" value="120" inputmode="numeric" data-nuits-saisie aria-label="Nombre de nuits louées par an"><small>nuits</small></span>
+            </span>
+            <input type="range" min="1" max="365" step="1" value="120" data-nuits aria-label="Curseur du nombre de nuits louées par an">
+          </label>
           <fieldset>
-            <legend>Plateformes utilisées</legend>
+            <legend>Plateforme</legend>
             <div class="plats">
-              <label class="plat"><input type="checkbox" name="plateforme" data-nom="Airbnb" data-taux="15.5" data-logo="assets/img/plateformes/airbnb.svg" checked><img src="assets/img/plateformes/airbnb.svg" alt=""><b>Airbnb</b><small>15,5 %</small></label>
-              <label class="plat"><input type="checkbox" name="plateforme" data-nom="Booking" data-taux="15" data-logo="assets/img/plateformes/booking.svg" checked><img src="assets/img/plateformes/booking.svg" alt=""><b>Booking</b><small>15 %</small></label>
-              <label class="plat"><input type="checkbox" name="plateforme" data-nom="Expedia" data-taux="15" data-logo="assets/img/plateformes/expedia.svg"><img src="assets/img/plateformes/expedia.svg" alt=""><b>Expedia</b><small>15 %</small></label>
-              <label class="plat"><input type="checkbox" name="plateforme" data-nom="Direct" data-taux="0" data-logo="assets/img/plateformes/direct.svg"><img src="assets/img/plateformes/direct.svg" alt=""><b>Direct</b><small>0 %</small></label>
+              <label class="plat"><input type="radio" name="plateforme" data-nom="Airbnb" data-taux="15.5" checked><img src="assets/img/plateformes/airbnb.svg" alt=""><b>Airbnb</b><small>15,5 %</small></label>
+              <label class="plat"><input type="radio" name="plateforme" data-nom="Booking" data-taux="15"><img src="assets/img/plateformes/booking.svg" alt=""><b>Booking</b><small>15 %</small></label>
+              <label class="plat"><input type="radio" name="plateforme" data-nom="Expedia" data-taux="15"><img src="assets/img/plateformes/expedia.svg" alt=""><b>Expedia</b><small>15 %</small></label>
+              <label class="plat"><input type="radio" name="plateforme" data-nom="réservation directe" data-taux="0"><img src="assets/img/plateformes/direct.svg" alt=""><b>Direct</b><small>0 %</small></label>
             </div>
           </fieldset>
           <ul class="resultats" data-resultats aria-live="polite"></ul>
-          <p class="note-calcul">Frais de la plateforme retirés du prix, puis commission Lyze de 20 % sur le reste. Taux indicatifs.</p>
+          <p class="note-calcul">Commission Lyze de 20 % calculée après les frais de la plateforme. Taux indicatifs.</p>
         </form>
       </div>
     </section>
@@ -180,20 +186,26 @@
         </div>
       </div>
       <div class="contact">
-        <h2>Nous écrire</h2>
-        <p class="coordonnees"><a href="tel:+212000000000">+212 [téléphone]</a> · <a href="mailto:contact@lyze.ma">[email]@lyze.ma</a></p>
+        <h2>Parlons de votre bien</h2>
+        <p class="coordonnees">Laissez vos coordonnées, nous vous rappelons sur WhatsApp. Sans engagement.</p>
         <form class="contact-form" data-contact novalidate>
           <label><span>Nom</span><input name="nom" required maxlength="120" autocomplete="name"></label>
           <label><span>E-mail</span><input name="email" type="email" required maxlength="200" autocomplete="email"></label>
-          <label class="plein"><span>Téléphone</span>
+          <label class="plein"><span>Téléphone (WhatsApp)</span>
             <span class="tel-groupe">
               <select name="indicatif" data-indicatifs aria-label="Indicatif du pays"><option value="+212">Maroc (+212)</option></select>
               <input name="telephone" type="tel" maxlength="30" autocomplete="tel-national" aria-label="Numéro de téléphone">
             </span>
           </label>
-          <label class="plein"><span>Message</span><textarea name="message" required maxlength="5000"></textarea></label>
+          <label><span>Ville du bien</span>
+            <select name="ville" required><option value="" disabled selected>Choisir</option><option>El Jadida</option><option>Casablanca</option><option>Marrakech</option><option>Autre ville</option></select>
+          </label>
+          <label><span>Bien meublé ?</span>
+            <select name="meuble" required><option value="" disabled selected>Choisir</option><option>Oui</option><option>Non</option><option>En partie</option></select>
+          </label>
+          <label class="plein"><span>Message (facultatif)</span><textarea name="message" maxlength="5000"></textarea></label>
           <label class="piege" aria-hidden="true">Site<input name="site" tabindex="-1" autocomplete="off"></label>
-          <button class="btn btn--plein" type="submit">Envoyer</button>
+          <button class="btn btn--plein" type="submit">Être recontacté</button>
           <p class="etat" role="status"></p>
         </form>
       </div>
@@ -207,5 +219,6 @@
       </p>
     </section>
   </main>
+  <a class="cta-flottant" href="#contact">Être recontacté <svg aria-hidden="true"><use href="#i-fleche"/></svg></a>
 </body>
 </html>
