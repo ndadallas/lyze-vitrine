@@ -20,6 +20,7 @@ async function main() {
       firstName: "Démo",
       lastName: "Propriétaire",
       role: "OWNER",
+      onboardedAt: new Date(), // compte de démo : pas de fiche de bienvenue
     },
   });
 
