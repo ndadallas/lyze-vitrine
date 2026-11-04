@@ -9,9 +9,9 @@
   --fond-app: #F1EADD;
   --brun: #6B4E3D;
   --brunF: #4A3426;
-  --brique: #A51E24;
+  --brique: #9C6644;
   --noir: #4A3426;
-  --rouge-f: #841519; /* rouge vif fonce (survols) */
+  --rouge-f: #7E4F33; /* chocolat fonce (survols) */
   --gris: #7A6A5A;
   --vert: #4F7A4A;
 
@@ -563,7 +563,7 @@ figure { margin: 0; }
 /* Connexion réelle (Next.js) */
 .connexion-form .souvenir { display: flex; align-items: center; gap: 10px; margin-top: 24px; font-size: 13px; color: var(--brun); cursor: pointer; }
 .connexion-form .souvenir input { width: 16px; height: 16px; accent-color: var(--brique); }
-.connexion-form .erreur { margin-top: 20px; max-width: 420px; padding: 12px 14px; border-left: 3px solid var(--brique); background: rgba(165, 30, 36, .08); color: var(--brunF); font-size: 14px; line-height: 1.5; }
+.connexion-form .erreur { margin-top: 20px; max-width: 420px; padding: 12px 14px; border-left: 3px solid var(--brique); background: rgba(156, 102, 68, .08); color: var(--brunF); font-size: 14px; line-height: 1.5; }
 .connexion-form .btn--plein:disabled { opacity: .6; cursor: wait; }
 
 /* =====================================================================
@@ -1068,3 +1068,27 @@ html.ecrans .proprio.actif .proprio-texte .proprio-actions .btn, .proprio-action
   .etapes p { display: none; }
   .hero-actions .btn { padding: 10px 16px; }
 }
+
+/* ===== Retours client 2026-11-04 ===== */
+/* Transition entre écrans plus fluide : plus longue, déplacement plus court, courbe douce (durée = minuterie 800 ms dans main.js) */
+html.ecrans [data-ecran].actif:not(.hero), html.ecrans [data-ecran].actif.sortant { animation-duration: .8s; animation-timing-function: cubic-bezier(.45, .05, .25, 1); }
+@keyframes ecran-entre { from { opacity: 0; transform: translateY(calc(var(--sens, 1) * 18vh)); } }
+@keyframes ecran-sort { to { opacity: 0; transform: translateY(calc(var(--sens, 1) * -18vh)); } }
+/* « Nos biens » : bande blanche, cartes plus grandes, coins arrondis */
+.accueil .nos-biens { background: #fff; padding: clamp(12px, 2vh, 20px) var(--gutter); }
+.accueil .carrousel-piste { --carte: 28%; }
+.carte-logement figure { border-radius: 16px; }
+.accueil .une.actif { gap: clamp(8px, 1.6vh, 20px); }
+.accueil .une .hero { height: clamp(150px, 25vh, 320px); }
+/* Photo au-dessus du formulaire de contact */
+.contact-photo { height: clamp(80px, 15vh, 180px); border-radius: 16px; overflow: hidden; margin-bottom: clamp(12px, 2vh, 20px); }
+.contact-photo img { height: 100%; }
+/* Notre histoire : une seule photo (ouverture), le parcours en texte seul */
+html.ecrans .chapitres.chapitres.actif, .chapitres { grid-template-columns: minmax(0, 860px); justify-content: center; }
+.histoire-ouverture { border-radius: 16px; overflow: hidden; }
+@media (max-width: 760px) {
+  .accueil .carrousel-piste { --carte: 72%; }
+  .contact-photo { height: 120px; }
+}
+/* Mobile : la piste du carrousel élargissait la grille (bannière coupée) */
+.accueil .une.actif { grid-template-columns: minmax(0, 1fr); }

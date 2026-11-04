@@ -126,7 +126,7 @@ export function PhotoManager({ propertyId, initial }: { propertyId: string; init
           }}
         >
           <svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true">
-            <g fill="none" stroke="#A51E24" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <g fill="none" stroke="#9C6644" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 16V4M7 9l5-5 5 5" />
               <path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" />
             </g>
