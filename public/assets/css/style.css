@@ -1092,3 +1092,17 @@ html.ecrans .chapitres.chapitres.actif, .chapitres { grid-template-columns: minm
 }
 /* Mobile : la piste du carrousel élargissait la grille (bannière coupée) */
 .accueil .une.actif { grid-template-columns: minmax(0, 1fr); }
+
+/* ===== Retour au défilement normal (2026-11-04) : plus de mode « écrans » ===== */
+.bar--flottante { transform: none; }
+body { padding-top: 72px; }
+[id] { scroll-margin-top: 80px; }
+.accueil .une { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(16px, 3vh, 32px); }
+.accueil .une .hero { height: clamp(260px, 48vh, 520px); }
+.accueil .nos-biens { padding-block: clamp(24px, 5vh, 56px); }
+.accueil .carte-logement figure { aspect-ratio: 4 / 5; }
+.questions-contact { padding-block: clamp(48px, 8vh, 96px) 24px; }
+@media (max-width: 760px) { body { padding-top: 64px; } [id] { scroll-margin-top: 70px; } }
+.accueil .nos-biens { grid-template-columns: minmax(0, 1fr); }
+.accueil .une .hero { overflow: hidden; }
+@media (max-width: 760px) { .proprio { grid-template-columns: minmax(0, 1fr); } }
