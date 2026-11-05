@@ -45,7 +45,7 @@ async function main() {
       // Mois en cours
       { propertyId: mer.id, startDate: day(1), endDate: day(4), guestName: "Sofia", platform: "AIRBNB", amount: 2700 },
       { propertyId: mer.id, startDate: day(13), endDate: day(18), guestName: "Marc", platform: "BOOKING", amount: 4600 },
-      { propertyId: mer.id, startDate: day(24), endDate: day(28), guestName: "Yasmine", platform: "DIRECT", amount: 3900 },
+      { propertyId: mer.id, startDate: day(24), endDate: day(28), guestName: "Yasmine", platform: "EXPEDIA", amount: 3900 },
       { propertyId: studio.id, startDate: day(5), endDate: day(9), guestName: "Hugo", platform: "AIRBNB", amount: 2300 },
       { propertyId: studio.id, startDate: day(19), endDate: day(22), guestName: "Nora", platform: "EXPEDIA", amount: 1800 },
       { propertyId: villa.id, kind: "BLOCKED", startDate: day(8), endDate: day(10), note: "entretien" },

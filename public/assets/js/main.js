@@ -76,10 +76,13 @@
 
   /* Calendriers de disponibilité (fiche bien) */
   var arabe = document.documentElement.lang === 'ar';
+  var anglais = document.documentElement.lang === 'en';
   var MOIS = arabe
     ? ['يناير', 'فبراير', 'مارس', 'أبريل', 'ماي', 'يونيو', 'يوليوز', 'غشت', 'شتنبر', 'أكتوبر', 'نونبر', 'دجنبر']
+    : anglais
+    ? ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     : ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-  var JOURS = arabe ? ['ن', 'ث', 'ر', 'خ', 'ج', 'س', 'ح'] : ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+  var JOURS = arabe ? ['ن', 'ث', 'ر', 'خ', 'ج', 'س', 'ح'] : anglais ? ['M', 'T', 'W', 'T', 'F', 'S', 'S'] : ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
   document.querySelectorAll('[data-calendrier]').forEach(function (el) {
     var parts = el.dataset.calendrier.split('-');
     var an = +parts[0], m = +parts[1] - 1;
@@ -91,13 +94,13 @@
     for (var i = 0; i < decalage; i++) html += '<span aria-hidden="true"></span>';
     for (var d = 1; d <= nbJours; d++) {
       var estPris = pris.indexOf(d) > -1;
-      html += '<span' + (estPris ? ' class="pris" title="' + (arabe ? 'محجوز' : 'Indisponible') + '"' : '') + '>' + d + '</span>';
+      html += '<span' + (estPris ? ' class="pris" title="' + (arabe ? 'محجوز' : anglais ? 'Unavailable' : 'Indisponible') + '"' : '') + '>' + d + '</span>';
     }
     el.innerHTML = html + '</div>';
   });
 
-  /* Textes de l'interface selon la langue de la page (fr / ar) */
-  var lang = document.documentElement.lang === 'ar' ? 'ar' : 'fr';
+  /* Textes de l'interface selon la langue de la page (fr / en / ar) */
+  var lang = arabe ? 'ar' : anglais ? 'en' : 'fr';
   var T = {
     fr: {
       photo: 'Photo', devise: 'MAD', aucune: 'Cochez au moins une plateforme.',
@@ -114,6 +117,23 @@
       corps: function (d) {
         return 'Nom : ' + d.nom + '\nE-mail : ' + d.email + '\nTéléphone : ' + d.telephone
           + '\nVille du bien : ' + d.ville + '\nMeublé : ' + d.meuble + '\n\n' + d.message;
+      }
+    },
+    en: {
+      photo: 'Photo', devise: 'MAD', aucune: 'Tick at least one platform.',
+      bruts: 'Gross income', parAn: 'per year', fraisDe: 'Fees', comLyze: 'Lyze commission', apresFrais: 'after fees', recevez: 'You receive',
+      vousTouchez: 'you earn', envoi: 'Sending…',
+      ok: 'Thank you, your message has been sent. We will get back to you shortly.',
+      invalide: 'Please check the form fields.',
+      repli: 'Online sending is not available: your email app opens with the message ready to send.',
+      sujet: 'Message from the Lyze website',
+      resa: function (d) {
+        return 'Hello,\n\nI would like to entrust my property to Lyze.\nCity: ' + d.get('ville') + '\nType: ' + d.get('type')
+          + '\nBedrooms: ' + d.get('chambres') + '\nPlan: ' + d.get('formule') + '\n';
+      },
+      corps: function (d) {
+        return 'Name: ' + d.nom + '\nEmail: ' + d.email + '\nPhone: ' + d.telephone
+          + '\nProperty city: ' + d.ville + '\nFurnished: ' + d.meuble + '\n\n' + d.message;
       }
     },
     ar: {
@@ -134,7 +154,7 @@
       }
     }
   }[lang];
-  var nombre = new Intl.NumberFormat(lang === 'ar' ? 'ar-MA' : 'fr-FR', { maximumFractionDigits: 1 });
+  var nombre = new Intl.NumberFormat({ ar: 'ar-MA', en: 'en-GB', fr: 'fr-FR' }[lang], { maximumFractionDigits: 1 });
   var mad = function (n) { return nombre.format(Math.round(n)) + ' ' + T.devise; };
   var ici = document.currentScript ? document.currentScript.src : location.href;
 
@@ -357,7 +377,7 @@
     var surAccueil = document.body.classList.contains('accueil');
     var pointsEcrans = document.createElement('nav');
     pointsEcrans.className = 'points-ecrans';
-    pointsEcrans.setAttribute('aria-label', arabe ? 'أقسام الصفحة' : 'Sections de la page');
+    pointsEcrans.setAttribute('aria-label', arabe ? 'أقسام الصفحة' : anglais ? 'Page sections' : 'Sections de la page');
     ecrans.forEach(function (s, i) {
       var b = document.createElement('button');
       b.type = 'button';

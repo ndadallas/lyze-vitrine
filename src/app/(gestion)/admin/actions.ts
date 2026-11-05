@@ -279,7 +279,7 @@ function parseBooking(formData: FormData) {
   return BookingSchema.safeParse({
     propertyId: formData.get("propertyId") ?? "",
     kind: formData.get("kind") ?? "RESERVED",
-    platform: formData.get("platform") ?? "DIRECT",
+    platform: formData.get("platform") ?? "AIRBNB",
     startDate: formData.get("startDate") ?? "",
     endDate: formData.get("endDate") ?? "",
     guestName: formData.get("guestName") ?? "",

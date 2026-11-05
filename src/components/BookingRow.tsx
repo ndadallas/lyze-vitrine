@@ -4,7 +4,7 @@ import { useState } from "react";
 import { deleteBooking, updateBooking } from "@/app/(gestion)/admin/actions";
 import { ActionForm } from "@/components/ActionForm";
 import { ConfirmButton } from "@/components/ConfirmButton";
-import { CODES_PLATEFORMES, LogoPlateforme, PLATEFORMES, type Plateforme } from "@/lib/plateformes";
+import { CHOIX_PLATEFORMES, LogoPlateforme, PLATEFORMES, type Plateforme } from "@/lib/plateformes";
 
 export type BookingRowData = {
   id: string;
@@ -71,7 +71,7 @@ export function BookingRow({ b }: { b: BookingRowData }) {
               <div className="field">
                 <label htmlFor={`${p}-platform`}>Plateforme</label>
                 <select id={`${p}-platform`} name="platform" defaultValue={b.platform}>
-                  {CODES_PLATEFORMES.map((c) => (
+                  {(CHOIX_PLATEFORMES.includes(b.platform) ? CHOIX_PLATEFORMES : [...CHOIX_PLATEFORMES, b.platform]).map((c) => (
                     <option key={c} value={c}>{PLATEFORMES[c].nom}</option>
                   ))}
                 </select>

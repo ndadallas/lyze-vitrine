@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { addDays, formatMAD, formatShortDate, toDayString, today } from "@/lib/dates";
 import { photoUrl } from "@/lib/photos";
-import { CODES_PLATEFORMES, PLATEFORMES } from "@/lib/plateformes";
+import { CHOIX_PLATEFORMES, PLATEFORMES } from "@/lib/plateformes";
 import { nights } from "@/lib/stats";
 import { ActionForm } from "@/components/ActionForm";
 import { BookingRow } from "@/components/BookingRow";
@@ -302,7 +302,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
                       <div className="field">
                         <label htmlFor="add-platform">Plateforme</label>
                         <select id="add-platform" name="platform" defaultValue="AIRBNB">
-                          {CODES_PLATEFORMES.map((c) => (
+                          {CHOIX_PLATEFORMES.map((c) => (
                             <option key={c} value={c}>{PLATEFORMES[c].nom}</option>
                           ))}
                         </select>

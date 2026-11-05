@@ -26,6 +26,7 @@ jobs:
           mkdir _site && cp -r public/. pages-demo/. _site/
           sed -i 's#href="/connexion"#href="connexion.html"#g' _site/*.html
           sed -i 's#href="/connexion"#href="../connexion.html"#g' _site/ar/*.html
+          sed -i 's#href="/connexion"#href="../connexion.html"#g' _site/en/*.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

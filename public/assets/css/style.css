@@ -1106,3 +1106,20 @@ body { padding-top: 72px; }
 .accueil .nos-biens { grid-template-columns: minmax(0, 1fr); }
 .accueil .une .hero { overflow: hidden; }
 @media (max-width: 760px) { .proprio { grid-template-columns: minmax(0, 1fr); } }
+
+/* ===== Mobile (2026-11-05) ===== */
+.plats { grid-template-columns: repeat(3, 1fr); } /* 3 plateformes depuis le retrait de « Direct » */
+@media (max-width: 680px) {
+  .plats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .accueil .une .hero h1 { font-size: clamp(34px, 10vw, 44px); text-shadow: 0 2px 18px rgba(74, 52, 38, .45); }
+  .hero-texte { font-size: 15px; text-shadow: 0 1px 10px rgba(74, 52, 38, .5); }
+  .hero::after { background: linear-gradient(180deg, rgba(74, 52, 38, .55), rgba(74, 52, 38, .35) 45%, rgba(74, 52, 38, .55)); }
+  .cta-flottant { padding: 10px 14px; font-size: 12px; }
+  .pied-mini { gap: 8px 16px; }
+  .pied-mini span { flex-basis: 100%; }
+  .bar { gap: 10px; }
+  .bar > .lien-langue { padding: 5px 8px; }
+  .proprio-visuel, .calcul { min-width: 0; }
+  .accueil .calcul { padding-inline: 18px; }
+  .ligne-prix > span:first-child { min-width: 0; }
+}

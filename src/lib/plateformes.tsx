@@ -23,3 +23,6 @@ export function LogoPlateforme({ code, avecNom = true, taille = 16 }: { code: Pl
     </span>
   );
 }
+
+// Lyze ne prend pas de réservation directe : DIRECT reste en base (anciennes données) mais n'est plus proposé.
+export const CHOIX_PLATEFORMES: Plateforme[] = CODES_PLATEFORMES.filter((c) => c !== "DIRECT");

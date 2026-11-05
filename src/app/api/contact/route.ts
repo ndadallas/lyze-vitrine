@@ -11,7 +11,7 @@ const ContactSchema = z.object({
   meuble: z.string().trim().max(30).optional(),
   message: z.string().trim().max(5000).optional(),
   site: z.string().max(200).optional(), // piège à robots : doit rester vide
-  langue: z.enum(["fr", "ar"]).optional(),
+  langue: z.enum(["fr", "en", "ar"]).optional(),
 });
 
 // shortcut: limite en mémoire par instance (best effort en serverless) ; passer à un store partagé si spam réel.
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
     `Téléphone : ${d.telephone || "—"}`,
     `Ville du bien : ${d.ville || "—"}`,
     `Meublé : ${d.meuble || "—"}`,
-    `Langue du site : ${d.langue === "ar" ? "arabe" : "français"}`,
+    `Langue du site : ${{ ar: "arabe", en: "anglais", fr: "français" }[d.langue ?? "fr"]}`,
     "",
     d.message || "(pas de message)",
   ].join("\n");
