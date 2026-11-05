@@ -24,6 +24,27 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fermerMenu(); });
   }
 
+  /* Liens vers une section de la page (#contact, #simulateur…) : défilement animé en JS.
+     Le défilement doux natif était annulé par le carrousel auto (il écrit scrollLeft à chaque image) → les boutons du menu ne bougeaient plus. */
+  document.addEventListener('click', function (e) {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    var a = e.target.closest && e.target.closest('a[href*="#"]');
+    if (!a || a.pathname !== location.pathname || a.host !== location.host || a.hash.length < 2) return;
+    var cible = document.getElementById(decodeURIComponent(a.hash.slice(1)));
+    if (!cible || document.documentElement.classList.contains('ecrans')) return;
+    e.preventDefault();
+    var depart = window.scrollY;
+    var fin = Math.max(0, cible.getBoundingClientRect().top + depart - (parseFloat(getComputedStyle(cible).scrollMarginTop) || 0));
+    var duree = reduit ? 0 : Math.min(900, 300 + Math.abs(fin - depart) / 4), t0 = performance.now();
+    history.pushState(null, '', a.hash);
+    (function pas(t) {
+      var p = duree ? Math.min(1, (t - t0) / duree) : 1;
+      var e2 = p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; // ease-in-out
+      window.scrollTo({ top: depart + (fin - depart) * e2, behavior: 'instant' });
+      if (p < 1) requestAnimationFrame(pas);
+    })(t0);
+  });
+
   /* Accueil : la barre compacte descend quand le grand en-tête sort de l'écran */
   var flottante = document.querySelector('.bar--flottante');
   var masthead = document.querySelector('.masthead');
