@@ -35,10 +35,10 @@ export function BookingRow({ b }: { b: BookingRowData }) {
           </span>
           {b.kind === "RESERVED" && <LogoPlateforme code={b.platform} />}
         </td>
-        <td style={{ whiteSpace: "nowrap" }}>{b.datesLabel}</td>
-        <td>{b.nights}</td>
-        <td className="muted">{(b.kind === "RESERVED" ? b.guestName : b.note) ?? "—"}</td>
-        <td>{b.amountLabel}</td>
+        <td data-label="Dates" style={{ whiteSpace: "nowrap" }}>{b.datesLabel}</td>
+        <td data-label="Nuits">{b.nights}</td>
+        <td data-label="Voyageur / motif" className="muted">{(b.kind === "RESERVED" ? b.guestName : b.note) ?? "—"}</td>
+        <td data-label="Montant net">{b.amountLabel}</td>
         <td style={{ textAlign: "right" }}>
           <div className="row resa-actions">
             <button

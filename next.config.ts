@@ -6,8 +6,6 @@ const nextConfig: NextConfig = {
     return {
       beforeFiles: [
         { source: "/", destination: "/index.html" },
-        { source: "/ar", destination: "/ar/index.html" },
-        { source: "/en", destination: "/en/index.html" },
       ],
       afterFiles: [],
       fallback: [],
@@ -18,6 +16,9 @@ const nextConfig: NextConfig = {
     return [
       { source: "/connexion.html", destination: "/connexion", permanent: true },
       { source: "/espace.html", destination: "/espace", permanent: true },
+      // /en et /ar : redirection (et non réécriture), sinon les liens relatifs des pages partent vers les pages françaises.
+      { source: "/en", destination: "/en/index.html", permanent: false },
+      { source: "/ar", destination: "/ar/index.html", permanent: false },
     ];
   },
 };

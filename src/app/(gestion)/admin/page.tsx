@@ -69,7 +69,7 @@ export default async function AdminPage() {
           <div className="card empty">Aucun client pour l&apos;instant.</div>
         ) : (
           <div className="card table-wrap">
-            <table className="table">
+            <table className="table table-fiches">
               <thead>
                 <tr>
                   <th scope="col">Client</th>
@@ -88,10 +88,10 @@ export default async function AdminPage() {
                         {o.firstName} {o.lastName}
                       </Link>
                     </td>
-                    <td><span style={{ fontFamily: "ui-monospace, Consolas, monospace", fontSize: 13 }}>{o.username}</span></td>
-                    <td>{o._count.properties}</td>
-                    <td className="muted">{o.lastLoginAt ? lastLogin.format(o.lastLoginAt) : "Jamais"}</td>
-                    <td>
+                    <td data-label="Identifiant"><span style={{ fontFamily: "ui-monospace, Consolas, monospace", fontSize: 13 }}>{o.username}</span></td>
+                    <td data-label="Biens">{o._count.properties}</td>
+                    <td data-label="Dernière connexion" className="muted">{o.lastLoginAt ? lastLogin.format(o.lastLoginAt) : "Jamais"}</td>
+                    <td data-label="Statut">
                       <span className={o.active ? "pill pill-free" : "pill pill-blocked"}>
                         {o.active ? "Actif" : "Désactivé"}
                       </span>

@@ -332,7 +332,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
 
                   {bien.bookings.length > 0 ? (
                     <div className="table-wrap">
-                      <table className="table">
+                      <table className="table table-fiches">
                         <thead>
                           <tr>
                             <th scope="col">Type</th>
