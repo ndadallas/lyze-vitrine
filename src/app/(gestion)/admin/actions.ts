@@ -251,7 +251,7 @@ export async function deleteProperty(formData: FormData) {
 const BookingSchema = z
   .object({
     propertyId: z.string().min(1),
-    kind: z.enum(["RESERVED", "BLOCKED"]),
+    kind: z.enum(["RESERVED", "BLOCKED", "MANAGED"]),
     platform: z.enum(CODES_PLATEFORMES, { error: "Plateforme invalide." }),
     startDate: z.string().transform((v, ctx) => {
       const d = parseDay(v);
@@ -300,7 +300,7 @@ async function findClash(propertyId: string, start: Date, end: Date, exceptId?: 
     orderBy: { startDate: "asc" },
   });
   if (!clash) return null;
-  return `Ces dates chevauchent ${clash.kind === "RESERVED" ? "une réservation" : "un blocage"} existant (${formatShortDate(clash.startDate)} → ${formatShortDate(clash.endDate)}).`;
+  return `Ces dates chevauchent ${clash.kind === "RESERVED" ? "une réservation" : clash.kind === "MANAGED" ? "une période « Barka s’en charge »" : "un blocage"} existant (${formatShortDate(clash.startDate)} → ${formatShortDate(clash.endDate)}).`;
 }
 
 export async function addBooking(_prev: ActionState, formData: FormData): Promise<ActionState> {
@@ -320,7 +320,7 @@ export async function addBooking(_prev: ActionState, formData: FormData): Promis
   });
   revalidatePath(`/admin/clients/${property.ownerId}`);
   return {
-    message: b.kind === "RESERVED" ? "Réservation ajoutée." : "Blocage ajouté.",
+    message: b.kind === "RESERVED" ? "Réservation ajoutée." : b.kind === "MANAGED" ? "Période « Barka s’en charge » ajoutée." : "Blocage ajouté.",
     done: Date.now(),
   };
 }

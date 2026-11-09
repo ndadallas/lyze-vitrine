@@ -16,9 +16,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/style.css?v=17">
+  <link rel="stylesheet" href="../assets/css/style.css?v=18">
   <script>document.documentElement.classList.add('js')</script>
-  <script src="../assets/js/main.js?v=17" defer></script>
+  <script src="../assets/js/main.js?v=18" defer></script>
 </head>
 <body class="accueil">
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -32,11 +32,12 @@
   </svg>
 
   <header class="bar bar--flottante">
-    <a class="bar-logo" href="index.html" lang="en">Lyze</a>
+    <a class="bar-logo" href="index.html"><img src="../assets/img/logo-lyze.png" alt="Lyze Conciergerie" width="599" height="200"></a>
     <nav class="bar-nav" aria-label="التنقل">
       <a href="index.html" aria-current="page">الرئيسية</a>
       <a href="#simulateur">الملاك</a>
       <a href="#contact">اتصل بنا</a>
+      <a href="faq.html">الأسئلة الشائعة</a>
       <a href="histoire.html">قصتنا</a>
     </nav>
     <a class="lien-langue" href="../index.html" lang="fr" hreflang="fr">Français</a>
@@ -49,7 +50,7 @@
     <button class="menu-fermer" type="button" data-ferme-menu>إغلاق</button>
     <a href="index.html">الرئيسية</a>
     <a href="#simulateur">الملاك</a>
-    <a href="#faq">الأسئلة الشائعة</a>
+    <a href="faq.html">الأسئلة الشائعة</a>
     <a href="#contact">اتصل بنا</a>
     <a href="histoire.html">قصتنا</a>
     <a class="lien-langue" href="../index.html" lang="fr" hreflang="fr">Français</a>
@@ -158,46 +159,13 @@
             </div>
           </fieldset>
           <ul class="resultats" data-resultats aria-live="polite"></ul>
-          <p class="note-calcul">تُحتسب عمولة Lyze بنسبة 20٪ بعد خصم عمولة المنصة. نسب تقريبية.</p>
+          <p class="note-calcul">تُحتسب عمولة Lyze Conciergerie بنسبة 20٪ بعد خصم عمولة المنصة. نسب تقريبية.</p>
         </form>
       </div>
     </section>
 
     <!-- الشاشة 3 -->
     <section class="questions-contact wrap" id="contact" data-ecran="اتصل بنا">
-      <div class="faq" id="faq">
-        <h2>الأسئلة الشائعة</h2>
-        <div class="faq-liste">
-          <details>
-            <summary>كيف تتقاضى Lyze أجرها؟</summary>
-            <p>عن طريق عمولة على المداخيل الكرائية لعقارك، لا تُقتطع إلا عند تأجيره. لا إيجار مضمون ولا مصاريف خفية: يمنحك المحاكي أعلاه تقديرًا لما تتقاضاه عن كل ليلة.</p>
-          </details>
-          <details>
-            <summary>على أي منصات يُعرض عقاري؟</summary>
-            <p>على Airbnb وBooking وExpedia. تصل جميع الحجوزات إلى تقويم واحد يمكنك الاطلاع عليه من فضاء المالك.</p>
-          </details>
-          <details>
-            <summary>هل يمكنني حجز تواريخ لنفسي؟</summary>
-            <p>نعم. أخبرنا ونغلق هذه التواريخ على جميع المنصات، فتظهر «محجوبة» في تقويمك.</p>
-          </details>
-          <details>
-            <summary>من يتكفل بالتنظيف والمفروشات؟</summary>
-            <p>فريقنا في عين المكان، بين كل إقامة وأخرى: تنظيف شامل، ومفروشات فندقية، وتجديد مستلزمات الاستقبال.</p>
-          </details>
-          <details>
-            <summary>كيف أتابع مداخيلي؟</summary>
-            <p>يعرض فضاء المالك كل حجز، ومنصته الأصلية، والمبلغ الذي يعود إليك، ونسبة الإشغال خلال الشهر.</p>
-          </details>
-          <details>
-            <summary>في أي مدن تعملون؟</summary>
-            <p>الجديدة والدار البيضاء ومراكش. عقارك في مدينة أخرى؟ اتصل بنا، فنحن ندرس كل طلب.</p>
-          </details>
-          <details>
-            <summary>هل يمكنني التوقف متى شئت؟</summary>
-            <p>نعم، مع إشعار مسبق لاحترام الحجوزات المؤكدة. الشروط الدقيقة مذكورة في عقد الإدارة.</p>
-          </details>
-        </div>
-      </div>
       <div class="contact">
         <figure class="contact-photo"><img class="photo" src="https://images.unsplash.com/photo-1628642004970-1da51c8c7dec?w=1400&q=80&auto=format&fit=crop" alt="فناء رياض مهيأ للضيوف" loading="lazy"></figure>
         <h2>لنتحدث عن عقارك</h2>
@@ -226,6 +194,7 @@
       <p class="pied-mini">
         <span>© Lyze Conciergerie</span>
         <a href="histoire.html">قصتنا</a>
+        <a href="faq.html">الأسئلة الشائعة</a>
         <a href="mentions.html">الإشعار القانوني</a>
         <a href="#" aria-label="Instagram"><svg class="ico" aria-hidden="true"><use href="#i-ig"/></svg></a>
         <a href="#" aria-label="Facebook"><svg class="ico" aria-hidden="true"><use href="#i-fb"/></svg></a>

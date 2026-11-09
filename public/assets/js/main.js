@@ -125,7 +125,7 @@
   var T = {
     fr: {
       photo: 'Photo', devise: 'MAD', aucune: 'Cochez au moins une plateforme.',
-      bruts: 'Revenus bruts', parAn: 'par an', fraisDe: 'Frais', comLyze: 'Commission Lyze', apresFrais: 'après frais', recevez: 'Vous recevez',
+      bruts: 'Revenus bruts', parAn: 'par an', fraisDe: 'Frais', comLyze: 'Commission Lyze Conciergerie', apresFrais: 'après frais', recevez: 'Vous recevez',
       vousTouchez: 'vous touchez', envoi: 'Envoi…',
       ok: 'Merci, votre message est bien parti. Nous vous répondons rapidement.',
       invalide: 'Vérifiez les champs du formulaire.',
@@ -142,7 +142,7 @@
     },
     en: {
       photo: 'Photo', devise: 'MAD', aucune: 'Tick at least one platform.',
-      bruts: 'Gross income', parAn: 'per year', fraisDe: 'Fees', comLyze: 'Lyze commission', apresFrais: 'after fees', recevez: 'You receive',
+      bruts: 'Gross income', parAn: 'per year', fraisDe: 'Fees', comLyze: 'Lyze Conciergerie commission', apresFrais: 'after fees', recevez: 'You receive',
       vousTouchez: 'you earn', envoi: 'Sending…',
       ok: 'Thank you, your message has been sent. We will get back to you shortly.',
       invalide: 'Please check the form fields.',
@@ -159,7 +159,7 @@
     },
     ar: {
       photo: 'صورة', devise: 'درهم', aucune: 'اختر منصة واحدة على الأقل.',
-      bruts: 'المداخيل الإجمالية', parAn: 'في السنة', fraisDe: 'عمولة', comLyze: 'عمولة Lyze', apresFrais: 'بعد عمولة المنصة', recevez: 'صافي دخلك',
+      bruts: 'المداخيل الإجمالية', parAn: 'في السنة', fraisDe: 'عمولة', comLyze: 'عمولة Lyze Conciergerie', apresFrais: 'بعد عمولة المنصة', recevez: 'صافي دخلك',
       vousTouchez: 'صافي دخلك', envoi: 'جارٍ الإرسال…',
       ok: 'شكرًا، وصلتنا رسالتك. سنتواصل معك قريبًا.',
       invalide: 'يرجى التحقق من حقول الاستمارة.',
@@ -299,7 +299,7 @@
         html += '<li><div class="tete"><span><img src="' + p.dataset.logo + '" alt="">' + p.dataset.nom + '</span>'
           + '<strong>' + mad(net) + '</strong></div>'
           + '<p class="detail">' + mad(prix) + ' − ' + mad(frais) + ' (' + p.dataset.nom + ' ' + nombre.format(taux) + ' %) − '
-          + mad(lyze) + ' (Lyze ' + nombre.format(commission) + ' %) = ' + T.vousTouchez + ' ' + mad(net) + '</p></li>';
+          + mad(lyze) + ' (Lyze Conciergerie ' + nombre.format(commission) + ' %) = ' + T.vousTouchez + ' ' + mad(net) + '</p></li>';
       });
       liste.innerHTML = html || '<li class="vide">' + T.aucune + '</li>';
     };

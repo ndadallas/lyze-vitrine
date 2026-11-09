@@ -15,6 +15,7 @@ enum Role {
 enum BookingKind {
   RESERVED
   BLOCKED
+  MANAGED // « Barka s'en charge » (bleu dans le calendrier)
 }
 
 // Plateforme d'origine d'une réservation (logo affiché dans le calendrier).

@@ -1148,3 +1148,27 @@ body:not(:has(.bar--flottante)) { padding-top: 0; }
 .mentions p { line-height: 1.7; margin: 0 0 10px; color: var(--brun); }
 .mentions a { color: var(--brique); text-decoration: underline; text-underline-offset: 3px; }
 .mentions code { font-size: .92em; background: rgba(74, 52, 38, .07); padding: 1px 5px; border-radius: 4px; }
+
+/* Retours client 2026-11-09 : logo image, FAQ sur sa propre page (contact seul sur l'accueil), bannière agrandie */
+.bar-logo, .pied-bas .logo { display: inline-flex; align-items: center; }
+.bar-logo img { display: block; height: 50px; width: auto; }
+.pied-bas .logo img { display: block; height: 64px; width: auto; }
+.questions-contact { grid-template-columns: minmax(0, 1fr); }
+.questions-contact .contact { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); column-gap: clamp(32px, 5vw, 80px); align-items: start; }
+.questions-contact .contact-photo { grid-row: 1 / span 3; height: 100%; min-height: 320px; margin: 0; }
+.questions-contact .contact > :not(.contact-photo) { grid-column: 2; }
+.faq-page { padding-block: clamp(40px, 8vh, 96px); }
+.faq-page h1 { font-family: var(--f-titre); font-weight: 400; font-size: clamp(34px, 5vw, 56px); line-height: 1.05; margin: 18px 0 8px; }
+.faq-page .lead a { color: var(--brique); text-decoration: underline; text-underline-offset: 3px; }
+.accueil .une .hero { height: clamp(380px, 72vh, 820px); }
+@media (max-width: 860px) {
+  .questions-contact .contact { grid-template-columns: minmax(0, 1fr); }
+  .questions-contact .contact > * { grid-column: 1; }
+  .questions-contact .contact-photo { grid-row: auto; height: clamp(140px, 32vw, 240px); min-height: 0; margin-bottom: 16px; }
+}
+@media (max-width: 680px) {
+  .bar-logo img { height: 40px; }
+  .accueil .une .hero { height: clamp(320px, 62svh, 560px); }
+}
+.connexion-visuel .logo img { display: block; height: 64px; width: auto; }
+@media (max-width: 680px) { .connexion-visuel .logo img { height: 48px; } }

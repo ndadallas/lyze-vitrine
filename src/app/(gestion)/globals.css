@@ -925,3 +925,7 @@ form.stack > .btn { align-self: flex-start; }
   .table-fiches .resa-actions { flex-direction: row; gap: 8px; }
   .table-fiches .resa-actions > * { flex: 1; }
 }
+
+/* Logo image (2026-11-09) */
+img.logo-name { display: block; height: 52px; width: auto; }
+.pill-barka { background: rgba(62, 106, 143, 0.14); color: #3e6a8f; }

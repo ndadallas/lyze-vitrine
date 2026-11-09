@@ -1,7 +1,7 @@
 import { DAY_MS, addMonths, daysInMonth } from "@/lib/dates";
 
 export type BookingLike = {
-  kind: "RESERVED" | "BLOCKED";
+  kind: "RESERVED" | "BLOCKED" | "MANAGED";
   startDate: Date;
   endDate: Date; // jour de départ, exclu
   amount: number;

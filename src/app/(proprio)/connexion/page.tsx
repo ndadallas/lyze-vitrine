@@ -19,7 +19,7 @@ export default async function ConnexionPage() {
           alt=""
           fetchPriority="high"
         />
-        <a className="logo" href="/">Lyze</a>
+        <a className="logo" href="/"><img src="/assets/img/logo-lyze-creme.png" alt="Lyze Conciergerie" width={599} height={200} />{/* eslint-disable-line @next/next/no-img-element */}</a>
         <blockquote>Vos biens, vos réservations et vos revenus, réunis au même endroit.</blockquote>
       </div>
 

@@ -8,7 +8,7 @@ import { CHOIX_PLATEFORMES, LogoPlateforme, PLATEFORMES, type Plateforme } from 
 
 export type BookingRowData = {
   id: string;
-  kind: "RESERVED" | "BLOCKED";
+  kind: "RESERVED" | "BLOCKED" | "MANAGED";
   platform: Plateforme;
   startDate: string; // "2026-10-02"
   endDate: string; // jour de départ, exclu
@@ -30,8 +30,8 @@ export function BookingRow({ b }: { b: BookingRowData }) {
     <>
       <tr>
         <td>
-          <span className={b.kind === "RESERVED" ? "pill pill-occupied" : "pill pill-blocked"}>
-            {b.kind === "RESERVED" ? "Réservé" : "Bloqué"}
+          <span className={`pill ${{ RESERVED: "pill-occupied", BLOCKED: "pill-blocked", MANAGED: "pill-barka" }[b.kind]}`}>
+            {{ RESERVED: "Réservé", BLOCKED: "Bloqué", MANAGED: "Barka s’en charge" }[b.kind]}
           </span>
           {b.kind === "RESERVED" && <LogoPlateforme code={b.platform} />}
         </td>
@@ -66,6 +66,7 @@ export function BookingRow({ b }: { b: BookingRowData }) {
                 <select id={`${p}-kind`} name="kind" defaultValue={b.kind}>
                   <option value="RESERVED">Réservation</option>
                   <option value="BLOCKED">Blocage (travaux, usage perso…)</option>
+                  <option value="MANAGED">Barka s’en charge</option>
                 </select>
               </div>
               <div className="field">

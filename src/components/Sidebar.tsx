@@ -8,7 +8,7 @@ export function Sidebar({ home, children }: { home: string; children: ReactNode 
     <aside className="sidebar">
       <div className="sidebar-top">
         <Link href={home} className="logo" aria-label="Lyze, accueil de l'espace gérante">
-          <span className="logo-name">Lyze</span>
+          <img className="logo-name" src="/assets/img/logo-lyze-creme.png" alt="" width={599} height={200} />{/* eslint-disable-line @next/next/no-img-element */}
           <span className="eyebrow-light logo-sub">Espace gérante</span>
         </Link>
         <nav className="sidebar-nav" aria-label="Navigation principale">

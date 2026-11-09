@@ -62,14 +62,14 @@ export function Simulateur() {
                 <strong>{formatMAD(net)}</strong>
               </div>
               <p className="detail">
-                {formatMAD(prix)} − {formatMAD(frais)} ({PLATEFORMES[c].nom} {pct(TAUX[c])} %) − {formatMAD(lyze)} (Lyze {COMMISSION} %) = vous touchez {formatMAD(net)}
+                {formatMAD(prix)} − {formatMAD(frais)} ({PLATEFORMES[c].nom} {pct(TAUX[c])} %) − {formatMAD(lyze)} (Lyze Conciergerie {COMMISSION} %) = vous touchez {formatMAD(net)}
               </p>
             </li>
           );
         })}
       </ul>
       <p className="note-calcul">
-        Montant net par nuit : frais de la plateforme retirés du prix, puis commission Lyze de {COMMISSION} % sur le reste. Taux indicatifs, hors frais de ménage et taxe de séjour.
+        Montant net par nuit : frais de la plateforme retirés du prix, puis commission Lyze Conciergerie de {COMMISSION} % sur le reste. Taux indicatifs, hors frais de ménage et taxe de séjour.
       </p>
     </form>
   );

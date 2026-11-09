@@ -10,7 +10,7 @@ import { LogoPlateforme, PLATEFORMES, type Plateforme } from "@/lib/plateformes"
 
 export type ResaEspace = {
   id: string;
-  type: "RESERVED" | "BLOCKED";
+  type: "RESERVED" | "BLOCKED" | "MANAGED";
   du: string; // arrivée, "2026-11-12"
   au: string; // départ (exclu), "2026-11-16"
   initiale: string | null;
@@ -100,7 +100,7 @@ export function EspaceProprietaire({ nom, aujourdhui, biens }: Props) {
   return (
     <div className="app">
       <aside className="side">
-        <a className="logo" href="/">Lyze</a>
+        <a className="logo" href="/"><img src="/assets/img/logo-lyze-creme.png" alt="Lyze Conciergerie" width={599} height={200} />{/* eslint-disable-line @next/next/no-img-element */}</a>
         <span className="role">ESPACE PROPRIÉTAIRE</span>
         <nav aria-label="Espace propriétaire">
           <a href="#haut" aria-current="page">Mes biens</a>
@@ -158,6 +158,7 @@ export function EspaceProprietaire({ nom, aujourdhui, biens }: Props) {
                   Réservation sélectionnée
                 </span>
                 <span><i className="l-brique" />Loué / complet</span>
+                <span><i className="l-barka" />Barka s’en charge</span>
                 <span><i className="l-bloque" />Bloqué</span>
                 <span><i className="l-libre" />Libre</span>
               </div>
@@ -279,6 +280,13 @@ function Calendrier({
 
     if (!r) {
       cases.push(<div key={d} className="jour">{d}</div>);
+    } else if (r.type === "MANAGED") {
+      cases.push(
+        <div key={d} className="jour barka">
+          {d}
+          {debutOuPremier && <span className="etiquette">Barka</span>}
+        </div>,
+      );
     } else if (r.type === "BLOCKED") {
       cases.push(
         <div key={d} className="jour bloque">

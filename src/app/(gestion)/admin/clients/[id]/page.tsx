@@ -297,6 +297,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
                         <select id="add-kind" name="kind" defaultValue="RESERVED">
                           <option value="RESERVED">Réservation</option>
                           <option value="BLOCKED">Blocage (travaux, usage perso…)</option>
+                          <option value="MANAGED">Barka s’en charge</option>
                         </select>
                       </div>
                       <div className="field">

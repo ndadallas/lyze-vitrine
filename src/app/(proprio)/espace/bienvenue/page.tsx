@@ -18,7 +18,7 @@ export default async function BienvenuePage() {
           alt=""
           fetchPriority="high"
         />
-        <a className="logo" href="/">Lyze</a>
+        <a className="logo" href="/"><img src="/assets/img/logo-lyze-creme.png" alt="Lyze Conciergerie" width={599} height={200} />{/* eslint-disable-line @next/next/no-img-element */}</a>
         <blockquote>Votre bien, entre de bonnes mains.</blockquote>
       </div>
       <BienvenueForm prenom={user.firstName} email={user.email ?? ""} />

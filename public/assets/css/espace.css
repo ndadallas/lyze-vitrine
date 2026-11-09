@@ -199,3 +199,11 @@ button.jour { cursor: pointer; }
   .side .bas button { min-height: 36px; }
 }
 @media (max-width: 380px) { .side nav a { font-size: 13px; } }
+
+/* Logo image (2026-11-09) */
+.side .logo img { display: block; height: 56px; width: auto; }
+@media (max-width: 900px) { .side .logo img { height: 40px; } }
+
+/* « Barka s'en charge » (2026-11-09) : bleu */
+.jour.barka { background: #3E6A8F; color: var(--creme); border-color: transparent; }
+.legende-app .l-barka { background: #3E6A8F; }
