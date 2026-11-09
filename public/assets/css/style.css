@@ -1207,3 +1207,8 @@ body:not(:has(.bar--flottante)) { padding-top: 0; }
 .pied-bas .logo img { height: 54px; }
 .connexion-visuel .logo img { height: 54px; }
 @media (max-width: 680px) { .bar-logo img { height: 34px; } .connexion-visuel .logo img { height: 42px; } }
+
+/* Bannière : texte remonté (2026-11-09) */
+.accueil .une .hero-slides { position: absolute; inset: 0; } /* ne prend plus de ligne dans la grille : le texte se centre sur toute la bannière */
+.accueil .une .hero-contenu { transform: translateY(calc(-1 * clamp(30px, 7vh, 80px))); }
+@media (max-width: 760px) { .accueil .une .hero-contenu { transform: translateY(calc(-1 * clamp(16px, 4svh, 40px))); } }
