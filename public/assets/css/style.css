@@ -1172,3 +1172,31 @@ body:not(:has(.bar--flottante)) { padding-top: 0; }
 }
 .connexion-visuel .logo img { display: block; height: 64px; width: auto; }
 @media (max-width: 680px) { .connexion-visuel .logo img { height: 48px; } }
+
+/* Retours client 2026-11-09 (2) */
+/* logo coupé : la règle de la photo de fond (.connexion-visuel img) touchait aussi le logo */
+.connexion-visuel .logo img { position: static; inset: auto; object-fit: contain; width: auto; height: 64px; }
+@media (max-width: 680px) { .connexion-visuel .logo img { height: 48px; } }
+/* croix « retour au site » en haut à droite */
+.connexion { position: relative; }
+.fermer-connexion { position: absolute; top: 16px; inset-inline-end: 16px; z-index: 3; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; color: var(--brunF); background: rgba(246, 240, 228, .9); transition: background .2s; }
+.fermer-connexion:hover { background: var(--sable2); }
+.fermer-connexion:focus-visible { outline: 2px solid var(--brique); outline-offset: 2px; }
+/* diaporama : le point actif reste un trait, juste rempli (le raccourci background effaçait background-clip) */
+.hero-points button[aria-current="true"] { background: var(--creme); background-clip: content-box; }
+/* téléphone (bienvenue) : un seul trait continu sous l'indicatif et le numéro */
+.champ .tel-groupe { column-gap: 0; }
+.champ .tel-groupe select { padding-inline-end: 12px; }
+/* boutons de langue rapprochés */
+.bar--flottante { justify-content: flex-start; }
+.bar--flottante .bar-nav { margin-inline: auto; }
+.bar--flottante > .lien-langue + .lien-langue { margin-inline-start: -16px; }
+.bar--flottante > .lien-proprio { margin-inline-start: 8px; }
+/* pied de page plus lisible + marge sous le bouton flottant */
+.pied-mini { font-size: 14px; padding-bottom: 120px; }
+.pied-mini .ico { width: 20px; height: 20px; }
+.pied-page { padding-bottom: 120px; }
+.qr-liste { gap: 0; }
+@media (max-width: 1100px) { .bar--flottante > .bar-logo { margin-inline-end: auto; } }
+.pied-bas nav a { font-size: 13px; }
+.qr { outline: 1px solid rgba(74, 52, 38, .15); }

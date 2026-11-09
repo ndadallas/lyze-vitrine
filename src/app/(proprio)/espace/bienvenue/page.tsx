@@ -11,6 +11,7 @@ export default async function BienvenuePage() {
 
   return (
     <main className="connexion">
+      <a className="fermer-connexion" href="/" aria-label="Retour au site"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" d="M5 5l14 14M19 5L5 19" /></svg></a>
       <div className="connexion-visuel">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
