@@ -8,10 +8,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;400&family=Gloock&family=Instrument+Sans:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=19">
-  <link rel="stylesheet" href="assets/css/espace.css?v=19">
-  <script src="assets/js/espace.js?v=19" defer></script>
-  <script src="assets/js/main.js?v=19" defer></script>
+  <link rel="stylesheet" href="assets/css/style.css?v=20">
+  <link rel="stylesheet" href="assets/css/espace.css?v=20">
+  <script src="assets/js/espace.js?v=20" defer></script>
+  <script src="assets/js/main.js?v=20" defer></script>
 </head>
 <body class="espace">
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -25,13 +25,10 @@
       <a class="logo" href="index.html"><img src="assets/img/logo-lyze-creme.png" alt="Lyze Conciergerie" width="599" height="200"></a>
       <span class="role">ESPACE PROPRIÉTAIRE</span>
       <nav aria-label="Espace propriétaire">
-        <a href="#">Tableau de bord</a>
-        <a href="#" aria-current="page">Mes biens</a>
+        <a href="#haut" aria-current="location">Mes biens</a>
         <a href="#calendrier">Calendrier</a>
         <a href="#photos">Photos</a>
         <a href="#revenus">Simulateur</a>
-        <a href="#">Documents</a>
-        <a href="#">Paramètres</a>
       </nav>
       <div class="bas">
         <span>Connecté·e : <strong>[Prénom Nom]</strong></span>
@@ -39,8 +36,12 @@
       </div>
     </aside>
 
-    <main class="contenu">
-      <h1>Mes biens</h1>
+    <main class="contenu" id="haut">
+      <header class="entete-app">
+        <span class="eyebrow eyebrow--brique">Espace propriétaire</span>
+        <h1>Mes biens</h1>
+        <p class="lead">Vos réservations, vos photos et vos revenus, réunis au même endroit.</p>
+      </header>
 
       <div class="outils" id="calendrier">
         <label class="champ-app select">
@@ -77,7 +78,8 @@
       </div>
 
       <section class="panneau photos" id="photos">
-        <h2>Photos du bien</h2>
+        <span class="eyebrow eyebrow--brique">Photos</span>
+        <h2>Votre annonce</h2>
         <p class="aide-p">Glissez vos photos ici pour les ajouter à l'annonce. Faites-les glisser pour changer l'ordre.</p>
         <div class="photos-grille">
           <label class="depot" data-depot>
@@ -91,9 +93,9 @@
       </section>
 
       <section class="panneau simulateur" id="revenus">
-        <h2>Simulateur de revenus</h2>
+        <span class="eyebrow eyebrow--brique">Simulateur de revenus</span>
       <form class="calcul" data-calcul data-commission="20" aria-labelledby="titre-calcul" onsubmit="return false">
-        <p class="titre" id="titre-calcul">Combien vous rapporte une nuit&nbsp;?</p>
+        <h2 class="titre" id="titre-calcul">Combien vous rapporte une nuit&nbsp;?</h2>
         <label class="calcul-prix">
           <span class="ligne-prix"><span>Prix de la nuit</span>
             <span class="saisie"><input type="number" min="0" max="10000" step="50" value="1200" inputmode="numeric" data-prix-saisie aria-label="Prix de la nuit en dirhams"><small>MAD</small></span>

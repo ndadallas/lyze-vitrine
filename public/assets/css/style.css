@@ -1200,3 +1200,10 @@ body:not(:has(.bar--flottante)) { padding-top: 0; }
 @media (max-width: 1100px) { .bar--flottante > .bar-logo { margin-inline-end: auto; } }
 .pied-bas nav a { font-size: 13px; }
 .qr { outline: 1px solid rgba(74, 52, 38, .15); }
+/* Photos de fond plus sombres (lisibilité du texte) + logos affinés */
+.hero::after { background: linear-gradient(180deg, rgba(74, 52, 38, .62), rgba(74, 52, 38, .38) 45%, rgba(74, 52, 38, .6)); }
+.connexion-visuel::after { background: linear-gradient(180deg, rgba(43, 29, 21, .42), rgba(43, 29, 21, .78)); }
+.bar-logo img { height: 42px; }
+.pied-bas .logo img { height: 54px; }
+.connexion-visuel .logo img { height: 54px; }
+@media (max-width: 680px) { .bar-logo img { height: 34px; } .connexion-visuel .logo img { height: 42px; } }

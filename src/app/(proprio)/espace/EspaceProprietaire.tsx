@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { logout } from "@/app/actions/auth";
 import { PhotoManager, type PhotoItem } from "@/components/PhotoManager";
 import { Simulateur } from "@/components/Simulateur";
@@ -76,7 +76,35 @@ function IconeCoche(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+const ONGLETS = [
+  ["haut", "Mes biens"],
+  ["calendrier", "Calendrier"],
+  ["photos", "Photos"],
+  ["revenus", "Simulateur"],
+] as const;
+
 export function EspaceProprietaire({ nom, aujourdhui, biens }: Props) {
+  // Onglet souligné = section visible à l'écran (et pas seulement la page)
+  const [onglet, setOnglet] = useState<string>("haut");
+  useEffect(() => {
+    const maj = () => {
+      let actif = "haut";
+      for (const [id] of ONGLETS) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top < 160) actif = id;
+      }
+      // tout en bas de la page : dernière section
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) actif = ONGLETS[ONGLETS.length - 1][0];
+      setOnglet(actif);
+    };
+    maj();
+    window.addEventListener("scroll", maj, { passive: true });
+    window.addEventListener("resize", maj);
+    return () => {
+      window.removeEventListener("scroll", maj);
+      window.removeEventListener("resize", maj);
+    };
+  }, []);
   const t0 = jour(aujourdhui);
   const [bienId, setBienId] = useState<string | undefined>(biens[0]?.id);
   const [mois, setMois] = useState(() => monthStart(t0.getUTCFullYear(), t0.getUTCMonth()));
@@ -103,10 +131,11 @@ export function EspaceProprietaire({ nom, aujourdhui, biens }: Props) {
         <a className="logo" href="/"><img src="/assets/img/logo-lyze-creme.png" alt="Lyze Conciergerie" width={599} height={200} />{/* eslint-disable-line @next/next/no-img-element */}</a>
         <span className="role">ESPACE PROPRIÉTAIRE</span>
         <nav aria-label="Espace propriétaire">
-          <a href="#haut" aria-current="page">Mes biens</a>
-          <a href="#calendrier">Calendrier</a>
-          <a href="#photos">Photos</a>
-          <a href="#revenus">Simulateur</a>
+          {ONGLETS.map(([id, libelle]) => (
+            <a key={id} href={`#${id}`} aria-current={onglet === id ? "location" : undefined}>
+              {libelle}
+            </a>
+          ))}
         </nav>
         <div className="bas">
           <span>
@@ -119,7 +148,11 @@ export function EspaceProprietaire({ nom, aujourdhui, biens }: Props) {
       </aside>
 
       <main className="contenu" id="haut">
-        <h1>Mes biens</h1>
+        <header className="entete-app">
+          <span className="eyebrow eyebrow--brique">Espace propriétaire</span>
+          <h1>Mes biens</h1>
+          <p className="lead">Vos réservations, vos photos et vos revenus, réunis au même endroit.</p>
+        </header>
 
         {!bien ? (
           <section className="panneau vide-biens">
@@ -236,7 +269,8 @@ export function EspaceProprietaire({ nom, aujourdhui, biens }: Props) {
             </div>
 
             <section className="panneau photos" id="photos">
-              <h2>Photos — {bien.nom}</h2>
+              <span className="eyebrow eyebrow--brique">Photos</span>
+              <h2>{bien.nom}</h2>
               <p className="aide-p">
                 Glissez vos photos dans le cadre pour les ajouter à l&apos;annonce. Faites-les glisser entre elles pour
                 changer l&apos;ordre : la première est la photo de couverture.
@@ -247,7 +281,7 @@ export function EspaceProprietaire({ nom, aujourdhui, biens }: Props) {
         )}
 
         <section className="panneau simulateur" id="revenus">
-          <h2>Simulateur de revenus</h2>
+          <span className="eyebrow eyebrow--brique">Simulateur de revenus</span>
           <Simulateur />
         </section>
       </main>

@@ -520,3 +520,22 @@
     });
   }
 })();
+
+/* Soulignage du menu qui suit la section visible (accueil : Accueil / Propriétaires / Contact), pas seulement la page */
+(function () {
+  var liens = [].slice.call(document.querySelectorAll('.bar-nav a')).filter(function (a) {
+    var h = a.getAttribute('href') || '';
+    return h.charAt(0) === '#' || /^index\.html(#|$)/.test(h);
+  });
+  if (!document.body.classList.contains('accueil') || liens.length < 2) return;
+  function cible(a) { var h = a.getAttribute('href').split('#')[1]; return h ? document.getElementById(h) : null; }
+  function maj() {
+    var actif = liens[0];
+    liens.forEach(function (a) { var el = cible(a); if (el && el.getBoundingClientRect().top < innerHeight * 0.4) actif = a; });
+    if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) actif = liens[liens.length - 1];
+    liens.forEach(function (a) { if (a === actif) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  }
+  addEventListener('scroll', maj, { passive: true });
+  addEventListener('resize', maj);
+  maj();
+})();

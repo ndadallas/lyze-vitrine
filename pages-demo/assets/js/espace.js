@@ -263,3 +263,15 @@
   rendreTout();
   rendrePhotos();
 })();
+
+/* Onglet souligné = section visible (comme l'espace réel) */
+(function () {
+  var liens = [].slice.call(document.querySelectorAll('.side nav a[href^="#"]'));
+  function maj() {
+    var actif = liens[0];
+    liens.forEach(function (a) { var el = document.getElementById(a.getAttribute('href').slice(1)); if (el && el.getBoundingClientRect().top < 160) actif = a; });
+    if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) actif = liens[liens.length - 1];
+    liens.forEach(function (a) { if (a === actif) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current'); });
+  }
+  addEventListener('scroll', maj, { passive: true }); addEventListener('resize', maj); maj();
+})();

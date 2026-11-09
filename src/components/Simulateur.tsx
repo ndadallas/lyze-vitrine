@@ -19,7 +19,7 @@ export function Simulateur() {
 
   return (
     <form className="calcul" aria-labelledby="titre-calcul" onSubmit={(e) => e.preventDefault()}>
-      <p className="titre" id="titre-calcul">Combien vous rapporte une nuit&nbsp;?</p>
+      <h2 className="titre" id="titre-calcul">Combien vous rapporte une nuit&nbsp;?</h2>
       <label className="calcul-prix">
         <span className="ligne-prix">
           <span>Prix de la nuit</span>

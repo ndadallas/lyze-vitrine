@@ -207,3 +207,32 @@ button.jour { cursor: pointer; }
 /* « Barka s'en charge » (2026-11-09) : bleu */
 .jour.barka { background: #3E6A8F; color: var(--creme); border-color: transparent; }
 .legende-app .l-barka { background: #3E6A8F; }
+
+/* Refonte 2026-11-09 : mêmes codes que la vitrine (eyebrow, gros titre Gloock, texte, soulignage), brun foncé, plus de gris */
+.app { --gris: var(--brun); }
+.side { background: var(--noir); }
+.side .logo img { height: 48px; }
+.side .role { color: var(--sable2); }
+.side nav { gap: 2px; }
+.side nav a { padding: 12px 20px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: rgba(246, 240, 228, .7); background: none; }
+.side nav a::before { content: none; }
+.side nav a::after { content: ""; position: absolute; left: 20px; bottom: 6px; width: calc(100% - 40px); height: 1px; background: var(--creme); transform: scaleX(0); transform-origin: left; transition: transform .35s var(--ease); }
+.side nav a:hover::after, .side nav a[aria-current]::after { transform: scaleX(1); }
+.side nav a[aria-current] { color: var(--creme); font-weight: 600; background: none; }
+.side .bas { color: rgba(246, 240, 228, .75); }
+.contenu { padding: clamp(32px, 5vw, 64px) clamp(16px, 4vw, 56px) 80px; }
+.entete-app { margin-bottom: 8px; }
+.entete-app h1, .contenu .entete-app h1 { font-family: var(--f-titre); font-weight: 400; font-size: clamp(44px, 5.4vw, 80px); line-height: 1.02; margin-top: 14px; }
+.entete-app .lead { margin-top: 14px; max-width: 520px; }
+.outils { margin-top: 36px; }
+.panneau .titre-p { color: var(--brique); font-weight: 600; letter-spacing: .24em; }
+.photos, .simulateur { margin-top: 56px; padding: clamp(24px, 3vw, 44px); }
+.photos h2, .simulateur .calcul .titre { font-family: var(--f-titre); font-weight: 400; font-size: clamp(30px, 3.4vw, 48px); line-height: 1.05; margin-top: 12px; }
+.simulateur .calcul { margin-top: 0; }
+.detail h2 { font-size: clamp(26px, 2.4vw, 34px); }
+.vide-biens { padding: 28px; }
+@media (max-width: 900px) {
+  .side nav a { font-size: 11px; letter-spacing: .08em; padding: 10px 4px; }
+  .side nav a::after { left: 4px; width: calc(100% - 8px); bottom: 4px; }
+  .side .logo img { height: 36px; }
+}
