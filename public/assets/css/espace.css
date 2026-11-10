@@ -236,3 +236,21 @@ button.jour { cursor: pointer; }
   .side nav a::after { left: 4px; width: calc(100% - 8px); bottom: 4px; }
   .side .logo img { height: 36px; }
 }
+
+/* Mon compte (2026-11-10) : coordonnées + mot de passe */
+.compte { margin-top: 56px; padding: clamp(24px, 3vw, 44px); }
+.compte h2 { font-family: var(--f-titre); font-weight: 400; font-size: clamp(30px, 3.4vw, 48px); line-height: 1.05; margin-top: 12px; }
+.compte > .aide-p { font-size: 14px; margin-top: 10px; max-width: 620px; }
+.compte-grille { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(28px, 5vw, 72px); margin-top: 32px; }
+.compte form .champ, .compte form .champ:first-of-type { margin-top: 24px; max-width: none; }
+.compte form .aide-p { font-size: 13px; margin-top: 16px; }
+.compte .btn--plein { margin-top: 28px; height: 52px; justify-content: center; width: 100%; max-width: 320px; }
+.compte .btn--plein:disabled { opacity: .6; cursor: wait; }
+.message-compte { margin-top: 18px; padding: 10px 12px; font-size: 14px; border-left: 3px solid currentColor; }
+.message-compte.ok { background: rgba(79, 122, 74, .12); color: var(--vert); }
+.message-compte.erreur { background: rgba(156, 102, 68, .08); color: var(--brique); }
+@media (max-width: 900px) {
+  .side nav { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .side nav a { font-size: 10px; letter-spacing: .04em; }
+  .compte-grille { grid-template-columns: minmax(0, 1fr); }
+}

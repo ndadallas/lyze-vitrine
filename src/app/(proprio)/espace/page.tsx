@@ -51,6 +51,14 @@ export default async function EspacePage() {
       nom={`${user.firstName} ${user.lastName}`}
       aujourdhui={toDayString(now)}
       biens={biens}
+      compte={{
+        identifiant: user.username,
+        phone: user.phone ?? "",
+        email: user.email ?? "",
+        address: user.address ?? "",
+        country: user.country ?? "",
+        contactPreference: user.contactPreference ?? "",
+      }}
     />
   );
 }

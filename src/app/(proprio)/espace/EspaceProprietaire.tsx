@@ -7,6 +7,7 @@ import { Simulateur } from "@/components/Simulateur";
 import { DAY_MS, daysInMonth, formatMAD, monthStart, parseDay } from "@/lib/dates";
 import { monthStats, nights } from "@/lib/stats";
 import { LogoPlateforme, PLATEFORMES, type Plateforme } from "@/lib/plateformes";
+import { MonCompte, type CompteEspace } from "./MonCompte";
 
 export type ResaEspace = {
   id: string;
@@ -26,7 +27,7 @@ export type BienEspace = {
   resas: ResaEspace[];
 };
 
-type Props = { nom: string; aujourdhui: string; biens: BienEspace[] };
+type Props = { nom: string; aujourdhui: string; biens: BienEspace[]; compte: CompteEspace };
 
 const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
 const MOIS_COURT = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
@@ -81,9 +82,10 @@ const ONGLETS = [
   ["calendrier", "Calendrier"],
   ["photos", "Photos"],
   ["revenus", "Simulateur"],
+  ["compte", "Mon compte"],
 ] as const;
 
-export function EspaceProprietaire({ nom, aujourdhui, biens }: Props) {
+export function EspaceProprietaire({ nom, aujourdhui, biens, compte }: Props) {
   // Onglet souligné = section visible à l'écran (et pas seulement la page)
   const [onglet, setOnglet] = useState<string>("haut");
   useEffect(() => {
@@ -284,6 +286,8 @@ export function EspaceProprietaire({ nom, aujourdhui, biens }: Props) {
           <span className="eyebrow eyebrow--brique">Simulateur de revenus</span>
           <Simulateur />
         </section>
+
+        <MonCompte compte={compte} />
       </main>
     </div>
   );

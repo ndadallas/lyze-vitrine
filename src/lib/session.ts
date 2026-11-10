@@ -52,6 +52,12 @@ export async function deleteSession() {
   store.delete(SESSION_COOKIE);
 }
 
+/** Déconnecte les autres appareils, garde la session en cours (mot de passe changé par l'utilisateur). */
+export async function revokeOtherSessions(userId: string) {
+  const token = (await cookies()).get(SESSION_COOKIE)?.value;
+  await db.session.deleteMany({ where: { userId, ...(token && { id: { not: hashToken(token) } }) } });
+}
+
 /** Déconnecte un utilisateur partout (mot de passe régénéré, compte désactivé). */
 export async function revokeUserSessions(userId: string) {
   await db.session.deleteMany({ where: { userId } });

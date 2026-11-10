@@ -8,10 +8,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;400&family=Gloock&family=Instrument+Sans:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=21">
-  <link rel="stylesheet" href="assets/css/espace.css?v=21">
-  <script src="assets/js/espace.js?v=21" defer></script>
-  <script src="assets/js/main.js?v=21" defer></script>
+  <link rel="stylesheet" href="assets/css/style.css?v=22">
+  <link rel="stylesheet" href="assets/css/espace.css?v=22">
+  <script src="assets/js/espace.js?v=22" defer></script>
+  <script src="assets/js/main.js?v=22" defer></script>
 </head>
 <body class="espace">
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -29,6 +29,7 @@
         <a href="#calendrier">Calendrier</a>
         <a href="#photos">Photos</a>
         <a href="#revenus">Simulateur</a>
+        <a href="#compte">Mon compte</a>
       </nav>
       <div class="bas">
         <span>Connecté·e : <strong>[Prénom Nom]</strong></span>
@@ -113,6 +114,38 @@
         <ul class="resultats" data-resultats aria-live="polite"></ul>
         <p class="note-calcul">Montant net par nuit pour le propriétaire : frais de la plateforme retirés du prix, puis commission Lyze de 20 % sur le reste. Taux indicatifs, hors frais de ménage et taxe de séjour.</p>
       </form>
+      </section>
+
+      <section class="panneau compte" id="compte">
+        <span class="eyebrow eyebrow--brique">Mon compte</span>
+        <h2>Vos informations</h2>
+        <p class="aide-p">Identifiant de connexion : <strong>[prenom.nom]</strong>. Lyze utilise ces coordonnées pour vous joindre et vous adresser vos comptes rendus.</p>
+        <div class="compte-grille">
+          <form onsubmit="this.querySelector('.message-compte').hidden=false;return false">
+            <span class="titre-p">Coordonnées</span>
+            <label class="champ"><span>Téléphone</span><input type="tel" value="+212 6 12 34 56 78"></label>
+            <label class="champ"><span>E-mail</span><input type="email" value="proprietaire@exemple.ma"></label>
+            <label class="champ"><span>Adresse postale</span><input value="12 rue de la Plage, El Jadida"></label>
+            <label class="champ"><span>Pays de résidence</span><input value="Maroc"></label>
+            <fieldset class="champ choix-contact">
+              <span>Comment préférez-vous être contacté·e ?</span>
+              <label><input type="radio" name="contact" checked>WhatsApp</label>
+              <label><input type="radio" name="contact">Téléphone</label>
+              <label><input type="radio" name="contact">E-mail</label>
+            </fieldset>
+            <p class="message-compte ok" role="status" hidden>Démo : rien n'est enregistré.</p>
+            <button class="btn btn--plein" type="submit">Enregistrer</button>
+          </form>
+          <form onsubmit="this.querySelector('.message-compte').hidden=false;return false">
+            <span class="titre-p">Mot de passe</span>
+            <label class="champ"><span>Mot de passe actuel</span><input type="password" autocomplete="off"></label>
+            <label class="champ"><span>Nouveau mot de passe</span><input type="password" autocomplete="off"></label>
+            <label class="champ"><span>Confirmer le nouveau</span><input type="password" autocomplete="off"></label>
+            <p class="aide-p">Au moins 8 caractères. Vos autres appareils seront déconnectés.</p>
+            <p class="message-compte ok" role="status" hidden>Démo : rien n'est enregistré.</p>
+            <button class="btn btn--plein" type="submit">Changer le mot de passe</button>
+          </form>
+        </div>
       </section>
 
       <p class="demo-bandeau">Version de démonstration — données fictives, rien n'est enregistré.</p>
