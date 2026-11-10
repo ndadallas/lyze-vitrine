@@ -1225,3 +1225,36 @@ body:not(:has(.bar--flottante)) { padding-top: 0; }
 .chapitre-texte .chapitre-corps p { font-family: inherit; font-size: 18px; line-height: 1.75; margin-top: 18px; color: var(--brunF); }
 .chapitre-texte .chapitre-corps strong { font-weight: 600; }
 @media (max-width: 860px) { .chapitre-texte .chapitre-corps p { font-size: 16px; } .chapitre-texte .chapitre-corps { margin-top: 28px; } }
+
+/* Page Histoire, présentation « récit » (2026-11-10) : numéro + titre fixés à gauche, temps fort « Lisa → Lyze », valeurs */
+.recit { display: grid; grid-template-columns: minmax(0, 280px) minmax(0, 680px); column-gap: clamp(40px, 7vw, 120px); justify-content: center; padding: clamp(80px, 10vw, 140px) var(--gutter) 0; }
+.recit .chapitre-texte { padding-top: 0; }
+.recit .lettrine-ligne { margin-top: 0; }
+.recit .lettrine-ligne p { margin-top: 60px; }
+.recit-tete { position: sticky; top: 120px; align-self: start; }
+.recit-num { display: block; font-family: var(--f-cond); font-weight: 300; font-size: clamp(72px, 9vw, 132px); line-height: .9; color: var(--brique); }
+.recit-tete h2 { font-family: var(--f-titre); font-weight: 400; font-size: clamp(30px, 3vw, 44px); line-height: 1.05; margin-top: 18px; padding-top: 18px; border-top: 1px solid rgba(74, 52, 38, .25); }
+.chapitre-texte .chapitre-corps p.recit-phrase { font-family: var(--f-titre); font-size: clamp(28px, 3vw, 40px); line-height: 1.15; margin: 36px 0 30px; }
+.valeurs { list-style: none; padding: 0; margin: 44px 0 20px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-block: 1px solid rgba(74, 52, 38, .25); }
+.valeurs li { padding: 22px 18px; font-family: var(--f-titre); font-size: clamp(20px, 2vw, 28px); line-height: 1.1; }
+.valeurs li + li { border-inline-start: 1px solid rgba(74, 52, 38, .25); }
+.valeurs span { display: block; margin-bottom: 10px; font-family: var(--f-cond); font-size: 13px; letter-spacing: .2em; color: var(--brique); }
+#vision { padding-bottom: clamp(90px, 10vw, 140px); }
+.recit-nom { margin-top: clamp(90px, 10vw, 140px); background: var(--sable); text-align: center; padding: clamp(70px, 9vw, 120px) var(--gutter); }
+.recit-nom h2 { font-family: var(--f-titre); font-weight: 400; font-size: clamp(36px, 4.4vw, 64px); line-height: 1.05; margin-top: 16px; }
+.filiation { display: flex; align-items: center; justify-content: center; gap: clamp(16px, 3vw, 40px); margin-top: 26px; font-family: var(--f-script); font-size: clamp(64px, 9vw, 130px); line-height: 1.25; color: var(--brique); }
+.filiation span { display: inline-block; }
+.filiation i { width: clamp(40px, 8vw, 120px); height: 1px; background: currentColor; opacity: .5; }
+.recit-nom .chapitre-corps { max-width: 620px; margin: 24px auto 0; }
+.recit-nom .chapitre-corps p { font-size: 18px; line-height: 1.75; margin-top: 16px; color: var(--brunF); }
+@media (max-width: 860px) {
+  .recit { grid-template-columns: minmax(0, 1fr); row-gap: 28px; padding: 64px 16px 0; }
+  .recit-tete { position: static; display: flex; align-items: baseline; gap: 16px; }
+  .recit-num { font-size: 64px; }
+  .recit-tete h2 { margin-top: 0; padding-top: 0; border-top: 0; font-size: 30px; }
+  .recit .lettrine-ligne p { margin-top: 44px; }
+  .valeurs li { padding: 16px 10px; font-size: 18px; }
+  .recit-nom { padding: 60px 16px; margin-top: 64px; }
+  .recit-nom .chapitre-corps p { font-size: 16px; }
+  #vision { padding-bottom: 70px; }
+}

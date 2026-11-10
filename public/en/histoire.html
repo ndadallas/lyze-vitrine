@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;400&family=Gloock&family=Instrument+Sans:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/style.css?v=24">
+  <link rel="stylesheet" href="../assets/css/style.css?v=25">
   <script>document.documentElement.classList.add('js')</script>
   <script src="../assets/js/main.js?v=21" defer></script>
 </head>
@@ -62,9 +62,12 @@
     </figure>
     </div>
 
-    <section class="chapitres" id="parcours" data-ecran="The journey">
-      <div class="chapitre-texte">
-        <span class="eyebrow eyebrow--brique">(01)&nbsp; My journey</span>
+    <section class="recit" id="parcours" data-ecran="The journey">
+      <header class="recit-tete" data-apparait>
+        <span class="recit-num">01</span>
+        <h2>My journey</h2>
+      </header>
+      <div class="recit-texte chapitre-texte">
         <div class="lettrine-ligne">
           <span class="lettrine" data-encre aria-hidden="true">I</span>
           <p><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">I</span> am convinced that the most beautiful adventures often begin with a deep desire to give new meaning to one's life.</p>
@@ -79,26 +82,34 @@
       </div>
     </section>
 
-    <section class="chapitres" id="nom" data-ecran="The name">
-      <div class="chapitre-texte">
-        <span class="eyebrow eyebrow--brique">(02)&nbsp; The name</span>
-        <h2>A name with a story</h2>
-        <div class="chapitre-corps">
-          <p>Lyze is not just a company name.</p>
-          <p>It is inspired by my daughter's name, Lisa. A way for me to bring together this professional project and what I hold most dear: my family.</p>
-          <p>This choice gives Lyze Conciergerie a very special meaning. Behind this company, there is a personal story, values and a great deal of heart.</p>
-        </div>
+    <section class="recit-nom" id="nom" data-ecran="The name">
+      <span class="eyebrow eyebrow--brique">02&nbsp; The name</span>
+      <h2>A name with a story</h2>
+      <p class="filiation" aria-hidden="true" dir="ltr"><span data-encre>Lisa</span><i></i><span data-encre>Lyze</span></p>
+      <div class="chapitre-corps" data-apparait>
+        <p>Lyze is not just a company name.</p>
+        <p>It is inspired by my daughter's name, Lisa. A way for me to bring together this professional project and what I hold most dear: my family.</p>
+        <p>This choice gives Lyze Conciergerie a very special meaning. Behind this company, there is a personal story, values and a great deal of heart.</p>
       </div>
     </section>
 
-    <section class="chapitres" id="vision" data-ecran="The vision">
-      <div class="chapitre-texte">
-        <span class="eyebrow eyebrow--brique">(03)&nbsp; The vision</span>
+    <section class="recit" id="vision" data-ecran="The vision">
+      <header class="recit-tete" data-apparait>
+        <span class="recit-num">03</span>
         <h2>My vision of concierge services</h2>
+      </header>
+      <div class="recit-texte chapitre-texte">
         <div class="chapitre-corps">
           <p>To me, concierge services are not just about managing bookings or welcoming guests.</p>
-          <p>Above all, it is a human relationship.</p>
+          <p class="recit-phrase">Above all, it is a human relationship.</p>
           <p>I know that entrusting your home to someone else is a big decision. That is why I place <strong>trust, transparency and listening</strong> at the heart of every collaboration.</p>
+        </div>
+        <ul class="valeurs" data-apparait>
+          <li><span>01</span>Trust</li>
+          <li><span>02</span>Transparency</li>
+          <li><span>03</span>Listening</li>
+        </ul>
+        <div class="chapitre-corps">
           <p>I love well-kept places, welcoming atmospheres and the small details that make all the difference. Every home deserves special attention, just as every owner deserves personalised support.</p>
           <p>My ambition is not simply to manage properties, but to build lasting relationships, founded on respect, closeness and professionalism.</p>
           <p>Today, through Lyze Conciergerie, present in Casablanca, El Jadida and Marrakech, I want to give owners the peace of mind they are looking for, while enhancing the value of their property.</p>
