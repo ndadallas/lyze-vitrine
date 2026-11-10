@@ -275,6 +275,8 @@
     var nuits = calcul.querySelector('[data-nuits]');
     var nuitsSaisie = calcul.querySelector('[data-nuits-saisie]');
     var calculer = function () {
+      // curseurs déplacés par la saisie au clavier : remettre à jour la partie remplie
+      [curseur, nuits].forEach(function (r) { if (r) r.style.setProperty('--pct', ((r.value - r.min) / (r.max - r.min) * 100) + '%'); });
       var prix = Math.max(0, +curseur.value || 0);
       var html = '';
       if (nuits) { // vitrine : une plateforme, détail sur l'année
@@ -538,4 +540,11 @@
   addEventListener('scroll', maj, { passive: true });
   addEventListener('resize', maj);
   maj();
+})();
+
+// Curseurs du simulateur : partie remplie de la piste (--pct), la piste elle-même est beige en CSS
+(function () {
+  function pct(r) { r.style.setProperty('--pct', ((r.value - r.min) / (r.max - r.min) * 100) + '%'); }
+  document.querySelectorAll('.calcul input[type="range"]').forEach(pct);
+  document.addEventListener('input', function (e) { if (e.target.matches && e.target.matches('.calcul input[type="range"]')) pct(e.target); });
 })();

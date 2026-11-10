@@ -1258,3 +1258,14 @@ body:not(:has(.bar--flottante)) { padding-top: 0; }
   .recit-nom .chapitre-corps p { font-size: 16px; }
   #vision { padding-bottom: 70px; }
 }
+
+/* Retours 2026-11-10 : lien « Mon espace » centré sur le bouton ; curseur du simulateur sans gris (piste beige) */
+.proprio .proprio-actions .btn.btn--plein { margin-top: 0; }
+.calcul input[type="range"] { -webkit-appearance: none; appearance: none; height: 28px; background: transparent; accent-color: auto; }
+.calcul input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(to right, var(--brique) var(--pct, 50%), var(--sable2) var(--pct, 50%)); }
+html[dir="rtl"] .calcul input[type="range"]::-webkit-slider-runnable-track { background: linear-gradient(to left, var(--brique) var(--pct, 50%), var(--sable2) var(--pct, 50%)); }
+.calcul input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -7px; border-radius: 50%; border: 0; background: var(--brique); }
+.calcul input[type="range"]::-moz-range-track { height: 4px; border-radius: 2px; background: var(--sable2); }
+.calcul input[type="range"]::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--brique); }
+.calcul input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; border: 0; background: var(--brique); }
+.calcul input[type="range"]:focus-visible { outline: 2px solid var(--brique); outline-offset: 4px; }

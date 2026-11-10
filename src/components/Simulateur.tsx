@@ -32,7 +32,11 @@ export function Simulateur() {
             <small>MAD</small>
           </span>
         </span>
-        <input type="range" min={200} max={10000} step={50} value={prix} aria-label="Curseur du prix de la nuit" onChange={(e) => setPrix(+e.target.value)} />
+        <input
+          type="range" min={200} max={10000} step={50} value={prix} aria-label="Curseur du prix de la nuit"
+          style={{ "--pct": `${((Math.min(10000, Math.max(200, prix)) - 200) / 9800) * 100}%` } as React.CSSProperties}
+          onChange={(e) => setPrix(+e.target.value)}
+        />
       </label>
       <fieldset>
         <legend>Plateformes utilisées</legend>
