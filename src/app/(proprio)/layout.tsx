@@ -17,7 +17,7 @@ export default function ProprioLayout({ children }: { children: React.ReactNode 
           href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;400&family=Gloock&family=Instrument+Sans:wght@400;500;600&family=Pinyon+Script&display=swap"
           rel="stylesheet"
         />
-        <link rel="stylesheet" href="/assets/css/style.css?v=23" />
+        <link rel="stylesheet" href="/assets/css/style.css?v=24" />
         <link rel="stylesheet" href="/assets/css/espace.css?v=23" />
       </head>
       <body>{children}</body>
