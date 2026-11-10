@@ -254,3 +254,12 @@ button.jour { cursor: pointer; }
   .side nav a { font-size: 10px; letter-spacing: .04em; }
   .compte-grille { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Calendrier (demande cliente 2026-11-03) : VERT = réservé, ROUGE (= chocolat clair du site) = libre */
+.cal-jours .jour:not(.vide, .loue, .reserve, .bloque, .barka) { background: var(--brique); color: var(--creme); border-color: rgba(246, 240, 228, .35); }
+.jour.loue { background: var(--vert); }
+.jour.loue:hover { background: #3E6239; }
+.jour.reserve { background: #2F4A2C; }
+.legende-app .l-brique { background: var(--vert); }
+.legende-app .l-vert { background: #2F4A2C; }
+.legende-app .l-libre { background: var(--brique); border: 0; }

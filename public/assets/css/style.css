@@ -1212,3 +1212,7 @@ body:not(:has(.bar--flottante)) { padding-top: 0; }
 .accueil .une .hero-slides { position: absolute; inset: 0; } /* ne prend plus de ligne dans la grille : le texte se centre sur toute la bannière */
 .accueil .une .hero-contenu { transform: translateY(calc(-1 * clamp(30px, 7vh, 80px))); }
 @media (max-width: 760px) { .accueil .une .hero-contenu { transform: translateY(calc(-1 * clamp(16px, 4svh, 40px))); } }
+
+/* Réseaux sociaux (2026-11-10) : 3 vrais QR codes (Instagram, TikTok, Facebook) */
+.qr-liste { gap: 22px; flex-wrap: wrap; }
+@media (max-width: 860px) { .qr-liste { grid-template-columns: repeat(3, minmax(0, 96px)); gap: 16px; } .qr-item, .qr { width: 100%; height: auto; aspect-ratio: 1; } .qr-item { aspect-ratio: auto; } }

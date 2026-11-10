@@ -192,7 +192,7 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, compte }: Props) {
                   </i>
                   Réservation sélectionnée
                 </span>
-                <span><i className="l-brique" />Loué / complet</span>
+                <span><i className="l-brique" />Réservé</span>
                 <span><i className="l-barka" />Barka s’en charge</span>
                 <span><i className="l-bloque" />Bloqué</span>
                 <span><i className="l-libre" />Libre</span>
