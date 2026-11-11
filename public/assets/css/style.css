@@ -1269,3 +1269,73 @@ html[dir="rtl"] .calcul input[type="range"]::-webkit-slider-runnable-track { bac
 .calcul input[type="range"]::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--brique); }
 .calcul input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; border: 0; background: var(--brique); }
 .calcul input[type="range"]:focus-visible { outline: 2px solid var(--brique); outline-offset: 4px; }
+
+/* ===== Retours client 2026-11-11 ===== */
+/* « Gestion locative » sous le logo */
+.bar-logo { flex-direction: column; align-items: flex-start; gap: 3px; }
+.bar-sous { font-family: var(--f-texte); font-size: 9.5px; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; color: var(--brique); white-space: nowrap; padding-inline-start: 2px; }
+html[lang="ar"] .bar-sous { letter-spacing: 0; font-size: 12px; }
+@media (max-width: 680px) { .bar-sous { font-size: 8px; letter-spacing: .22em; } }
+
+/* Nos biens : fond beige, photos carrées */
+.accueil .nos-biens { background: var(--sable); padding-block: clamp(32px, 6vh, 64px); }
+.accueil .carte-logement figure, .carte-logement figure { aspect-ratio: 1 / 1; }
+
+/* Accompagnement en 5 étapes (accordéon) */
+.etapes-titre { font-family: var(--f-texte); font-size: 12px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; color: var(--brique); margin-top: clamp(24px, 4vh, 40px); }
+html[lang="ar"] .etapes-titre { letter-spacing: 0; font-size: 15px; }
+.etapes-accordeon { margin-top: 14px; max-width: 560px; border-top: 1px solid rgba(74, 52, 38, .18); }
+.etapes-accordeon details { border-bottom: 1px solid rgba(74, 52, 38, .18); }
+.etapes-accordeon summary { list-style: none; display: flex; align-items: center; gap: 16px; padding: 16px 0; cursor: pointer; }
+.etapes-accordeon summary::-webkit-details-marker { display: none; }
+.etapes-accordeon .num { font-family: var(--f-titre); font-size: 16px; color: var(--brique); min-width: 26px; }
+.etapes-accordeon .etape-titre { font-family: var(--f-titre); font-size: clamp(17px, 1.5vw, 20px); line-height: 1.25; }
+.etapes-accordeon .chevron { flex: none; width: 18px; height: 18px; margin-inline-start: auto; color: var(--brique); transition: transform .3s var(--ease); }
+.etapes-accordeon details[open] .chevron { transform: rotate(180deg); }
+.etapes-accordeon summary:hover .etape-titre { color: var(--brique); }
+.etapes-accordeon details p { padding: 0 0 18px 42px; font-size: 15px; line-height: 1.6; color: var(--brun); }
+html[lang="ar"] .etapes-accordeon details p { padding: 0 42px 18px 0; }
+
+/* Votre interlocutrice (Barka) */
+.interlocutrice { display: grid; grid-template-columns: minmax(0, 400px) minmax(0, 1fr); gap: clamp(32px, 6vw, 96px); align-items: center; padding-block: clamp(56px, 9vw, 110px); }
+.interlocutrice-photo { position: relative; aspect-ratio: 3 / 4; background: var(--sable2); border: 1px solid rgba(74, 52, 38, .15); display: grid; place-items: center; color: var(--brun); font-size: 14px; margin: 0; }
+.interlocutrice-photo::after { content: ""; position: absolute; width: 60px; height: 60px; background: var(--brique); inset-inline-end: -66px; bottom: -12px; }
+.interlocutrice-texte blockquote { font-family: var(--f-titre); font-style: italic; font-size: clamp(22px, 2.2vw, 30px); line-height: 1.35; border-inline-start: 2px solid var(--brique); padding-inline-start: 20px; margin: 20px 0 0; max-width: 600px; }
+.interlocutrice-texte h2 { font-family: var(--f-titre); font-weight: 400; font-size: 28px; margin-top: 28px; }
+.interlocutrice-role { font-size: 11px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--brique); margin-top: 6px; }
+.interlocutrice-tags { list-style: none; padding: 0; margin: 20px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.interlocutrice-tags li { border: 1px solid rgba(74, 52, 38, .25); padding: 8px 14px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--brun); }
+.interlocutrice-reseaux { display: flex; flex-wrap: wrap; gap: 10px 24px; margin-top: 22px; }
+.interlocutrice-reseaux a { display: inline-flex; align-items: center; gap: 8px; color: var(--brique); font-size: 15px; }
+.interlocutrice-reseaux a:hover { color: var(--rouge-f, #7E4F33); }
+.interlocutrice-reseaux .ico { width: 20px; height: 20px; }
+html[lang="ar"] .interlocutrice-role, html[lang="ar"] .interlocutrice-tags li { letter-spacing: 0; font-size: 13px; }
+
+/* Zones d'intervention */
+.zones { padding-block: clamp(48px, 7vw, 90px) 0; }
+.zones h2 { font-family: var(--f-titre); font-weight: 400; font-size: clamp(30px, 3.4vw, 48px); line-height: 1.05; margin-top: 14px; }
+.zones-liste { list-style: none; padding: 0; margin: 32px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid rgba(74, 52, 38, .15); }
+.zones-liste li { padding: 28px; display: grid; gap: 6px; background: #fff; }
+.zones-liste li + li { border-inline-start: 1px solid rgba(74, 52, 38, .15); }
+.zones-liste svg { width: 26px; height: 26px; color: var(--brique); margin-bottom: 10px; }
+.zones-liste strong { font-family: var(--f-titre); font-weight: 400; font-size: 24px; }
+.zones-liste small { font-size: 14px; color: var(--brun); }
+
+/* Contact : titre collé à sa phrase, ville libre, drapeau */
+.questions-contact .contact { grid-template-rows: auto auto 1fr; }
+.questions-contact .coordonnees { margin-top: 4px; }
+.questions-contact .contact h2 { margin-bottom: 0; }
+.contact-form .ville-autre { margin-top: 10px; }
+.tel-groupe:has(.drapeau) { grid-template-columns: 24px minmax(0, 170px) 1fr; align-items: center; }
+.champ .tel-groupe .drapeau { margin-inline-end: 10px; }
+@media (max-width: 760px) { .tel-groupe:has(.drapeau) { grid-template-columns: 24px minmax(0, 120px) 1fr; } }
+.tel-groupe .drapeau { flex: none; width: 24px; height: 18px; object-fit: cover; border-radius: 2px; box-shadow: 0 0 0 1px rgba(74, 52, 38, .15); }
+
+@media (max-width: 860px) {
+  .interlocutrice { grid-template-columns: minmax(0, 1fr); }
+  .interlocutrice-photo { max-width: 320px; }
+  .interlocutrice-photo::after { width: 36px; height: 36px; inset-inline-end: -12px; bottom: -12px; }
+  .zones-liste { grid-template-columns: minmax(0, 1fr); }
+  .zones-liste li + li { border-inline-start: 0; border-top: 1px solid rgba(74, 52, 38, .15); }
+  .zones-liste li { padding: 20px; }
+}

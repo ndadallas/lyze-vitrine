@@ -331,9 +331,17 @@
       var lignes = pays.map(function (p) { return { iso: p[0], tel: '+' + p[1], nom: noms ? noms.of(p[0]) : p[0] }; });
       lignes.sort(function (a, b) { return a.nom.localeCompare(b.nom, lang); });
       var enTete = ['MA', 'FR'].map(function (iso) { return lignes.find(function (l) { return l.iso === iso; }); });
-      var option = function (l) { return '<option value="' + l.tel + '">' + l.nom + ' (' + l.tel + ')</option>'; };
+      var option = function (l) { return '<option value="' + l.tel + '" data-iso="' + l.iso.toLowerCase() + '">' + l.nom + ' (' + l.tel + ')</option>'; };
       var html = enTete.map(option).join('') + '<option disabled>──────────</option>' + lignes.map(option).join('');
-      selectsIndicatif.forEach(function (s) { s.innerHTML = html; s.selectedIndex = 0; });
+      selectsIndicatif.forEach(function (s) {
+        s.innerHTML = html; s.selectedIndex = 0;
+        // drapeau du pays choisi, à gauche de l'indicatif (les <option> natives ne peuvent pas afficher d'image)
+        var drapeau = s.parentNode.querySelector('[data-drapeau]');
+        if (drapeau) s.addEventListener('change', function () {
+          var iso = s.selectedOptions[0] && s.selectedOptions[0].dataset.iso;
+          if (iso) drapeau.src = drapeau.src.replace(/[a-z]+\.svg$/, iso + '.svg');
+        });
+      });
     }).catch(function () { /* la liste par défaut (+212) reste dans le HTML */ });
   }
 
@@ -343,6 +351,14 @@
     var etat = contact.querySelector('.etat');
     var bouton = contact.querySelector('button[type="submit"]');
     var afficher = function (texte, classe) { etat.textContent = texte; etat.className = 'etat ' + (classe || ''); };
+    // « Autre ville » : un champ libre apparaît pour écrire la ville
+    var villeSel = contact.querySelector('select[name="ville"]');
+    var villeAutre = contact.querySelector('.ville-autre');
+    if (villeSel && villeAutre) villeSel.addEventListener('change', function () {
+      var autre = villeSel.value === 'Autre ville';
+      villeAutre.hidden = !autre; villeAutre.required = autre;
+      if (autre) villeAutre.focus();
+    });
     contact.addEventListener('submit', function (e) {
       e.preventDefault();
       if (!contact.reportValidity()) return;
@@ -352,7 +368,7 @@
         nom: String(f.get('nom') || '').trim(),
         email: String(f.get('email') || '').trim(),
         telephone: tel ? f.get('indicatif') + ' ' + tel : '',
-        ville: String(f.get('ville') || ''),
+        ville: f.get('ville') === 'Autre ville' ? String(f.get('ville_autre') || '').trim() : String(f.get('ville') || ''),
         meuble: String(f.get('meuble') || ''),
         message: String(f.get('message') || '').trim(),
         site: String(f.get('site') || ''),

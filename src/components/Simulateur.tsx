@@ -6,7 +6,7 @@ import { PLATEFORMES } from "@/lib/plateformes";
 
 // shortcut: mêmes taux et commission que le simulateur de la vitrine (public/index.html), à confirmer par Lyze
 const COMMISSION = 20;
-const TAUX = { AIRBNB: 15.5, BOOKING: 15, EXPEDIA: 15 } as const;
+const TAUX = { AIRBNB: 18, BOOKING: 20, EXPEDIA: 15 } as const;
 type Code = keyof typeof TAUX;
 const CODES = Object.keys(TAUX) as Code[];
 const pct = (n: number) => new Intl.NumberFormat("fr-FR").format(n);

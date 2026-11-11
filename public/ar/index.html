@@ -16,9 +16,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/style.css?v=26">
+  <link rel="stylesheet" href="../assets/css/style.css?v=27">
   <script>document.documentElement.classList.add('js')</script>
-  <script src="../assets/js/main.js?v=26" defer></script>
+  <script src="../assets/js/main.js?v=27" defer></script>
 </head>
 <body class="accueil">
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -32,13 +32,13 @@
   </svg>
 
   <header class="bar bar--flottante">
-    <a class="bar-logo" href="index.html"><img src="../assets/img/logo-lyze.png" alt="Lyze Conciergerie" width="599" height="200"></a>
+    <a class="bar-logo" href="index.html"><img src="../assets/img/logo-lyze.png" alt="Lyze Conciergerie" width="599" height="200"><span class="bar-sous">إدارة الكراء</span></a>
     <nav class="bar-nav" aria-label="التنقل">
       <a href="index.html" aria-current="page">الرئيسية</a>
       <a href="#simulateur">الملاك</a>
       <a href="#contact">اتصل بنا</a>
-      <a href="faq.html">الأسئلة الشائعة</a>
       <a href="histoire.html">قصتنا</a>
+      <a href="faq.html">الأسئلة الشائعة</a>
     </nav>
     <a class="lien-langue" href="../index.html" lang="fr" hreflang="fr">Français</a>
     <a class="lien-langue" href="../en/index.html" lang="en" hreflang="en">English</a>
@@ -50,9 +50,9 @@
     <button class="menu-fermer" type="button" data-ferme-menu>إغلاق</button>
     <a href="index.html">الرئيسية</a>
     <a href="#simulateur">الملاك</a>
-    <a href="faq.html">الأسئلة الشائعة</a>
     <a href="#contact">اتصل بنا</a>
     <a href="histoire.html">قصتنا</a>
+    <a href="faq.html">الأسئلة الشائعة</a>
     <a class="lien-langue" href="../index.html" lang="fr" hreflang="fr">Français</a>
     <a class="lien-langue" href="../en/index.html" lang="en" hreflang="en">English</a>
     <a class="lien-proprio" href="/connexion">فضاء المالك ←</a>
@@ -70,11 +70,7 @@
         </div>
         <div class="hero-points" data-diaporama-points></div>
         <div class="hero-contenu">
-          <h1>عقارك في أيدٍ أمينة.</h1>
-          <p class="hero-texte">خدمة الكونسيرج وإدارة الكراء في الجديدة والدار البيضاء ومراكش.</p>
-          <div class="hero-actions">
-            <a class="btn btn--plein" href="#simulateur">قدّر مداخيلك</a>
-          </div>
+          <h1>الثقة تجمعنا، والتميّز يميّزنا.</h1>
         </div>
       </div>
 
@@ -86,7 +82,7 @@
 
       <div class="nos-biens" id="biens" data-carrousel data-auto>
         <div class="biens-ligne">
-          <h2>عقاراتنا</h2>
+          <h2>العقارات التي نديرها</h2>
           <div class="carrousel-fleches">
             <button type="button" data-prec aria-label="العقارات السابقة"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
             <button type="button" data-suiv aria-label="العقارات التالية"><svg aria-hidden="true" style="transform:scaleX(-1)"><use href="#i-fleche"/></svg></button>
@@ -124,14 +120,13 @@
       <div class="proprio-texte">
         <span class="eyebrow eyebrow--brique">الملاك</span>
         <h2 id="titre-proprio">عقارك مؤجَّر،<br>دون أن تنشغل به.</h2>
-        <ol class="etapes">
-          <li><h3>أول لقاء</h3><p>تقدّم لنا عقارك، ونقدّر مداخيله.</p></li>
-          <li><h3>العرض على المنصات</h3><p>إعلانات على Airbnb وBooking، بأسعار مضبوطة.</p></li>
-          <li><h3>الإدارة اليومية</h3><p>الاستقبال والتنظيف والصيانة. تتابع الحجوزات والمداخيل في فضاء المالك.</p></li>
-        </ol>
-        <div class="proprio-actions">
-          <a class="btn btn--plein" href="#contact">اطلب اتصالًا</a>
-          <a class="lien-espace" href="/connexion">مالك بالفعل؟ فضائي ←</a>
+        <h3 class="etapes-titre">مرافقتنا في 5 مراحل</h3>
+        <div class="etapes-accordeon">
+          <details name="etapes" open><summary><span class="num">01</span><span class="etape-titre">أول لقاء – لنتعارف</span><svg class="chevron" aria-hidden="true" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" d="M6 9l6 6 6-6"/></svg></summary><p>مكالمة هاتفية دون أي التزام لفهم توقعاتك، والتعرّف على عقارك، وتحديد أهدافك معًا.</p></details>
+          <details name="etapes"><summary><span class="num">02</span><span class="etape-titre">زيارة عقارك وتقييمه</span><svg class="chevron" aria-hidden="true" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" d="M6 9l6 6 6-6"/></svg></summary><p>نزور عقارك لتقييم إمكاناته الكرائية. وإن لزم الأمر، نقترح عليك تحسينات محدّدة لتثمين عقارك وزيادة جاذبيته.</p></details>
+          <details name="etapes"><summary><span class="num">03</span><span class="etape-titre">عرض مخصّص وتوقيع العقد</span><svg class="chevron" aria-hidden="true" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" d="M6 9l6 6 6-6"/></svg></summary><p>نقدّم لك عرض إدارة واضحًا ومناسبًا لاحتياجاتك. وبعد موافقتك، نوثّق تعاوننا بتوقيع عقد شفّاف.</p></details>
+          <details name="etapes"><summary><span class="num">04</span><span class="etape-titre">إبراز العقار وعرضه على المنصات</span><svg class="chevron" aria-hidden="true" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" d="M6 9l6 6 6-6"/></svg></summary><p>نجهّز عقارك للكراء، وننشئ إعلانات جذابة، ونتولى نشرها على منصات الحجز المناسبة لعقارك.</p></details>
+          <details name="etapes"><summary><span class="num">05</span><span class="etape-titre">إدارة شاملة وتحسين المداخيل</span><svg class="chevron" aria-hidden="true" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" d="M6 9l6 6 6-6"/></svg></summary><p>نتكفّل بالإدارة اليومية لكرائك: الحجوزات، واستقبال الضيوف، ومتابعة الإقامات، والصيانة، وتنسيق الخدمات. ونعدّل استراتيجيتنا السعرية بانتظام لتحسين نسبة الإشغال ومداخيلك الكرائية.</p></details>
         </div>
       </div>
       <div class="proprio-visuel">
@@ -153,34 +148,56 @@
           <fieldset>
             <legend>المنصة</legend>
             <div class="plats">
-              <label class="plat"><input type="radio" name="plateforme" data-nom="Airbnb" data-taux="15.5" checked><img src="../assets/img/plateformes/airbnb.svg" alt=""><b>Airbnb</b><small>15,5 %</small></label>
-              <label class="plat"><input type="radio" name="plateforme" data-nom="Booking" data-taux="15"><img src="../assets/img/plateformes/booking.svg" alt=""><b>Booking</b><small>15 %</small></label>
+              <label class="plat"><input type="radio" name="plateforme" data-nom="Airbnb" data-taux="18" checked><img src="../assets/img/plateformes/airbnb.svg" alt=""><b>Airbnb</b><small>18٪</small></label>
+              <label class="plat"><input type="radio" name="plateforme" data-nom="Booking" data-taux="20"><img src="../assets/img/plateformes/booking.svg" alt=""><b>Booking</b><small>20٪</small></label>
               <label class="plat"><input type="radio" name="plateforme" data-nom="Expedia" data-taux="15"><img src="../assets/img/plateformes/expedia.svg" alt=""><b>Expedia</b><small>15 %</small></label>
             </div>
           </fieldset>
           <ul class="resultats" data-resultats aria-live="polite"></ul>
-          <p class="note-calcul">تُحتسب عمولة Lyze Conciergerie بنسبة 20٪ بعد خصم عمولة المنصة. نسب تقريبية.</p>
+          <p class="note-calcul">تُحتسب عمولة Lyze Conciergerie بنسبة 20٪ بعد خصم عمولة المنصة. نسب تقريبية. ستتواصل معك بركة عبر واتساب خلال 24 ساعة.</p>
         </form>
       </div>
     </section>
+
+    <section class="interlocutrice wrap" id="barka" aria-labelledby="titre-barka">
+      <figure class="interlocutrice-photo"><span>[صورة بركة]</span></figure>
+      <div class="interlocutrice-texte">
+        <span class="eyebrow eyebrow--brique">محاورتك</span>
+        <blockquote>«لأن وراء كل مسكن مالكًا وقصة وثقة تُكتسب.»</blockquote>
+        <h2 id="titre-barka">Barka</h2>
+        <p class="interlocutrice-role">المؤسِّسة · Lyze Conciergerie</p>
+        <ul class="interlocutrice-tags"><li>ردّ خلال 24 ساعة</li><li>عبر واتساب</li><li>الجديدة · الدار البيضاء · مراكش</li></ul>
+        <p class="interlocutrice-reseaux">
+          <a href="https://www.instagram.com/lyze.conciergerie/" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-ig"/></svg>@lyze.conciergerie</a>
+          <a href="https://www.tiktok.com/@lyze.conciergerie" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-tt"/></svg>@lyze.conciergerie</a>
+        </p>
+      </div>
+    </section>
+
+    <section class="zones wrap" id="zones" aria-labelledby="titre-zones">
+      <span class="eyebrow eyebrow--brique">مناطق تدخّلنا</span>
+      <h2 id="titre-zones">حيث ندير عقارك</h2>
+      <ul class="zones-liste"><li><svg aria-hidden="true" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></g></svg><strong>الجديدة</strong><small>الساحل الأطلسي</small></li><li><svg aria-hidden="true" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></g></svg><strong>الدار البيضاء</strong><small>المدينة والكورنيش</small></li><li><svg aria-hidden="true" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></g></svg><strong>مراكش</strong><small>المدينة العتيقة والنخيل</small></li></ul>
+    </section>
+
 
     <!-- الشاشة 3 -->
     <section class="questions-contact wrap" id="contact" data-ecran="اتصل بنا">
       <div class="contact">
         <figure class="contact-photo"><img class="photo" src="https://images.unsplash.com/photo-1628642004970-1da51c8c7dec?w=1400&q=80&auto=format&fit=crop" alt="فناء رياض مهيأ للضيوف" loading="lazy"></figure>
         <h2>لنتحدث عن عقارك</h2>
-        <p class="coordonnees">اترك معلوماتك وسنتصل بك عبر واتساب. دون أي التزام.</p>
+        <p class="coordonnees">املأ الاستمارة، وستتواصل معك بركة عبر واتساب خلال 24 ساعة لأول لقاء دون أي التزام.</p>
         <form class="contact-form" data-contact novalidate>
           <label><span>الاسم</span><input name="nom" required maxlength="120" autocomplete="name"></label>
           <label><span>البريد الإلكتروني</span><input name="email" type="email" required maxlength="200" autocomplete="email" dir="ltr"></label>
           <label class="plein"><span>الهاتف (واتساب)</span>
             <span class="tel-groupe">
-              <select name="indicatif" data-indicatifs aria-label="رمز البلد"><option value="+212">المغرب (+212)</option></select>
+              <img class="drapeau" src="../assets/img/drapeaux/ma.svg" alt="" width="24" height="18" data-drapeau><select name="indicatif" data-indicatifs aria-label="رمز البلد"><option value="+212">المغرب (+212)</option></select>
               <input name="telephone" type="tel" maxlength="30" autocomplete="tel-national" aria-label="رقم الهاتف">
             </span>
           </label>
           <label><span>مدينة العقار</span>
-            <select name="ville" required><option value="" disabled selected>اختر</option><option value="El Jadida">الجديدة</option><option value="Casablanca">الدار البيضاء</option><option value="Marrakech">مراكش</option><option value="Autre ville">مدينة أخرى</option></select>
+            <select name="ville" required><option value="" disabled selected>اختر</option><option value="El Jadida">الجديدة</option><option value="Casablanca">الدار البيضاء</option><option value="Marrakech">مراكش</option><option value="Autre ville">مدينة أخرى</option></select><input class="ville-autre" name="ville_autre" maxlength="60" placeholder="مدينتك" aria-label="مدينتك" hidden>
           </label>
           <label><span>هل العقار مفروش؟</span>
             <select name="meuble" required><option value="" disabled selected>اختر</option><option value="Oui">نعم</option><option value="Non">لا</option><option value="En partie">جزئيًا</option></select>
