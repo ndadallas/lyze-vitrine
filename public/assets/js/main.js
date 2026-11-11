@@ -333,16 +333,62 @@
       var enTete = ['MA', 'FR'].map(function (iso) { return lignes.find(function (l) { return l.iso === iso; }); });
       var option = function (l) { return '<option value="' + l.tel + '" data-iso="' + l.iso.toLowerCase() + '">' + l.nom + ' (' + l.tel + ')</option>'; };
       var html = enTete.map(option).join('') + '<option disabled>──────────</option>' + lignes.map(option).join('');
-      selectsIndicatif.forEach(function (s) {
-        s.innerHTML = html; s.selectedIndex = 0;
-        // drapeau du pays choisi, à gauche de l'indicatif (les <option> natives ne peuvent pas afficher d'image)
-        var drapeau = s.parentNode.querySelector('[data-drapeau]');
-        if (drapeau) s.addEventListener('change', function () {
-          var iso = s.selectedOptions[0] && s.selectedOptions[0].dataset.iso;
-          if (iso) drapeau.src = drapeau.src.replace(/[a-z]+\.svg$/, iso + '.svg');
-        });
-      });
+      selectsIndicatif.forEach(function (s) { s.innerHTML = html; s.selectedIndex = 0; listeAvecDrapeaux(s); });
     }).catch(function () { /* la liste par défaut (+212) reste dans le HTML */ });
+  }
+
+  /* Liste des pays avec drapeaux : les <option> natives ne peuvent pas afficher d'image, donc liste maison ;
+     le <select> reste dans le formulaire (caché) et porte la valeur envoyée. */
+  function listeAvecDrapeaux(select) {
+    var drapeau = function (iso) { return new URL('../img/drapeaux/' + iso + '.svg', ici).href; };
+    var opts = [].slice.call(select.options);
+    var boite = document.createElement('div');
+    boite.className = 'pays-choix';
+    boite.innerHTML = '<button type="button" class="pays-bouton" aria-haspopup="listbox" aria-expanded="false">'
+      + '<img alt="" width="24" height="18"><span></span><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M6 9l6 6 6-6"/></svg></button>'
+      + '<ul class="pays-liste" role="listbox" tabindex="-1" hidden></ul>';
+    var bouton = boite.querySelector('button'), liste = boite.querySelector('ul');
+    bouton.setAttribute('aria-label', select.getAttribute('aria-label') || '');
+    liste.innerHTML = opts.map(function (o, i) {
+      if (o.disabled) return '<li class="pays-sep" role="separator"></li>';
+      return '<li role="option" data-i="' + i + '" tabindex="-1"><img src="' + drapeau(o.dataset.iso) + '" alt="" width="24" height="18" loading="lazy"><span>' + o.textContent + '</span></li>';
+    }).join('');
+    var items = [].slice.call(liste.querySelectorAll('[role="option"]'));
+    var afficher = function () {
+      var o = select.options[select.selectedIndex];
+      bouton.querySelector('img').src = drapeau(o.dataset.iso);
+      bouton.querySelector('span').textContent = o.value;
+      items.forEach(function (li) { li.setAttribute('aria-selected', String(+li.dataset.i === select.selectedIndex)); });
+    };
+    var ouvrir = function (oui) {
+      liste.hidden = !oui; bouton.setAttribute('aria-expanded', String(oui));
+      if (oui) { var sel = liste.querySelector('[aria-selected="true"]') || items[0]; sel.focus(); sel.scrollIntoView({ block: 'nearest' }); }
+    };
+    var choisir = function (li) {
+      select.selectedIndex = +li.dataset.i;
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+      afficher(); ouvrir(false); bouton.focus();
+    };
+    bouton.addEventListener('click', function () { ouvrir(liste.hidden); });
+    // preventDefault : la liste est dans un <label>, qui renverrait sinon le clic au bouton (liste rouverte)
+    liste.addEventListener('click', function (e) { e.preventDefault(); var li = e.target.closest('[role="option"]'); if (li) choisir(li); });
+    var recherche = '', minuterie;
+    liste.addEventListener('keydown', function (e) {
+      var i = items.indexOf(document.activeElement);
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); var n = items[Math.min(items.length - 1, Math.max(0, i + (e.key === 'ArrowDown' ? 1 : -1)))]; n.focus(); n.scrollIntoView({ block: 'nearest' }); }
+      else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (i >= 0) choisir(items[i]); }
+      else if (e.key === 'Escape' || e.key === 'Tab') { ouvrir(false); if (e.key === 'Escape') bouton.focus(); }
+      else if (e.key.length === 1) { // taper les premières lettres d'un pays
+        recherche += e.key.toLowerCase(); clearTimeout(minuterie); minuterie = setTimeout(function () { recherche = ''; }, 700);
+        var t = items.slice(2).find(function (li) { return li.textContent.toLowerCase().indexOf(recherche) === 0; });
+        if (t) { t.focus(); t.scrollIntoView({ block: 'nearest' }); }
+      }
+    });
+    document.addEventListener('click', function (e) { if (!boite.contains(e.target)) ouvrir(false); });
+    select.classList.add('pays-natif');
+    select.tabIndex = -1;
+    select.parentNode.insertBefore(boite, select);
+    afficher();
   }
 
   /* Formulaire de contact : envoi par /api/contact (site hébergé), sinon repli sur la messagerie */

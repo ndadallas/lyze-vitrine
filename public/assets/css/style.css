@@ -1326,10 +1326,21 @@ html[lang="ar"] .interlocutrice-role, html[lang="ar"] .interlocutrice-tags li { 
 .questions-contact .coordonnees { margin-top: 4px; }
 .questions-contact .contact h2 { margin-bottom: 0; }
 .contact-form .ville-autre { margin-top: 10px; }
-.tel-groupe:has(.drapeau) { grid-template-columns: 24px minmax(0, 170px) 1fr; align-items: center; }
-.champ .tel-groupe .drapeau { margin-inline-end: 10px; }
-@media (max-width: 760px) { .tel-groupe:has(.drapeau) { grid-template-columns: 24px minmax(0, 120px) 1fr; } }
-.tel-groupe .drapeau { flex: none; width: 24px; height: 18px; object-fit: cover; border-radius: 2px; box-shadow: 0 0 0 1px rgba(74, 52, 38, .15); }
+/* Indicatif : liste maison avec drapeaux (le <select> reste caché dans le formulaire) */
+.tel-groupe:has(.pays-choix) { grid-template-columns: auto minmax(0, 1fr); }
+.pays-natif { position: absolute !important; width: 1px !important; height: 1px !important; opacity: 0; pointer-events: none; }
+.pays-choix { position: relative; }
+.pays-bouton { display: flex; align-items: center; gap: 8px; height: 100%; min-height: 48px; padding: 0 12px; border: 1px solid rgba(74, 52, 38, .25); background: #fff; color: var(--brunF); font: inherit; font-size: 15px; cursor: pointer; white-space: nowrap; }
+.pays-bouton:focus-visible, .pays-bouton[aria-expanded="true"] { border-color: var(--brique); outline: none; }
+.pays-bouton svg { width: 14px; height: 14px; color: var(--brique); }
+.pays-choix img { flex: none; width: 24px; height: 18px; object-fit: cover; border-radius: 2px; box-shadow: 0 0 0 1px rgba(74, 52, 38, .15); }
+.pays-liste { position: absolute; z-index: 30; top: calc(100% + 4px); inset-inline-start: 0; width: min(320px, 86vw); max-height: 300px; overflow-y: auto; margin: 0; padding: 6px 0; list-style: none; background: #fff; border: 1px solid rgba(74, 52, 38, .2); box-shadow: 0 12px 32px rgba(74, 52, 38, .18); text-transform: none; letter-spacing: 0; }
+.pays-liste [role="option"] { display: flex; align-items: center; gap: 10px; padding: 9px 14px; font-size: 14px; color: var(--brunF); cursor: pointer; outline: none; }
+.pays-liste [role="option"]:hover, .pays-liste [role="option"]:focus { background: var(--sable); }
+.pays-liste [aria-selected="true"] { font-weight: 600; }
+.pays-sep { height: 1px; margin: 6px 0; background: rgba(74, 52, 38, .15); }
+.champ .pays-bouton { border: 0; border-bottom: 1px solid rgba(43, 29, 21, .3); background: none; padding-inline: 0 14px; min-height: 52px; }
+.champ .tel-groupe:has(.pays-choix) { column-gap: 0; }
 
 @media (max-width: 860px) {
   .interlocutrice { grid-template-columns: minmax(0, 1fr); }
@@ -1339,3 +1350,7 @@ html[lang="ar"] .interlocutrice-role, html[lang="ar"] .interlocutrice-tags li { 
   .zones-liste li + li { border-inline-start: 0; border-top: 1px solid rgba(74, 52, 38, .15); }
   .zones-liste li { padding: 20px; }
 }
+/* la règle « .champ span » (libellés) ne doit pas toucher la liste des pays */
+.champ .pays-choix span { display: inline; font-size: inherit; font-weight: inherit; letter-spacing: 0; text-transform: none; color: inherit; }
+.champ .pays-bouton { font-size: 15px; color: var(--brunF); }
+.contact-form .pays-liste, .champ .pays-liste { font-weight: 400; }
