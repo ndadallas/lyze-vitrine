@@ -12,6 +12,7 @@ const ContactSchema = z.object({
   message: z.string().trim().max(5000).optional(),
   site: z.string().max(200).optional(), // piège à robots : doit rester vide
   langue: z.enum(["fr", "en", "ar"]).optional(),
+  type: z.enum(["rappel", "reservation"]).optional(), // réservation = demande d'un voyageur depuis une fiche bien
 });
 
 // shortcut: limite en mémoire par instance (best effort en serverless) ; passer à un store partagé si spam réel.
@@ -41,8 +42,8 @@ export async function POST(req: Request) {
     `Nom : ${d.nom}`,
     `E-mail : ${d.email}`,
     `Téléphone : ${d.telephone || "—"}`,
-    `Ville du bien : ${d.ville || "—"}`,
-    `Meublé : ${d.meuble || "—"}`,
+    `${d.type === "reservation" ? "Bien" : "Ville du bien"} : ${d.ville || "—"}`,
+    ...(d.type === "reservation" ? [] : [`Meublé : ${d.meuble || "—"}`]),
     `Langue du site : ${{ ar: "arabe", en: "anglais", fr: "français" }[d.langue ?? "fr"]}`,
     "",
     d.message || "(pas de message)",
@@ -55,7 +56,7 @@ export async function POST(req: Request) {
       from: process.env.CONTACT_FROM || "Site Lyze <onboarding@resend.dev>",
       to: [process.env.CONTACT_TO || "contact@lyze.ma"],
       reply_to: d.email,
-      subject: `Demande de rappel — ${d.nom}${d.ville ? ` (${d.ville})` : ""}`.slice(0, 150),
+      subject: `${d.type === "reservation" ? "Demande de réservation" : "Demande de rappel"} — ${d.nom}${d.ville ? ` (${d.ville})` : ""}`.slice(0, 150),
       text: texte,
     }),
   }).catch(() => null);

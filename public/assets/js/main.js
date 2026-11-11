@@ -104,21 +104,117 @@
     ? ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     : ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
   var JOURS = arabe ? ['ن', 'ث', 'ر', 'خ', 'ج', 'س', 'ح'] : anglais ? ['M', 'T', 'W', 'T', 'F', 'S', 'S'] : ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
-  document.querySelectorAll('[data-calendrier]').forEach(function (el) {
-    var parts = el.dataset.calendrier.split('-');
-    var an = +parts[0], m = +parts[1] - 1;
-    var pris = (el.dataset.pris || '').split(',').map(Number);
-    var decalage = (new Date(an, m, 1).getDay() + 6) % 7; // lundi = 0
-    var nbJours = new Date(an, m + 1, 0).getDate();
-    var html = '<h3>' + MOIS[m] + ' ' + an + '</h3><div class="jours">';
-    JOURS.forEach(function (j) { html += '<span class="entete">' + j + '</span>'; });
-    for (var i = 0; i < decalage; i++) html += '<span aria-hidden="true"></span>';
-    for (var d = 1; d <= nbJours; d++) {
-      var estPris = pris.indexOf(d) > -1;
-      html += '<span' + (estPris ? ' class="pris" title="' + (arabe ? 'محجوز' : anglais ? 'Unavailable' : 'Indisponible') + '"' : '') + '>' + d + '</span>';
+  /* Fiche bien : calendrier navigable mois par mois + choix arrivée / départ + demande de réservation.
+     data-indispo = séjours déjà pris « arrivée/départ » (départ exclu : ce jour-là reste possible comme départ). */
+  var dispo = document.querySelector('[data-dispo]');
+  if (dispo) {
+    var JOUR = 864e5;
+    var ceJour = new Date();
+    var auj = Date.UTC(ceJour.getFullYear(), ceJour.getMonth(), ceJour.getDate());
+    var lireJour = function (s) { var p = s.split('-'); return Date.UTC(+p[0], +p[1] - 1, +p[2]); };
+    var indispo = (dispo.dataset.indispo || '').split(',').filter(Boolean).map(function (r) { var p = r.split('/'); return [lireJour(p[0]), lireJour(p[1])]; });
+    var nuitPrise = function (t) { return indispo.some(function (r) { return t >= r[0] && t < r[1]; }); };
+    var nuitsLibres = function (a, b) { for (var t = a; t < b; t += JOUR) if (nuitPrise(t)) return false; return true; };
+    var moisMin = Date.UTC(ceJour.getFullYear(), ceJour.getMonth(), 1);
+    var vue = moisMin;
+    var choix = { du: null, au: null };
+    var calPrec = document.querySelector('[data-cal-prec]'), calSuiv = document.querySelector('[data-cal-suiv]');
+    var unSeul = window.matchMedia('(max-width: 760px)');
+    var dateLongue = function (t) { var d = new Date(t), m = MOIS[d.getUTCMonth()]; return d.getUTCDate() + ' ' + (anglais || arabe ? m : m.toLowerCase()) + ' ' + d.getUTCFullYear(); };
+
+    var rendre = function () {
+      var html = '';
+      for (var k = 0; k < (unSeul.matches ? 1 : 2); k++) {
+        var d0 = new Date(vue); d0.setUTCMonth(d0.getUTCMonth() + k);
+        var an = d0.getUTCFullYear(), m = d0.getUTCMonth();
+        var decalage = (d0.getUTCDay() + 6) % 7; // lundi = 0
+        var nb = new Date(Date.UTC(an, m + 1, 0)).getUTCDate();
+        html += '<div class="mois"><h3>' + MOIS[m] + ' ' + an + '</h3><div class="jours">';
+        JOURS.forEach(function (j) { html += '<span class="entete" aria-hidden="true">' + j + '</span>'; });
+        for (var i = 0; i < decalage; i++) html += '<span aria-hidden="true"></span>';
+        for (var j = 1; j <= nb; j++) {
+          var t = Date.UTC(an, m, j), passe = t < auj, pris = !passe && nuitPrise(t);
+          var cls = passe ? ['passe'] : pris ? ['pris'] : [];
+          var dansChoix = choix.du !== null && (t === choix.du || (choix.au !== null && t > choix.du && t <= choix.au));
+          if (dansChoix) cls.push('choisi');
+          if (t === choix.du) cls.push('debut');
+          if (t === choix.au) cls.push('fin');
+          // un jour pris reste cliquable comme jour de DÉPART si toutes les nuits d'avant sont libres
+          var commeDepart = choix.du !== null && choix.au === null && t > choix.du && nuitsLibres(choix.du, t);
+          var cliquable = !passe && (!pris || commeDepart);
+          html += cliquable
+            ? '<button type="button" data-jour="' + t + '" class="' + cls.join(' ') + '" aria-label="' + dateLongue(t) + '"' + (dansChoix ? ' aria-pressed="true"' : '') + '>' + j + '</button>'
+            : '<span class="' + cls.join(' ') + '">' + j + '</span>';
+        }
+        html += '</div></div>';
+      }
+      dispo.innerHTML = html;
+      if (calPrec) calPrec.disabled = vue <= moisMin;
+    };
+
+    dispo.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-jour]'); if (!b) return;
+      var t = +b.dataset.jour;
+      if (choix.du !== null && choix.au === null && t > choix.du && nuitsLibres(choix.du, t)) choix.au = t; // départ
+      else if (!nuitPrise(t)) choix = { du: t, au: null }; // (nouvelle) arrivée
+      rendre(); majCarte();
+      var nouveau = dispo.querySelector('[data-jour="' + t + '"]'); if (nouveau) nouveau.focus();
+    });
+    var decaler = function (n) { var d = new Date(vue); d.setUTCMonth(d.getUTCMonth() + n); vue = Math.max(moisMin, d.getTime()); rendre(); };
+    if (calPrec) calPrec.addEventListener('click', function () { decaler(-1); });
+    if (calSuiv) calSuiv.addEventListener('click', function () { decaler(1); });
+    unSeul.addEventListener('change', rendre);
+
+    /* Carte « Demander à réserver » */
+    var resaForm = document.querySelector('[data-reserver]');
+    var TR = {
+      fr: { dates: 'Choisissez vos dates d’arrivée et de départ dans le calendrier.', ok: 'Merci ! Votre demande est envoyée : Barka vous répond sur WhatsApp sous 24 h.', sujet: 'Demande de réservation', bien: 'Bien', arr: 'Arrivée', dep: 'Départ', nuits: 'Nuits', voy: 'Voyageurs', titre: 'Demande de réservation' },
+      en: { dates: 'Choose your check-in and check-out dates in the calendar.', ok: 'Thank you! Your request has been sent: Barka will reply on WhatsApp within 24 hours.', sujet: 'Booking request', bien: 'Property', arr: 'Check-in', dep: 'Check-out', nuits: 'Nights', voy: 'Guests', titre: 'Booking request' },
+      ar: { dates: 'اختر تاريخَي الوصول والمغادرة من التقويم.', ok: 'شكرًا! تم إرسال طلبك: ستردّ عليك بركة عبر واتساب خلال 24 ساعة.', sujet: 'طلب حجز', bien: 'العقار', arr: 'الوصول', dep: 'المغادرة', nuits: 'الليالي', voy: 'الضيوف', titre: 'طلب حجز' }
+    }[arabe ? 'ar' : anglais ? 'en' : 'fr'];
+    var nbNuits = function () { return choix.au !== null ? Math.round((choix.au - choix.du) / JOUR) : 0; };
+    var majCarte = function () {
+      if (!resaForm) return;
+      resaForm.querySelector('[data-arrivee]').textContent = choix.du !== null ? dateLongue(choix.du) : '—';
+      resaForm.querySelector('[data-depart]').textContent = choix.au !== null ? dateLongue(choix.au) : '—';
+      resaForm.querySelector('[data-nuits]').textContent = nbNuits() || '—';
+      var prix = parseFloat(resaForm.dataset.prix); // vide tant que Lyze n'a pas donné le prix
+      var ligneTotal = resaForm.querySelector('[data-total-ligne]');
+      ligneTotal.hidden = !(prix > 0 && nbNuits());
+      if (!ligneTotal.hidden) resaForm.querySelector('[data-total]').textContent = new Intl.NumberFormat(arabe ? 'ar-MA' : anglais ? 'en-GB' : 'fr-FR').format(prix * nbNuits()) + ' MAD';
+    };
+    if (resaForm) {
+      var etatResa = resaForm.querySelector('.etat'), boutonResa = resaForm.querySelector('button[type="submit"]');
+      var dire = function (texte, classe) { etatResa.textContent = texte; etatResa.className = 'etat ' + (classe || ''); };
+      resaForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!nbNuits()) { dire(TR.dates, 'erreur'); dispo.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+        if (!resaForm.reportValidity()) return;
+        var f = new FormData(resaForm);
+        var details = TR.titre + '\n' + TR.bien + ' : ' + resaForm.dataset.bien + '\n' + TR.arr + ' : ' + dateLongue(choix.du) + '\n' + TR.dep + ' : ' + dateLongue(choix.au)
+          + '\n' + TR.nuits + ' : ' + nbNuits() + '\n' + TR.voy + ' : ' + f.get('voyageurs');
+        var donnees = {
+          nom: String(f.get('nom') || '').trim(), email: String(f.get('email') || '').trim(), telephone: String(f.get('telephone') || '').trim(),
+          ville: resaForm.dataset.bien.slice(0, 60), message: details, site: String(f.get('site') || ''), langue: arabe ? 'ar' : anglais ? 'en' : 'fr', type: 'reservation'
+        };
+        var repli = function () {
+          dire(T[donnees.langue].repli);
+          window.location.href = 'mailto:contact@lyze.ma?subject=' + encodeURIComponent(TR.sujet) + '&body=' + encodeURIComponent(details + '\n\n' + donnees.nom + '\n' + donnees.email + '\n' + donnees.telephone);
+        };
+        boutonResa.disabled = true;
+        dire(T[donnees.langue].envoi);
+        fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(donnees) })
+          .then(function (r) {
+            if (r.ok) { resaForm.reset(); choix = { du: null, au: null }; rendre(); majCarte(); dire(TR.ok, 'ok'); }
+            else if (r.status === 400) dire(T[donnees.langue].invalide, 'erreur');
+            else repli(); // démo GitHub Pages (404/405) ou mail pas encore branché (503)
+          })
+          .catch(repli)
+          .finally(function () { boutonResa.disabled = false; });
+      });
     }
-    el.innerHTML = html + '</div>';
-  });
+    rendre();
+  }
 
   /* Textes de l'interface selon la langue de la page (fr / en / ar) */
   var lang = arabe ? 'ar' : anglais ? 'en' : 'fr';

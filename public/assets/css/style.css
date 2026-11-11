@@ -1354,3 +1354,30 @@ html[lang="ar"] .interlocutrice-role, html[lang="ar"] .interlocutrice-tags li { 
 .champ .pays-choix span { display: inline; font-size: inherit; font-weight: inherit; letter-spacing: 0; text-transform: none; color: inherit; }
 .champ .pays-bouton { font-size: 15px; color: var(--brunF); }
 .contact-form .pays-liste, .champ .pays-liste { font-weight: 400; }
+
+/* Fiche bien = page voyageur (2026-11-11) : calendrier navigable + demande de réservation */
+.dispo-tete { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.dispo-nav { display: flex; gap: 8px; }
+.dispo-nav button { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid rgba(74, 52, 38, .25); background: none; color: var(--brunF); cursor: pointer; transition: border-color .2s, background .2s; }
+.dispo-nav button:hover:not(:disabled) { border-color: var(--brique); background: #fff; }
+.dispo-nav button:disabled { opacity: .3; cursor: default; }
+.dispo-nav svg { width: 18px; height: 18px; }
+html[lang="ar"] .dispo-nav svg { transform: scaleX(-1); }
+.calendriers[data-dispo] { margin-top: 22px; }
+.mois .jours button { height: 38px; display: grid; place-items: center; font: inherit; font-size: 14px; color: var(--brunF); background: none; border: 1px solid transparent; cursor: pointer; padding: 0; position: relative; }
+.mois .jours button:hover { border-color: var(--brique); }
+.mois .jours button:focus-visible { outline: 2px solid var(--brique); outline-offset: 1px; }
+.mois .jours .passe { color: rgba(122, 106, 90, .35); }
+.mois .jours .choisi { background: rgba(156, 102, 68, .18); color: var(--brunF); }
+.mois .jours .choisi::after { content: none; }
+.mois .jours .debut, .mois .jours .fin { background: var(--brique); color: var(--creme); }
+.aide-dates { margin-top: 18px; font-size: 14px; color: var(--brun); }
+.legende .choisi { background: var(--brique); }
+.carte-resa .prix { font-size: 34px; }
+.carte-resa label input { width: 60%; }
+.carte-resa .note-resa { font-size: 12px; line-height: 1.5; color: var(--brun); margin-top: 12px; text-align: center; }
+.carte-resa .etat { font-size: 14px; margin-top: 10px; }
+.carte-resa .etat.ok { color: var(--vert); }
+.carte-resa .etat.erreur { color: var(--brique); }
+.carte-resa .piege { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.carte-resa [hidden] { display: none; }
