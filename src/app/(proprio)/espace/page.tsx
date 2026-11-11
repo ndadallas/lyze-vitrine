@@ -51,6 +51,8 @@ export default async function EspacePage() {
       nom={`${user.firstName} ${user.lastName}`}
       aujourdhui={toDayString(now)}
       biens={biens}
+      // LYZE_WHATSAPP = numéro international sans + (ex. 212612345678) ; sans lui, le bouton mène au formulaire de contact
+      contact={process.env.LYZE_WHATSAPP ? `https://wa.me/${process.env.LYZE_WHATSAPP.replace(/\D/g, "")}` : "/#contact"}
       compte={{
         identifiant: user.username,
         phone: user.phone ?? "",

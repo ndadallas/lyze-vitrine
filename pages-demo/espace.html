@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;400&family=Gloock&family=Instrument+Sans:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css?v=26">
-  <link rel="stylesheet" href="assets/css/espace.css?v=23">
+  <link rel="stylesheet" href="assets/css/espace.css?v=24">
   <script src="assets/js/espace.js?v=22" defer></script>
   <script src="assets/js/main.js?v=26" defer></script>
 </head>
@@ -27,11 +27,13 @@
       <nav aria-label="Espace propriétaire">
         <a href="#haut" aria-current="location">Mes biens</a>
         <a href="#calendrier">Calendrier</a>
+        <a href="#releve">Revenus</a>
         <a href="#photos">Photos</a>
         <a href="#revenus">Simulateur</a>
         <a href="#compte">Mon compte</a>
       </nav>
       <div class="bas">
+        <a class="contacter" href="index.html#contact"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M4 5h16v11H9l-5 4z"/></svg>Contacter Lyze</a>
         <span>Connecté·e : <strong>[Prénom Nom]</strong></span>
         <a href="index.html">Se déconnecter</a>
       </div>
@@ -77,6 +79,39 @@
 
         <section class="panneau detail" aria-live="polite" data-detail></section>
       </div>
+
+      <section class="panneau revenus" id="releve">
+        <span class="eyebrow eyebrow--brique">Revenus</span>
+        <h2>Vos revenus</h2>
+        <p class="aide-p">Montants nets qui vous reviennent, après frais de plateforme et commission Lyze Conciergerie.</p>
+        <div class="revenus-chiffres">
+          <div><span>Depuis septembre 2026</span><strong>[montant] MAD</strong></div>
+          <div><span>Nuits réservées</span><strong>46</strong></div>
+          <div><span>Ce mois-ci</span><strong>[montant] MAD</strong></div>
+        </div>
+        <div class="revenus-grille">
+          <div>
+            <span class="titre-p">Relevé mois par mois</span>
+            <table class="releve">
+              <thead><tr><th scope="col">Mois</th><th scope="col">Nuits</th><th scope="col">Occupation</th><th scope="col">Montant net</th></tr></thead>
+              <tbody>
+              <tr><th scope="row">Novembre 2026 <small>en cours</small></th><td>23</td><td>26 %</td><td>[montant] MAD</td></tr>
+              <tr><th scope="row">Octobre 2026</th><td>9</td><td>10 %</td><td>[montant] MAD</td></tr>
+              <tr><th scope="row">Septembre 2026</th><td>14</td><td>16 %</td><td>[montant] MAD</td></tr>
+              </tbody>
+              <tfoot><tr><th scope="row">Total</th><td>46</td><td></td><td>[montant] MAD</td></tr></tfoot>
+            </table>
+          </div>
+          <div>
+            <span class="titre-p">Prochaines arrivées</span>
+            <ul class="arrivees">
+              <li><span class="arrivee-date">14 nov.</span><span><strong>Villa [Nom]</strong><small>Voyageur M. · 5 nuits</small></span><span></span><span class="arrivee-montant">[montant] MAD</span></li>
+              <li><span class="arrivee-date">20 nov.</span><span><strong>Appart. [Nom]</strong><small>Voyageur N. · 3 nuits</small></span><span></span><span class="arrivee-montant">[montant] MAD</span></li>
+              <li><span class="arrivee-date">27 nov.</span><span><strong>Riad [Nom]</strong><small>Voyageur T. · 7 nuits</small></span><span></span><span class="arrivee-montant">[montant] MAD</span></li>
+            </ul>
+          </div>
+        </div>
+      </section>
 
       <section class="panneau photos" id="photos">
         <span class="eyebrow eyebrow--brique">Photos</span>

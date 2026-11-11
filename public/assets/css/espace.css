@@ -263,3 +263,42 @@ button.jour { cursor: pointer; }
 .legende-app .l-brique { background: var(--vert); }
 .legende-app .l-vert { background: #2F4A2C; }
 .legende-app .l-libre { background: var(--brique); border: 0; }
+
+/* Revenus (2026-11-11) : relevé 12 mois + prochaines arrivées ; bouton « Contacter Lyze » */
+.revenus { margin-top: 56px; padding: clamp(24px, 3vw, 44px); }
+.revenus h2 { font-family: var(--f-titre); font-weight: 400; font-size: clamp(30px, 3.4vw, 48px); line-height: 1.05; margin-top: 12px; }
+.revenus > .aide-p { font-size: 14px; margin-top: 10px; max-width: 620px; }
+.revenus-filtre { margin-top: 24px; width: max-content; max-width: 100%; }
+.revenus-chiffres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 28px; }
+.revenus-chiffres div { border-top: 1px solid rgba(74, 52, 38, .18); padding-top: 14px; }
+.revenus-chiffres span { display: block; font-size: 13px; color: var(--gris); }
+.revenus-chiffres strong { font-family: var(--f-titre); font-weight: 400; font-size: clamp(24px, 2.6vw, 36px); }
+.revenus-grille { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: clamp(28px, 4vw, 56px); margin-top: 40px; }
+.releve { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+.releve th, .releve td { padding: 10px 8px; text-align: right; border-bottom: 1px solid rgba(74, 52, 38, .12); font-weight: 400; white-space: nowrap; }
+.releve th:first-child { text-align: left; padding-left: 0; }
+.releve thead th { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--gris); }
+.releve tbody th small { font-size: 11px; color: var(--brique); margin-left: 4px; }
+.releve tfoot th, .releve tfoot td { font-weight: 600; border-bottom: 0; border-top: 2px solid var(--brunF); }
+.arrivees { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 4px; }
+.arrivees li { display: grid; grid-template-columns: 76px minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(74, 52, 38, .12); }
+.arrivee-date { font-family: var(--f-titre); font-size: 20px; white-space: nowrap; }
+.arrivees strong { display: block; font-size: 15px; font-weight: 500; }
+.arrivees small { font-size: 12px; color: var(--gris); }
+.arrivee-montant { font-size: 14px; font-weight: 500; white-space: nowrap; }
+.side .bas .contacter { display: inline-flex; align-items: center; gap: 8px; justify-content: center; padding: 11px 14px; border: 1px solid rgba(246, 240, 228, .45); color: var(--creme); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px; transition: background .25s; }
+.side .bas .contacter:hover { background: rgba(246, 240, 228, .1); }
+@media (max-width: 900px) {
+  .side nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .side .bas .contacter { margin: 0; padding: 8px 10px; font-size: 10px; }
+  .revenus-grille { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 520px) {
+  .revenus-chiffres { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .revenus-chiffres div:first-child { grid-column: 1 / -1; }
+  .revenus-chiffres strong { font-size: 24px; white-space: nowrap; }
+  .releve th, .releve td { padding: 9px 4px; font-size: 13px; }
+  .releve th:nth-child(3), .releve td:nth-child(3) { display: none; }
+  .arrivees li { grid-template-columns: 52px minmax(0, 1fr) auto; }
+  .arrivees li .plateforme { display: none; }
+}

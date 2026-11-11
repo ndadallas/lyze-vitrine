@@ -18,7 +18,7 @@ export default function ProprioLayout({ children }: { children: React.ReactNode 
           rel="stylesheet"
         />
         <link rel="stylesheet" href="/assets/css/style.css?v=26" />
-        <link rel="stylesheet" href="/assets/css/espace.css?v=23" />
+        <link rel="stylesheet" href="/assets/css/espace.css?v=24" />
       </head>
       <body>{children}</body>
     </html>

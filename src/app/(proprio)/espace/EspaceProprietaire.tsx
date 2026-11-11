@@ -8,6 +8,7 @@ import { DAY_MS, daysInMonth, formatMAD, monthStart, parseDay } from "@/lib/date
 import { monthStats, nights } from "@/lib/stats";
 import { LogoPlateforme, PLATEFORMES, type Plateforme } from "@/lib/plateformes";
 import { MonCompte, type CompteEspace } from "./MonCompte";
+import { Revenus } from "./Revenus";
 
 export type ResaEspace = {
   id: string;
@@ -27,7 +28,7 @@ export type BienEspace = {
   resas: ResaEspace[];
 };
 
-type Props = { nom: string; aujourdhui: string; biens: BienEspace[]; compte: CompteEspace };
+type Props = { nom: string; aujourdhui: string; biens: BienEspace[]; compte: CompteEspace; contact: string };
 
 const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
 const MOIS_COURT = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
@@ -80,12 +81,13 @@ function IconeCoche(props: React.SVGProps<SVGSVGElement>) {
 const ONGLETS = [
   ["haut", "Mes biens"],
   ["calendrier", "Calendrier"],
+  ["releve", "Revenus"],
   ["photos", "Photos"],
   ["revenus", "Simulateur"],
   ["compte", "Mon compte"],
 ] as const;
 
-export function EspaceProprietaire({ nom, aujourdhui, biens, compte }: Props) {
+export function EspaceProprietaire({ nom, aujourdhui, biens, compte, contact }: Props) {
   // Onglet souligné = section visible à l'écran (et pas seulement la page)
   const [onglet, setOnglet] = useState<string>("haut");
   useEffect(() => {
@@ -140,6 +142,12 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, compte }: Props) {
           ))}
         </nav>
         <div className="bas">
+          <a className="contacter" href={contact} {...(contact.startsWith("https://") ? { target: "_blank", rel: "noopener" } : {})}>
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" d="M4 5h16v11H9l-5 4z" />
+            </svg>
+            Contacter Lyze
+          </a>
           <span>
             Connecté·e : <strong>{nom}</strong>
           </span>
@@ -269,6 +277,8 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, compte }: Props) {
                 )}
               </section>
             </div>
+
+            <Revenus biens={biens} aujourdhui={aujourdhui} />
 
             <section className="panneau photos" id="photos">
               <span className="eyebrow eyebrow--brique">Photos</span>
