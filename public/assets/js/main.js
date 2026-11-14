@@ -543,7 +543,7 @@
       var f = new FormData(contact);
       var tel = String(f.get('telephone') || '').trim();
       var donnees = {
-        nom: String(f.get('nom') || '').trim(),
+        nom: (String(f.get('prenom') || '').trim() + ' ' + String(f.get('nom') || '').trim()).trim(), // prénom + nom envoyés ensemble (API inchangée)
         email: String(f.get('email') || '').trim(),
         telephone: tel ? f.get('indicatif') + ' ' + tel : '',
         ville: f.get('ville') === 'Autre ville' ? String(f.get('ville_autre') || '').trim() : String(f.get('ville') || ''),
