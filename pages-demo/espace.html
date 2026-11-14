@@ -131,23 +131,29 @@
       <section class="panneau simulateur" id="revenus">
         <span class="eyebrow eyebrow--brique">Simulateur de revenus</span>
       <form class="calcul" data-calcul data-commission="20" aria-labelledby="titre-calcul" onsubmit="return false">
-        <h2 class="titre" id="titre-calcul">Combien vous rapporte une nuit&nbsp;?</h2>
+        <h2 class="titre" id="titre-calcul">Estimez vos revenus</h2>
         <label class="calcul-prix">
           <span class="ligne-prix"><span>Prix de la nuit</span>
             <span class="saisie"><input type="number" min="0" max="10000" step="50" value="1200" inputmode="numeric" data-prix-saisie aria-label="Prix de la nuit en dirhams"><small>MAD</small></span>
           </span>
           <input type="range" min="200" max="10000" step="50" value="1200" data-prix aria-label="Curseur du prix de la nuit">
         </label>
+        <label class="calcul-prix">
+          <span class="ligne-prix"><span>Nuits louées par an</span>
+            <span class="saisie"><input type="number" min="0" max="365" step="1" value="120" inputmode="numeric" data-nuits-saisie aria-label="Nombre de nuits louées par an"><small>nuits</small></span>
+          </span>
+          <input type="range" min="1" max="365" step="1" value="120" data-nuits aria-label="Curseur du nombre de nuits louées par an">
+        </label>
         <fieldset>
-          <legend>Plateformes utilisées</legend>
+          <legend>Plateforme</legend>
           <div class="plats">
-            <label class="plat"><input type="checkbox" name="plateforme" data-nom="Airbnb" data-taux="18" data-logo="assets/img/plateformes/airbnb.svg" checked><img src="assets/img/plateformes/airbnb.svg" alt=""><b>Airbnb</b><small>18 %</small></label>
-            <label class="plat"><input type="checkbox" name="plateforme" data-nom="Booking" data-taux="20" data-logo="assets/img/plateformes/booking.svg" checked><img src="assets/img/plateformes/booking.svg" alt=""><b>Booking</b><small>20 %</small></label>
-            <label class="plat"><input type="checkbox" name="plateforme" data-nom="Expedia" data-taux="15" data-logo="assets/img/plateformes/expedia.svg"><img src="assets/img/plateformes/expedia.svg" alt=""><b>Expedia</b><small>15 %</small></label>
+            <label class="plat"><input type="radio" name="plateforme" data-nom="Airbnb" data-taux="18" checked><img src="assets/img/plateformes/airbnb.svg" alt=""><b>Airbnb</b><small>18 %</small></label>
+            <label class="plat"><input type="radio" name="plateforme" data-nom="Booking" data-taux="20"><img src="assets/img/plateformes/booking.svg" alt=""><b>Booking</b><small>20 %</small></label>
+            <label class="plat"><input type="radio" name="plateforme" data-nom="Expedia" data-taux="15"><img src="assets/img/plateformes/expedia.svg" alt=""><b>Expedia</b><small>15 %</small></label>
           </div>
         </fieldset>
         <ul class="resultats" data-resultats aria-live="polite"></ul>
-        <p class="note-calcul">Montant net par nuit pour le propriétaire : frais de la plateforme et commission Lyze Conciergerie de 20 %, tous deux calculés sur le prix total de la nuit. Taux indicatifs, hors frais de ménage et taxe de séjour.</p>
+        <p class="note-calcul">Commissions de la plateforme et de Lyze Conciergerie (20 %) calculées sur le montant total des nuitées. Taux indicatifs, hors frais de ménage et taxe de séjour.</p>
       </form>
       </section>
 

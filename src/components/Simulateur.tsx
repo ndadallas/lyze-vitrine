@@ -11,39 +11,52 @@ type Code = keyof typeof TAUX;
 const CODES = Object.keys(TAUX) as Code[];
 const pct = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
 
-/** Simulateur de revenus : prix de la nuit − frais de la plateforme − commission Lyze (styles .calcul de style.css). */
+/** Simulateur de revenus annuels, identique à celui de la vitrine : prix × nuits − commission plateforme − commission Lyze,
+ *  les deux calculées sur le montant total (demande client 2026-11-11). Styles .calcul de style.css. */
 export function Simulateur() {
   const [prix, setPrix] = useState(1200);
-  const [cochees, setCochees] = useState<Code[]>(["AIRBNB", "BOOKING"]);
-  const basculer = (c: Code) => setCochees((l) => (l.includes(c) ? l.filter((x) => x !== c) : [...l, c]));
+  const [nuits, setNuits] = useState(120);
+  const [plateforme, setPlateforme] = useState<Code>("AIRBNB");
+  const brut = prix * nuits;
+  const frais = (brut * TAUX[plateforme]) / 100;
+  const lyze = (brut * COMMISSION) / 100;
+  const borne = (v: number, min: number, max: number) => Math.min(max, Math.max(min, Math.round(v || 0)));
+  const remplissage = (v: number, min: number, max: number) =>
+    ({ "--pct": `${((borne(v, min, max) - min) / (max - min)) * 100}%` }) as React.CSSProperties;
 
   return (
     <form className="calcul" aria-labelledby="titre-calcul" onSubmit={(e) => e.preventDefault()}>
-      <h2 className="titre" id="titre-calcul">Combien vous rapporte une nuit&nbsp;?</h2>
+      <h2 className="titre" id="titre-calcul">Estimez vos revenus</h2>
       <label className="calcul-prix">
         <span className="ligne-prix">
           <span>Prix de la nuit</span>
           <span className="saisie">
-            <input
-              type="number" min={0} max={10000} step={50} inputMode="numeric" value={prix}
-              aria-label="Prix de la nuit en dirhams"
-              onChange={(e) => setPrix(Math.min(10000, Math.max(0, Math.round(+e.target.value || 0))))}
-            />
+            <input type="number" min={0} max={10000} step={50} inputMode="numeric" value={prix}
+              aria-label="Prix de la nuit en dirhams" onChange={(e) => setPrix(borne(+e.target.value, 0, 10000))} />
             <small>MAD</small>
           </span>
         </span>
-        <input
-          type="range" min={200} max={10000} step={50} value={prix} aria-label="Curseur du prix de la nuit"
-          style={{ "--pct": `${((Math.min(10000, Math.max(200, prix)) - 200) / 9800) * 100}%` } as React.CSSProperties}
-          onChange={(e) => setPrix(+e.target.value)}
-        />
+        <input type="range" min={200} max={10000} step={50} value={prix} aria-label="Curseur du prix de la nuit"
+          style={remplissage(prix, 200, 10000)} onChange={(e) => setPrix(+e.target.value)} />
+      </label>
+      <label className="calcul-prix">
+        <span className="ligne-prix">
+          <span>Nuits louées par an</span>
+          <span className="saisie">
+            <input type="number" min={0} max={365} step={1} inputMode="numeric" value={nuits}
+              aria-label="Nombre de nuits louées par an" onChange={(e) => setNuits(borne(+e.target.value, 0, 365))} />
+            <small>nuits</small>
+          </span>
+        </span>
+        <input type="range" min={1} max={365} step={1} value={nuits} aria-label="Curseur du nombre de nuits louées par an"
+          style={remplissage(nuits, 1, 365)} onChange={(e) => setNuits(+e.target.value)} />
       </label>
       <fieldset>
-        <legend>Plateformes utilisées</legend>
+        <legend>Plateforme</legend>
         <div className="plats">
           {CODES.map((c) => (
             <label className="plat" key={c}>
-              <input type="checkbox" checked={cochees.includes(c)} onChange={() => basculer(c)} />
+              <input type="radio" name="plateforme" checked={plateforme === c} onChange={() => setPlateforme(c)} />
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={PLATEFORMES[c].logo} alt="" />
               <b>{PLATEFORMES[c].nom}</b>
@@ -53,27 +66,19 @@ export function Simulateur() {
         </div>
       </fieldset>
       <ul className="resultats" aria-live="polite">
-        {cochees.length === 0 && <li className="vide">Cochez au moins une plateforme.</li>}
-        {CODES.filter((c) => cochees.includes(c)).map((c) => {
-          const frais = (prix * TAUX[c]) / 100;
-          const lyze = (prix * COMMISSION) / 100; // sur le prix total, comme la plateforme (demande client 2026-11-11)
-          const net = prix - frais - lyze;
-          return (
-            <li key={c}>
-              <div className="tete">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <span><img src={PLATEFORMES[c].logo} alt="" />{PLATEFORMES[c].nom}</span>
-                <strong>{formatMAD(net)}</strong>
-              </div>
-              <p className="detail">
-                {formatMAD(prix)} − {formatMAD(frais)} ({PLATEFORMES[c].nom} {pct(TAUX[c])} %) − {formatMAD(lyze)} (Lyze Conciergerie {COMMISSION} %) = vous touchez {formatMAD(net)}
-              </p>
-            </li>
-          );
-        })}
+        <li className="ligne-annee"><span>Revenus bruts<small>par an</small></span><strong>{formatMAD(brut)}</strong></li>
+        <li className="ligne-annee">
+          <span>Commission {PLATEFORMES[plateforme].nom}<small>{pct(TAUX[plateforme])} % sur les nuitées / an</small></span>
+          <strong>−{formatMAD(frais)}</strong>
+        </li>
+        <li className="ligne-annee">
+          <span>Commission Lyze Conciergerie<small>{COMMISSION} % sur les nuitées / an</small></span>
+          <strong>−{formatMAD(lyze)}</strong>
+        </li>
+        <li className="ligne-annee total"><span>Vous recevez<small>par an</small></span><strong>{formatMAD(brut - frais - lyze)}</strong></li>
       </ul>
       <p className="note-calcul">
-        Montant net par nuit : frais de la plateforme et commission Lyze Conciergerie de {COMMISSION} %, tous deux calculés sur le prix total de la nuit. Taux indicatifs, hors frais de ménage et taxe de séjour.
+        Commissions de la plateforme et de Lyze Conciergerie ({COMMISSION} %) calculées sur le montant total des nuitées. Taux indicatifs, hors frais de ménage et taxe de séjour.
       </p>
     </form>
   );
