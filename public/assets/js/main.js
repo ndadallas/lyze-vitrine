@@ -231,7 +231,7 @@
   var T = {
     fr: {
       photo: 'Photo', devise: 'MAD', aucune: 'Cochez au moins une plateforme.',
-      bruts: 'Revenus bruts', parAn: 'par an', fraisDe: 'Frais', comLyze: 'Commission Lyze Conciergerie', parNuit: 'par nuit', recevez: 'Vous recevez',
+      bruts: 'Revenus bruts', parAn: 'par an', fraisDe: 'Commission', comLyze: 'Commission Lyze Conciergerie', parNuit: 'sur les nuitées / an', recevez: 'Vous recevez',
       vousTouchez: 'vous touchez', envoi: 'Envoi…',
       ok: 'Merci, votre message est bien parti. Nous vous répondons rapidement.',
       invalide: 'Vérifiez les champs du formulaire.',
@@ -248,7 +248,7 @@
     },
     en: {
       photo: 'Photo', devise: 'MAD', aucune: 'Tick at least one platform.',
-      bruts: 'Gross income', parAn: 'per year', fraisDe: 'Fees', comLyze: 'Lyze Conciergerie commission', parNuit: 'per night', recevez: 'You receive',
+      bruts: 'Gross income', parAn: 'per year', fraisDe: 'Commission', comLyze: 'Lyze Conciergerie commission', parNuit: 'of nights / year', recevez: 'You receive',
       vousTouchez: 'you earn', envoi: 'Sending…',
       ok: 'Thank you, your message has been sent. We will get back to you shortly.',
       invalide: 'Please check the form fields.',
@@ -265,7 +265,7 @@
     },
     ar: {
       photo: 'صورة', devise: 'درهم', aucune: 'اختر منصة واحدة على الأقل.',
-      bruts: 'المداخيل الإجمالية', parAn: 'في السنة', fraisDe: 'عمولة', comLyze: 'عمولة Lyze Conciergerie', parNuit: 'لليلة', recevez: 'صافي دخلك',
+      bruts: 'المداخيل الإجمالية', parAn: 'في السنة', fraisDe: 'عمولة', comLyze: 'عمولة Lyze Conciergerie', parNuit: 'من مداخيل الليالي / السنة', recevez: 'صافي دخلك',
       vousTouchez: 'صافي دخلك', envoi: 'جارٍ الإرسال…',
       ok: 'شكرًا، وصلتنا رسالتك. سنتواصل معك قريبًا.',
       invalide: 'يرجى التحقق من حقول الاستمارة.',
@@ -282,7 +282,7 @@
     },
     it: {
       photo: 'Foto', devise: 'MAD', aucune: 'Seleziona almeno una piattaforma.',
-      bruts: 'Ricavi lordi', parAn: 'all’anno', fraisDe: 'Commissione', comLyze: 'Commissione Lyze Conciergerie', parNuit: 'a notte', recevez: 'Ricevi',
+      bruts: 'Ricavi lordi', parAn: 'all’anno', fraisDe: 'Commissione', comLyze: 'Commissione Lyze Conciergerie', parNuit: 'sulle notti / anno', recevez: 'Ricevi',
       vousTouchez: 'ricevi', envoi: 'Invio…',
       ok: 'Grazie, il tuo messaggio è stato inviato. Ti risponderemo al più presto.',
       invalide: 'Controlla i campi del modulo.',
@@ -295,7 +295,7 @@
     },
     es: {
       photo: 'Foto', devise: 'MAD', aucune: 'Marca al menos una plataforma.',
-      bruts: 'Ingresos brutos', parAn: 'al año', fraisDe: 'Comisión', comLyze: 'Comisión Lyze Conciergerie', parNuit: 'por noche', recevez: 'Recibes',
+      bruts: 'Ingresos brutos', parAn: 'al año', fraisDe: 'Comisión', comLyze: 'Comisión Lyze Conciergerie', parNuit: 'sobre las noches / año', recevez: 'Recibes',
       vousTouchez: 'recibes', envoi: 'Enviando…',
       ok: 'Gracias, tu mensaje se ha enviado. Te responderemos lo antes posible.',
       invalide: 'Revisa los campos del formulario.',
@@ -420,8 +420,8 @@
           return '<li class="ligne-annee ' + (classe || '') + '"><span>' + titre + '<small>' + sous + '</small></span><strong>' + val + '</strong></li>';
         };
         liste.innerHTML = ligne(T.bruts, T.parAn, mad(brut))
-          + ligne(T.fraisDe + ' ' + (p ? p.dataset.nom : ''), nombre.format(taux) + ' % · ' + mad(prix * taux / 100) + ' ' + T.parNuit, '−' + mad(frais))
-          + ligne(T.comLyze, nombre.format(commission) + ' % · ' + mad(prix * commission / 100) + ' ' + T.parNuit, '−' + mad(lyze))
+          + ligne(T.fraisDe + ' ' + (p ? p.dataset.nom : ''), nombre.format(taux) + ' % ' + T.parNuit, '−' + mad(frais))
+          + ligne(T.comLyze, nombre.format(commission) + ' % ' + T.parNuit, '−' + mad(lyze))
           + ligne(T.recevez, T.parAn, mad(brut - frais - lyze), 'total');
         return;
       }
