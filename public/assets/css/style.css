@@ -1381,3 +1381,29 @@ html[lang="ar"] .dispo-nav svg { transform: scaleX(-1); }
 .carte-resa .etat.erreur { color: var(--brique); }
 .carte-resa .piege { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .carte-resa [hidden] { display: none; }
+
+/* Retours client 2026-11-14 */
+/* Choix de la langue : 5 langues dans un petit menu déroulant */
+.langues { position: relative; }
+.langues summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; }
+.langues summary::-webkit-details-marker { display: none; }
+.langues summary::after { content: ""; width: 5px; height: 5px; border: solid currentColor; border-width: 0 1.5px 1.5px 0; transform: translateY(-2px) rotate(45deg); }
+.langues[open] summary { background: var(--brique); border-color: var(--brique); color: var(--creme); }
+.langues-liste { position: absolute; top: calc(100% + 8px); inset-inline-end: 0; z-index: 60; min-width: 150px; display: grid; padding: 6px 0; background: var(--creme); border: 1px solid rgba(74, 52, 38, .2); box-shadow: 0 12px 30px rgba(74, 52, 38, .12); }
+.langues-liste a { padding: 10px 16px; font-size: 14px; color: var(--brunF); }
+.langues-liste a:hover, .langues-liste a:focus-visible { background: var(--sable); color: var(--brique); }
+.menu-langues { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.menu .menu-langues .lien-langue { margin-top: 0; }
+
+/* Contact + QR codes : seulement sur l'accueil (retirés des sous-pages) */
+.contact-suivre { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 32px 60px; margin-top: clamp(40px, 6vh, 72px); padding-top: clamp(28px, 4vh, 48px); border-top: 1px solid rgba(74, 52, 38, .15); }
+.contact-suivre .pied-tel { display: block; font-size: clamp(30px, 3vw, 44px); margin-top: 14px; }
+.contact-suivre .qr-liste { margin-top: 18px; }
+.contact-suivre .qr { background: var(--sable); }
+.pied-page:not(:has(.pied-grille)) { padding-top: 0; }
+.pied-page:not(:has(.pied-grille)) .pied-bas { margin-top: 0; border-top: 0; }
+
+/* Zones d'intervention : 6 villes, séparateurs par l'écart de la grille */
+.zones-liste { gap: 1px; background: rgba(74, 52, 38, .15); }
+.zones-liste li + li { border: 0; }
+@media (min-width: 561px) and (max-width: 860px) { .zones-liste { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

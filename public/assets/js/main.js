@@ -98,12 +98,16 @@
   /* Calendriers de disponibilité (fiche bien) */
   var arabe = document.documentElement.lang === 'ar';
   var anglais = document.documentElement.lang === 'en';
-  var MOIS = arabe
-    ? ['يناير', 'فبراير', 'مارس', 'أبريل', 'ماي', 'يونيو', 'يوليوز', 'غشت', 'شتنبر', 'أكتوبر', 'نونبر', 'دجنبر']
-    : anglais
-    ? ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-    : ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-  var JOURS = arabe ? ['ن', 'ث', 'ر', 'خ', 'ج', 'س', 'ح'] : anglais ? ['M', 'T', 'W', 'T', 'F', 'S', 'S'] : ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+  var lang = ['en', 'ar', 'it', 'es'].indexOf(document.documentElement.lang) > -1 ? document.documentElement.lang : 'fr';
+  var LOCALE = { fr: 'fr-FR', en: 'en-GB', ar: 'ar-MA', it: 'it-IT', es: 'es-ES' }[lang];
+  var MOIS = {
+    ar: ['يناير', 'فبراير', 'مارس', 'أبريل', 'ماي', 'يونيو', 'يوليوز', 'غشت', 'شتنبر', 'أكتوبر', 'نونبر', 'دجنبر'],
+    en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    it: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
+    es: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+    fr: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+  }[lang];
+  var JOURS = { ar: ['ن', 'ث', 'ر', 'خ', 'ج', 'س', 'ح'], en: ['M', 'T', 'W', 'T', 'F', 'S', 'S'], it: ['L', 'M', 'M', 'G', 'V', 'S', 'D'], es: ['L', 'M', 'X', 'J', 'V', 'S', 'D'], fr: ['L', 'M', 'M', 'J', 'V', 'S', 'D'] }[lang];
   /* Fiche bien : calendrier navigable mois par mois + choix arrivée / départ + demande de réservation.
      data-indispo = séjours déjà pris « arrivée/départ » (départ exclu : ce jour-là reste possible comme départ). */
   var dispo = document.querySelector('[data-dispo]');
@@ -170,8 +174,10 @@
     var TR = {
       fr: { dates: 'Choisissez vos dates d’arrivée et de départ dans le calendrier.', ok: 'Merci ! Votre demande est envoyée : Barka vous répond sur WhatsApp sous 24 h.', sujet: 'Demande de réservation', bien: 'Bien', arr: 'Arrivée', dep: 'Départ', nuits: 'Nuits', voy: 'Voyageurs', titre: 'Demande de réservation' },
       en: { dates: 'Choose your check-in and check-out dates in the calendar.', ok: 'Thank you! Your request has been sent: Barka will reply on WhatsApp within 24 hours.', sujet: 'Booking request', bien: 'Property', arr: 'Check-in', dep: 'Check-out', nuits: 'Nights', voy: 'Guests', titre: 'Booking request' },
-      ar: { dates: 'اختر تاريخَي الوصول والمغادرة من التقويم.', ok: 'شكرًا! تم إرسال طلبك: ستردّ عليك بركة عبر واتساب خلال 24 ساعة.', sujet: 'طلب حجز', bien: 'العقار', arr: 'الوصول', dep: 'المغادرة', nuits: 'الليالي', voy: 'الضيوف', titre: 'طلب حجز' }
-    }[arabe ? 'ar' : anglais ? 'en' : 'fr'];
+      ar: { dates: 'اختر تاريخَي الوصول والمغادرة من التقويم.', ok: 'شكرًا! تم إرسال طلبك: ستردّ عليك بركة عبر واتساب خلال 24 ساعة.', sujet: 'طلب حجز', bien: 'العقار', arr: 'الوصول', dep: 'المغادرة', nuits: 'الليالي', voy: 'الضيوف', titre: 'طلب حجز' },
+      it: { dates: 'Scegli le date di arrivo e di partenza nel calendario.', ok: 'Grazie! La tua richiesta è stata inviata: Barka ti risponderà su WhatsApp entro 24 ore.', sujet: 'Richiesta di prenotazione', bien: 'Struttura', arr: 'Arrivo', dep: 'Partenza', nuits: 'Notti', voy: 'Ospiti', titre: 'Richiesta di prenotazione' },
+      es: { dates: 'Elige tus fechas de llegada y salida en el calendario.', ok: '¡Gracias! Tu solicitud se ha enviado: Barka te responderá por WhatsApp en menos de 24 horas.', sujet: 'Solicitud de reserva', bien: 'Alojamiento', arr: 'Llegada', dep: 'Salida', nuits: 'Noches', voy: 'Huéspedes', titre: 'Solicitud de reserva' }
+    }[lang];
     var nbNuits = function () { return choix.au !== null ? Math.round((choix.au - choix.du) / JOUR) : 0; };
     var majCarte = function () {
       if (!resaForm) return;
@@ -181,7 +187,7 @@
       var prix = parseFloat(resaForm.dataset.prix); // vide tant que Lyze n'a pas donné le prix
       var ligneTotal = resaForm.querySelector('[data-total-ligne]');
       ligneTotal.hidden = !(prix > 0 && nbNuits());
-      if (!ligneTotal.hidden) resaForm.querySelector('[data-total]').textContent = new Intl.NumberFormat(arabe ? 'ar-MA' : anglais ? 'en-GB' : 'fr-FR').format(prix * nbNuits()) + ' MAD';
+      if (!ligneTotal.hidden) resaForm.querySelector('[data-total]').textContent = new Intl.NumberFormat(LOCALE).format(prix * nbNuits()) + ' MAD';
     };
     if (resaForm) {
       var etatResa = resaForm.querySelector('.etat'), boutonResa = resaForm.querySelector('button[type="submit"]');
@@ -195,18 +201,18 @@
           + '\n' + TR.nuits + ' : ' + nbNuits() + '\n' + TR.voy + ' : ' + f.get('voyageurs');
         var donnees = {
           nom: String(f.get('nom') || '').trim(), email: String(f.get('email') || '').trim(), telephone: String(f.get('telephone') || '').trim(),
-          ville: resaForm.dataset.bien.slice(0, 60), message: details, site: String(f.get('site') || ''), langue: arabe ? 'ar' : anglais ? 'en' : 'fr', type: 'reservation'
+          ville: resaForm.dataset.bien.slice(0, 60), message: details, site: String(f.get('site') || ''), langue: lang, type: 'reservation'
         };
         var repli = function () {
-          dire(T[donnees.langue].repli);
+          dire(T.repli);
           window.location.href = 'mailto:contact@lyze.ma?subject=' + encodeURIComponent(TR.sujet) + '&body=' + encodeURIComponent(details + '\n\n' + donnees.nom + '\n' + donnees.email + '\n' + donnees.telephone);
         };
         boutonResa.disabled = true;
-        dire(T[donnees.langue].envoi);
+        dire(T.envoi);
         fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(donnees) })
           .then(function (r) {
             if (r.ok) { resaForm.reset(); choix = { du: null, au: null }; rendre(); majCarte(); dire(TR.ok, 'ok'); }
-            else if (r.status === 400) dire(T[donnees.langue].invalide, 'erreur');
+            else if (r.status === 400) dire(T.invalide, 'erreur');
             else repli(); // démo GitHub Pages (404/405) ou mail pas encore branché (503)
           })
           .catch(repli)
@@ -216,12 +222,16 @@
     rendre();
   }
 
+  /* Choix de la langue : se referme quand on clique ailleurs */
+  document.addEventListener('click', function (e) {
+    document.querySelectorAll('details.langues[open]').forEach(function (d) { if (!d.contains(e.target)) d.removeAttribute('open'); });
+  });
+
   /* Textes de l'interface selon la langue de la page (fr / en / ar) */
-  var lang = arabe ? 'ar' : anglais ? 'en' : 'fr';
   var T = {
     fr: {
       photo: 'Photo', devise: 'MAD', aucune: 'Cochez au moins une plateforme.',
-      bruts: 'Revenus bruts', parAn: 'par an', fraisDe: 'Frais', comLyze: 'Commission Lyze Conciergerie', apresFrais: 'après frais', recevez: 'Vous recevez',
+      bruts: 'Revenus bruts', parAn: 'par an', fraisDe: 'Frais', comLyze: 'Commission Lyze Conciergerie', parNuit: 'par nuit', recevez: 'Vous recevez',
       vousTouchez: 'vous touchez', envoi: 'Envoi…',
       ok: 'Merci, votre message est bien parti. Nous vous répondons rapidement.',
       invalide: 'Vérifiez les champs du formulaire.',
@@ -238,7 +248,7 @@
     },
     en: {
       photo: 'Photo', devise: 'MAD', aucune: 'Tick at least one platform.',
-      bruts: 'Gross income', parAn: 'per year', fraisDe: 'Fees', comLyze: 'Lyze Conciergerie commission', apresFrais: 'after fees', recevez: 'You receive',
+      bruts: 'Gross income', parAn: 'per year', fraisDe: 'Fees', comLyze: 'Lyze Conciergerie commission', parNuit: 'per night', recevez: 'You receive',
       vousTouchez: 'you earn', envoi: 'Sending…',
       ok: 'Thank you, your message has been sent. We will get back to you shortly.',
       invalide: 'Please check the form fields.',
@@ -255,7 +265,7 @@
     },
     ar: {
       photo: 'صورة', devise: 'درهم', aucune: 'اختر منصة واحدة على الأقل.',
-      bruts: 'المداخيل الإجمالية', parAn: 'في السنة', fraisDe: 'عمولة', comLyze: 'عمولة Lyze Conciergerie', apresFrais: 'بعد عمولة المنصة', recevez: 'صافي دخلك',
+      bruts: 'المداخيل الإجمالية', parAn: 'في السنة', fraisDe: 'عمولة', comLyze: 'عمولة Lyze Conciergerie', parNuit: 'لليلة', recevez: 'صافي دخلك',
       vousTouchez: 'صافي دخلك', envoi: 'جارٍ الإرسال…',
       ok: 'شكرًا، وصلتنا رسالتك. سنتواصل معك قريبًا.',
       invalide: 'يرجى التحقق من حقول الاستمارة.',
@@ -269,9 +279,35 @@
         return 'الاسم: ' + d.nom + '\nالبريد الإلكتروني: ' + d.email + '\nالهاتف: ' + d.telephone
           + '\nمدينة العقار: ' + d.ville + '\nمفروش: ' + d.meuble + '\n\n' + d.message;
       }
+    },
+    it: {
+      photo: 'Foto', devise: 'MAD', aucune: 'Seleziona almeno una piattaforma.',
+      bruts: 'Ricavi lordi', parAn: 'all’anno', fraisDe: 'Commissione', comLyze: 'Commissione Lyze Conciergerie', parNuit: 'a notte', recevez: 'Ricevi',
+      vousTouchez: 'ricevi', envoi: 'Invio…',
+      ok: 'Grazie, il tuo messaggio è stato inviato. Ti risponderemo al più presto.',
+      invalide: 'Controlla i campi del modulo.',
+      repli: 'L’invio online non è disponibile: si apre la tua app di posta con il messaggio pronto.',
+      sujet: 'Messaggio dal sito Lyze',
+      corps: function (d) {
+        return 'Nome: ' + d.nom + '\nE-mail: ' + d.email + '\nTelefono: ' + d.telephone
+          + '\nCittà dell’immobile: ' + d.ville + '\nArredato: ' + d.meuble + '\n\n' + d.message;
+      }
+    },
+    es: {
+      photo: 'Foto', devise: 'MAD', aucune: 'Marca al menos una plataforma.',
+      bruts: 'Ingresos brutos', parAn: 'al año', fraisDe: 'Comisión', comLyze: 'Comisión Lyze Conciergerie', parNuit: 'por noche', recevez: 'Recibes',
+      vousTouchez: 'recibes', envoi: 'Enviando…',
+      ok: 'Gracias, tu mensaje se ha enviado. Te responderemos lo antes posible.',
+      invalide: 'Revisa los campos del formulario.',
+      repli: 'El envío en línea no está disponible: se abre tu correo con el mensaje listo para enviar.',
+      sujet: 'Mensaje desde la web de Lyze',
+      corps: function (d) {
+        return 'Nombre: ' + d.nom + '\nE-mail: ' + d.email + '\nTeléfono: ' + d.telephone
+          + '\nCiudad del inmueble: ' + d.ville + '\nAmueblado: ' + d.meuble + '\n\n' + d.message;
+      }
     }
   }[lang];
-  var nombre = new Intl.NumberFormat({ ar: 'ar-MA', en: 'en-GB', fr: 'fr-FR' }[lang], { maximumFractionDigits: 1 });
+  var nombre = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 1 });
   var mad = function (n) { return nombre.format(Math.round(n)) + ' ' + T.devise; };
   var ici = document.currentScript ? document.currentScript.src : location.href;
 
@@ -361,7 +397,7 @@
     maj();
   });
 
-  /* Simulateur de revenus : prix de la nuit − frais de la plateforme − commission Lyze */
+  /* Simulateur de revenus : prix − frais de la plateforme − commission Lyze, les deux sur le montant total (demande client 2026-11-11) */
   var calcul = document.querySelector('[data-calcul]');
   if (calcul) {
     var commission = parseFloat(calcul.dataset.commission);
@@ -379,20 +415,20 @@
         var p = calcul.querySelector('input[name="plateforme"]:checked');
         var n = Math.max(0, +nuits.value || 0);
         var taux = p ? parseFloat(p.dataset.taux) : 0;
-        var brut = prix * n, frais = brut * taux / 100, lyze = (brut - frais) * commission / 100;
+        var brut = prix * n, frais = brut * taux / 100, lyze = brut * commission / 100;
         var ligne = function (titre, sous, val, classe) {
           return '<li class="ligne-annee ' + (classe || '') + '"><span>' + titre + '<small>' + sous + '</small></span><strong>' + val + '</strong></li>';
         };
         liste.innerHTML = ligne(T.bruts, T.parAn, mad(brut))
-          + ligne(T.fraisDe + ' ' + (p ? p.dataset.nom : ''), nombre.format(taux) + ' %', '−' + mad(frais))
-          + ligne(T.comLyze, nombre.format(commission) + ' % ' + T.apresFrais, '−' + mad(lyze))
+          + ligne(T.fraisDe + ' ' + (p ? p.dataset.nom : ''), nombre.format(taux) + ' % · ' + mad(prix * taux / 100) + ' ' + T.parNuit, '−' + mad(frais))
+          + ligne(T.comLyze, nombre.format(commission) + ' % · ' + mad(prix * commission / 100) + ' ' + T.parNuit, '−' + mad(lyze))
           + ligne(T.recevez, T.parAn, mad(brut - frais - lyze), 'total');
         return;
       }
       calcul.querySelectorAll('input[name="plateforme"]:checked').forEach(function (p) {
         var taux = parseFloat(p.dataset.taux);
         var frais = prix * taux / 100;
-        var lyze = (prix - frais) * commission / 100;
+        var lyze = prix * commission / 100;
         var net = prix - frais - lyze;
         html += '<li><div class="tete"><span><img src="' + p.dataset.logo + '" alt="">' + p.dataset.nom + '</span>'
           + '<strong>' + mad(net) + '</strong></div>'
@@ -558,7 +594,7 @@
     var surAccueil = document.body.classList.contains('accueil');
     var pointsEcrans = document.createElement('nav');
     pointsEcrans.className = 'points-ecrans';
-    pointsEcrans.setAttribute('aria-label', arabe ? 'أقسام الصفحة' : anglais ? 'Page sections' : 'Sections de la page');
+    pointsEcrans.setAttribute('aria-label', { ar: 'أقسام الصفحة', en: 'Page sections', it: 'Sezioni della pagina', es: 'Secciones de la página', fr: 'Sections de la page' }[lang]);
     ecrans.forEach(function (s, i) {
       var b = document.createElement('button');
       b.type = 'button';

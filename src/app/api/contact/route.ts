@@ -11,7 +11,7 @@ const ContactSchema = z.object({
   meuble: z.string().trim().max(30).optional(),
   message: z.string().trim().max(5000).optional(),
   site: z.string().max(200).optional(), // piège à robots : doit rester vide
-  langue: z.enum(["fr", "en", "ar"]).optional(),
+  langue: z.enum(["fr", "en", "ar", "it", "es"]).optional(),
   type: z.enum(["rappel", "reservation"]).optional(), // réservation = demande d'un voyageur depuis une fiche bien
 });
 
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     `Téléphone : ${d.telephone || "—"}`,
     `${d.type === "reservation" ? "Bien" : "Ville du bien"} : ${d.ville || "—"}`,
     ...(d.type === "reservation" ? [] : [`Meublé : ${d.meuble || "—"}`]),
-    `Langue du site : ${{ ar: "arabe", en: "anglais", fr: "français" }[d.langue ?? "fr"]}`,
+    `Langue du site : ${{ ar: "arabe", en: "anglais", fr: "français", it: "italien", es: "espagnol" }[d.langue ?? "fr"]}`,
     "",
     d.message || "(pas de message)",
   ].join("\n");

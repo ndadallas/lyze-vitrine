@@ -56,7 +56,7 @@ export function Simulateur() {
         {cochees.length === 0 && <li className="vide">Cochez au moins une plateforme.</li>}
         {CODES.filter((c) => cochees.includes(c)).map((c) => {
           const frais = (prix * TAUX[c]) / 100;
-          const lyze = ((prix - frais) * COMMISSION) / 100;
+          const lyze = (prix * COMMISSION) / 100; // sur le prix total, comme la plateforme (demande client 2026-11-11)
           const net = prix - frais - lyze;
           return (
             <li key={c}>
@@ -73,7 +73,7 @@ export function Simulateur() {
         })}
       </ul>
       <p className="note-calcul">
-        Montant net par nuit : frais de la plateforme retirés du prix, puis commission Lyze Conciergerie de {COMMISSION} % sur le reste. Taux indicatifs, hors frais de ménage et taxe de séjour.
+        Montant net par nuit : frais de la plateforme et commission Lyze Conciergerie de {COMMISSION} %, tous deux calculés sur le prix total de la nuit. Taux indicatifs, hors frais de ménage et taxe de séjour.
       </p>
     </form>
   );
