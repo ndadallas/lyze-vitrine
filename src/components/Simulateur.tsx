@@ -6,9 +6,9 @@ import { PLATEFORMES } from "@/lib/plateformes";
 
 // shortcut: mêmes taux et commission que le simulateur de la vitrine (public/index.html), à confirmer par Lyze
 const COMMISSION = 20;
-const TAUX = { AIRBNB: 18, BOOKING: 20, EXPEDIA: 15 } as const;
-type Code = keyof typeof TAUX;
-const CODES = Object.keys(TAUX) as Code[];
+const TAUX = { AIRBNB: 18, BOOKING: 20 } as const;
+type Code = keyof typeof TAUX | "AUTRE";
+const CODES = Object.keys(TAUX) as (keyof typeof TAUX)[];
 const pct = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
 
 /** Simulateur de revenus annuels, identique à celui de la vitrine : prix × nuits − commission plateforme − commission Lyze,
@@ -17,8 +17,13 @@ export function Simulateur() {
   const [prix, setPrix] = useState(1200);
   const [nuits, setNuits] = useState(120);
   const [plateforme, setPlateforme] = useState<Code>("AIRBNB");
+  // « Autre » : le propriétaire saisit le nom et la commission de sa plateforme (comme sur la vitrine)
+  const [autreNom, setAutreNom] = useState("");
+  const [autreTaux, setAutreTaux] = useState(15);
+  const taux = plateforme === "AUTRE" ? autreTaux : TAUX[plateforme];
+  const nomPlateforme = plateforme === "AUTRE" ? autreNom.trim() || "Autre" : PLATEFORMES[plateforme].nom;
   const brut = prix * nuits;
-  const frais = (brut * TAUX[plateforme]) / 100;
+  const frais = (brut * taux) / 100;
   const lyze = (brut * COMMISSION) / 100;
   const borne = (v: number, min: number, max: number) => Math.min(max, Math.max(min, Math.round(v || 0)));
   const remplissage = (v: number, min: number, max: number) =>
@@ -63,12 +68,35 @@ export function Simulateur() {
               <small>{pct(TAUX[c])} %</small>
             </label>
           ))}
+          <label className="plat">
+            <input type="radio" name="plateforme" checked={plateforme === "AUTRE"} onChange={() => setPlateforme("AUTRE")} />
+            <svg className="plat-ico" aria-hidden="true" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" d="M12 5v14M5 12h14" /></svg>
+            <b>Autre</b>
+            <small>Au choix</small>
+          </label>
         </div>
+        {plateforme === "AUTRE" && (
+          <div className="plat-autre">
+            <label><span>Nom de la plateforme</span>
+              <input type="text" maxLength={40} list="plateformes-autres" placeholder="Ex. Vrbo" value={autreNom} onChange={(e) => setAutreNom(e.target.value)} />
+            </label>
+            <label><span>Commission</span>
+              <span className="saisie">
+                <input type="number" min={0} max={50} step={0.5} inputMode="decimal" value={autreTaux}
+                  onChange={(e) => setAutreTaux(Math.min(100, Math.max(0, parseFloat(e.target.value) || 0)))} />
+                <small>%</small>
+              </span>
+            </label>
+            <datalist id="plateformes-autres">
+              {["Expedia", "Vrbo", "Abritel", "Hotels.com", "Agoda", "Tripadvisor"].map((n) => <option key={n} value={n} />)}
+            </datalist>
+          </div>
+        )}
       </fieldset>
       <ul className="resultats" aria-live="polite">
         <li className="ligne-annee"><span>Revenus bruts<small>par an</small></span><strong>{formatMAD(brut)}</strong></li>
         <li className="ligne-annee">
-          <span>Commission {PLATEFORMES[plateforme].nom}<small>{pct(TAUX[plateforme])} % sur les nuitées / an</small></span>
+          <span>Commission {nomPlateforme}<small>{pct(taux)} % sur les nuitées / an</small></span>
           <strong>−{formatMAD(frais)}</strong>
         </li>
         <li className="ligne-annee">
