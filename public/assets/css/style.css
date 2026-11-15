@@ -1575,3 +1575,6 @@ html[lang="ar"] .hx-signature small { letter-spacing: 0; }
 .interlocutrice-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
 .hx-ouverture-photo img { object-position: 50% 35%; }
 .interlocutrice-photo::after { content: none; }
+/* Un seul QR code (Linktree) depuis le 2026-11-15 */
+.contact-suivre .qr-item, .contact-suivre .qr { width: 160px; }
+.contact-suivre .qr { height: 160px; }
