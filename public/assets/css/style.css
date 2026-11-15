@@ -1580,3 +1580,20 @@ html[lang="ar"] .hx-signature small { letter-spacing: 0; }
 .histoire-tete h1 { font-size: clamp(38px, 4.8vw, 72px); line-height: 1.02; }
 .histoire-ouverture { width: min(480px, calc(100% - 32px)); margin-inline: auto; aspect-ratio: 4 / 5; }
 .histoire-ouverture img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 35%; }
+/* Notre histoire : haut refait (2026-11-15) : titre à gauche, portrait de Barka à droite */
+.histoire-debut { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; gap: clamp(32px, 6vw, 100px); max-width: 1200px; margin-inline: auto; padding: clamp(48px, 7vw, 100px) var(--gutter) 0; }
+.histoire-debut .histoire-tete { text-align: start; padding: 0; }
+.histoire-debut .histoire-tete h1 { font-size: clamp(40px, 5vw, 76px); line-height: 1.02; margin-top: 22px; text-wrap: balance; }
+.histoire-signe { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 14px; margin-top: clamp(24px, 3vw, 40px); padding-top: 20px; border-top: 1px solid rgba(74, 52, 38, .2); max-width: 420px; }
+.histoire-signe strong { font-family: var(--f-titre); font-weight: 400; font-size: 26px; color: var(--brunF); }
+.histoire-signe span { font-size: 12px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--brique-texte); }
+html[lang="ar"] .histoire-signe span { letter-spacing: 0; font-size: 14px; }
+.histoire-debut .histoire-ouverture { width: 100%; max-width: 480px; margin: 0; justify-self: end; aspect-ratio: 4 / 5; }
+@media (max-width: 760px) {
+  .histoire-debut { grid-template-columns: minmax(0, 1fr); padding-top: 40px; gap: 32px; }
+  .histoire-debut .histoire-ouverture { justify-self: stretch; max-width: none; aspect-ratio: 4 / 4.4; }
+}
+.histoire-debut { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); max-width: 1240px; }
+.histoire-debut .histoire-tete h1 { font-size: clamp(38px, 4.4vw, 68px); text-wrap: wrap; }
+.histoire-debut .histoire-tete h1 { max-width: 7.1em; }
+@media (max-width: 760px) { .histoire-debut { grid-template-columns: minmax(0, 1fr); } }
