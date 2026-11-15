@@ -12,9 +12,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;400&family=Gloock&family=Instrument+Sans:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/style.css?v=35">
+  <link rel="stylesheet" href="../assets/css/style.css?v=34">
   <script>document.documentElement.classList.add('js')</script>
-  <script src="../assets/js/main.js?v=35" defer></script>
+  <script src="../assets/js/main.js?v=34" defer></script>
 </head>
 <body class="histoire">
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -50,58 +50,79 @@
     <a class="lien-proprio" href="/connexion">Area proprietari →</a>
   </div>
 
-  <main class="hx">
-    <section class="hx-ouverture" id="debut">
-      <div class="hx-ouverture-texte">
-        <span class="eyebrow eyebrow--brique">La mia storia</span>
-        <h1>Una donna, dei valori<br>e una passione.</h1>
-        <p class="hx-accroche">Sono convinta che le avventure più belle nascano spesso da un desiderio profondo di dare un nuovo senso alla propria vita.</p>
-        <p class="hx-signature"><span data-encre>Barka</span><small>fondatrice</small></p>
-      </div>
-      <figure class="hx-ouverture-photo"><img class="photo" src="https://images.unsplash.com/photo-1527769668487-5804e45fed2a?w=2200&q=80&auto=format&fit=crop" alt="Patio di un riad visto dal piano superiore" fetchpriority="high"></figure>
-    </section>
+  <main>
+    <div class="histoire-debut" id="debut" data-ecran="La nostra storia">
+    <header class="histoire-tete wrap">
+      <span class="eyebrow eyebrow--brique" style="letter-spacing:.34em">La mia storia</span>
+      <h1>Una donna, dei valori<br>e una passione.</h1>
+    </header>
 
-    <section class="hx-parcours wrap" id="parcours" data-ecran="Le parcours">
-      <header class="hx-tete"><span class="hx-num">01</span><h2>Il mio percorso</h2></header>
-      <ol class="hx-etapes">
-        <li data-apparait><span class="hx-point" aria-hidden="true"></span><p>Prima di creare Lyze Conciergerie lavoravo come assistente commerciale e nell’amministrazione vendite. Un percorso professionale che mi ha insegnato il rigore, l’organizzazione e l’importanza del rapporto con il cliente.</p></li>
-        <li data-apparait><span class="hx-point" aria-hidden="true"></span><p>Ma avevo voglia di andare oltre. Di creare qualcosa che mi somigliasse davvero, in cui unire il mio gusto per le cose belle, la mia cura dei dettagli e, soprattutto, ciò che mi ha sempre animata: <strong>il contatto umano</strong>.</p></li>
-        <li data-apparait><span class="hx-point" aria-hidden="true"></span><p>Di origine marocchina, ho scelto naturalmente di rivolgermi al Marocco. Un paese a cui sono profondamente legata, ma anche un paese in piena evoluzione, che offre belle prospettive per fare impresa.</p></li>
-        <li data-apparait><span class="hx-point" aria-hidden="true"></span><p>Creare la mia azienda è stata una decisione importante. Come in ogni nuova avventura, ci sono stati dubbi, domande e a volte timori. Ma la mia determinazione e la voglia di riuscire sono sempre state più forti.</p></li>
-        <li data-apparait><span class="hx-point" aria-hidden="true"></span><p>Volevo costruire un’azienda a mia immagine: <strong>umana, elegante, esigente nella qualità dei suoi servizi e profondamente legata alla fiducia.</strong></p></li>
-      </ol>
-    </section>
+    <figure class="histoire-ouverture" data-apparait>
+      <img class="photo" src="https://images.unsplash.com/photo-1527769668487-5804e45fed2a?w=2200&q=80&auto=format&fit=crop" alt="Patio di un riad visto dal piano superiore" fetchpriority="high">
+    </figure>
+    </div>
 
-    <section class="hx-nom" id="nom">
-      <div class="hx-nom-grille wrap">
-        <p class="hx-filiation" aria-hidden="true" dir="ltr"><span data-encre>Lisa</span><i></i><span data-encre>Lyze</span></p>
-        <div class="hx-nom-texte" data-apparait>
-          <header class="hx-tete"><span class="hx-num">02</span><h2>Un nome che ha una storia</h2></header>
-          <p class="hx-chapeau">Lyze non è semplicemente il nome di un’azienda.</p>
-          <p>È un nome ispirato a quello di mia figlia, Lisa. Un modo per legare questo progetto professionale a ciò che ho di più prezioso: la mia famiglia.</p>
-          <p>Questa scelta dà a Lyze Conciergerie un significato tutto speciale. Dietro questa azienda ci sono una storia personale, dei valori e tanto cuore.</p>
+    <section class="recit" id="parcours" data-ecran="Le parcours">
+      <header class="recit-tete" data-apparait>
+        <span class="recit-num">01</span>
+        <h2>Il mio percorso</h2>
+      </header>
+      <div class="recit-texte chapitre-texte">
+        <div class="lettrine-ligne">
+          <span class="lettrine" data-encre aria-hidden="true">S</span>
+          <p><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">S</span>ono convinta che le avventure più belle nascano spesso da un desiderio profondo di dare un nuovo senso alla propria vita.</p>
+        </div>
+        <div class="chapitre-corps">
+          <p>Prima di creare Lyze Conciergerie lavoravo come assistente commerciale e nell’amministrazione vendite. Un percorso professionale che mi ha insegnato il rigore, l’organizzazione e l’importanza del rapporto con il cliente.</p>
+          <p>Ma avevo voglia di andare oltre. Di creare qualcosa che mi somigliasse davvero, in cui unire il mio gusto per le cose belle, la mia cura dei dettagli e, soprattutto, ciò che mi ha sempre animata: <strong>il contatto umano</strong>.</p>
+          <p>Di origine marocchina, ho scelto naturalmente di rivolgermi al Marocco. Un paese a cui sono profondamente legata, ma anche un paese in piena evoluzione, che offre belle prospettive per fare impresa.</p>
+          <p>Creare la mia azienda è stata una decisione importante. Come in ogni nuova avventura, ci sono stati dubbi, domande e a volte timori. Ma la mia determinazione e la voglia di riuscire sono sempre state più forti.</p>
+          <p>Volevo costruire un’azienda a mia immagine: <strong>umana, elegante, esigente nella qualità dei suoi servizi e profondamente legata alla fiducia.</strong></p>
         </div>
       </div>
     </section>
 
-    <section class="hx-vision wrap" id="vision">
-      <header class="hx-tete"><span class="hx-num">03</span><h2>La mia visione del concierge</h2></header>
-      <div class="hx-vision-grille">
-        <p class="hx-grande-phrase" data-apparait>È prima di tutto una relazione umana.</p>
-        <div class="hx-vision-texte">
+    <section class="recit-nom" id="nom" data-ecran="Il nome">
+      <span class="eyebrow eyebrow--brique">02&nbsp; Il nome</span>
+      <h2>Un nome che ha una storia</h2>
+      <p class="filiation" aria-hidden="true" dir="ltr"><span data-encre>Lisa</span><i></i><span data-encre>Lyze</span></p>
+      <div class="chapitre-corps" data-apparait>
+        <p>Lyze non è semplicemente il nome di un’azienda.</p>
+        <p>È un nome ispirato a quello di mia figlia, Lisa. Un modo per legare questo progetto professionale a ciò che ho di più prezioso: la mia famiglia.</p>
+        <p>Questa scelta dà a Lyze Conciergerie un significato tutto speciale. Dietro questa azienda ci sono una storia personale, dei valori e tanto cuore.</p>
+      </div>
+    </section>
+
+    <section class="recit" id="vision" data-ecran="La vision">
+      <header class="recit-tete" data-apparait>
+        <span class="recit-num">03</span>
+        <h2>La mia visione del concierge</h2>
+      </header>
+      <div class="recit-texte chapitre-texte">
+        <div class="chapitre-corps">
           <p>Per me il servizio di concierge non si limita a gestire prenotazioni o ad accogliere ospiti.</p>
+          <p class="recit-phrase">È prima di tutto una relazione umana.</p>
           <p>Je sais que confier son logement à une personne extérieure représente une décision importante. Per questo metto <strong>la fiducia, la trasparenza e l’ascolto</strong> al centro di ogni collaborazione.</p>
         </div>
-      </div>
-      <ul class="hx-valeurs"><li data-apparait><span>01</span>Fiducia</li><li data-apparait><span>02</span>Trasparenza</li><li data-apparait><span>03</span>Ascolto</li></ul>
-      <div class="hx-colonnes">
-        <p>Amo i luoghi curati, le atmosfere accoglienti e quei piccoli dettagli che fanno la differenza. Ogni alloggio merita un’attenzione particolare, così come ogni proprietario merita un accompagnamento personalizzato.</p><p>La mia ambizione non è semplicemente gestire immobili, ma creare relazioni durature, fondate sul rispetto, sulla vicinanza e sulla professionalità.</p><p>Oggi, attraverso Lyze Conciergerie, presente a Casablanca, El Jadida e Marrakech, desidero offrire ai proprietari la tranquillità che cercano, valorizzando al tempo stesso il loro patrimonio.</p><p>Credo profondamente che un’azienda possa essere professionale ed esigente, restando al tempo stesso accessibile, calorosa e umana.</p><p><strong>Perché dietro ogni alloggio ci sono un proprietario, una storia e una fiducia che va meritata.</strong></p><p>Ed è con questa filosofia che ho scelto di costruire Lyze Conciergerie.</p>
+        <ul class="valeurs" data-apparait>
+          <li><span>01</span>Fiducia</li>
+          <li><span>02</span>Trasparenza</li>
+          <li><span>03</span>Ascolto</li>
+        </ul>
+        <div class="chapitre-corps">
+          <p>Amo i luoghi curati, le atmosfere accoglienti e quei piccoli dettagli che fanno la differenza. Ogni alloggio merita un’attenzione particolare, così come ogni proprietario merita un accompagnamento personalizzato.</p>
+          <p>La mia ambizione non è semplicemente gestire immobili, ma creare relazioni durature, fondate sul rispetto, sulla vicinanza e sulla professionalità.</p>
+          <p>Oggi, attraverso Lyze Conciergerie, presente a Casablanca, El Jadida e Marrakech, desidero offrire ai proprietari la tranquillità che cercano, valorizzando al tempo stesso il loro patrimonio.</p>
+          <p>Credo profondamente che un’azienda possa essere professionale ed esigente, restando al tempo stesso accessibile, calorosa e umana.</p>
+          <p><strong>Perché dietro ogni alloggio ci sono un proprietario, una storia e una fiducia che va meritata.</strong></p>
+          <p>Ed è con questa filosofia che ho scelto di costruire Lyze Conciergerie.</p>
+        </div>
       </div>
     </section>
 
-    <section class="hx-citation">
+    <section class="citation" id="citation" data-ecran="En ses mots">
       <blockquote>«&nbsp;Perché dietro ogni alloggio ci sono un proprietario, una storia e una fiducia che va meritata.&nbsp;»</blockquote>
-      <p class="hx-signature"><span data-encre>Barka</span><small>fondatrice</small></p>
+      <p>— Barka, fondatrice</p>
     </section>
   </main>
 
