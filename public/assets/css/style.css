@@ -1578,3 +1578,6 @@ html[lang="ar"] .hx-signature small { letter-spacing: 0; }
 /* Un seul QR code (Linktree) depuis le 2026-11-15 */
 .contact-suivre .qr-item, .contact-suivre .qr { width: 160px; }
 .contact-suivre .qr { height: 160px; }
+.contact-suivre > div:last-child { margin-inline-start: auto; text-align: end; }
+.contact-suivre .qr-liste { justify-content: flex-end; }
+.contact-suivre .qr-item a { justify-content: flex-end; }
