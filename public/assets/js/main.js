@@ -414,13 +414,18 @@
       if (nuits) { // vitrine : une plateforme, détail sur l'année
         var p = calcul.querySelector('input[name="plateforme"]:checked');
         var n = Math.max(0, +nuits.value || 0);
-        var taux = p ? parseFloat(p.dataset.taux) : 0;
+        // « Autre » : le propriétaire saisit le nom et la commission de sa plateforme
+        var autre = calcul.querySelector('[data-plat-autre]'), estAutre = !!(p && autre && p.hasAttribute('data-autre'));
+        if (autre) autre.hidden = !estAutre;
+        var nomP = p ? (estAutre ? autre.querySelector('[data-autre-nom]').value.trim() || p.dataset.nom : p.dataset.nom) : '';
+        nomP = nomP.replace(/[&<>"]/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; });
+        var taux = p ? (estAutre ? Math.min(100, Math.max(0, parseFloat(autre.querySelector('[data-autre-taux]').value) || 0)) : parseFloat(p.dataset.taux)) : 0;
         var brut = prix * n, frais = brut * taux / 100, lyze = brut * commission / 100;
         var ligne = function (titre, sous, val, classe) {
           return '<li class="ligne-annee ' + (classe || '') + '"><span>' + titre + '<small>' + sous + '</small></span><strong>' + val + '</strong></li>';
         };
         liste.innerHTML = ligne(T.bruts, T.parAn, mad(brut))
-          + ligne(T.fraisDe + ' ' + (p ? p.dataset.nom : ''), nombre.format(taux) + ' % ' + T.parNuit, '−' + mad(frais))
+          + ligne(T.fraisDe + ' ' + nomP,nombre.format(taux) + ' % ' + T.parNuit, '−' + mad(frais))
           + ligne(T.comLyze, nombre.format(commission) + ' % ' + T.parNuit, '−' + mad(lyze))
           + ligne(T.recevez, T.parAn, mad(brut - frais - lyze), 'total');
         return;
@@ -452,6 +457,7 @@
       nuitsSaisie.addEventListener('change', function () { nuitsSaisie.value = nuits.value; });
     }
     calcul.addEventListener('change', calculer);
+    calcul.addEventListener('input', function (e) { if (e.target.closest('[data-plat-autre]')) calculer(); });
     calculer();
   }
 
