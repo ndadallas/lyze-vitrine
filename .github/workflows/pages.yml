@@ -1,5 +1,4 @@
-# Publie la vitrine statique (public/) sur GitHub Pages en attendant l'hébergement Vercel.
-# Le login (/connexion) ne marche pas sur Pages : il faut le serveur Next.js.
+# Publie la vitrine statique (public/) sur GitHub Pages. Le login et l'espace propriétaire sont sur Vercel (lyze-conciergerie.vercel.app).
 name: Pages
 on:
   push:
@@ -21,11 +20,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
-      # Vitrine + connexion/espace de démo (pages-demo/) ; /connexion pointe vers la page statique.
+      # Vitrine statique ; « Espace propriétaire » (/connexion) pointe vers le vrai espace hébergé sur Vercel.
       - run: |
-          mkdir _site && cp -r public/. pages-demo/. _site/
-          sed -i 's#href="/connexion"#href="connexion.html"#g' _site/*.html
-          sed -i 's#href="/connexion"#href="../connexion.html"#g' _site/{ar,en,it,es}/*.html
+          mkdir _site && cp -r public/. _site/
+          sed -i 's#href="/connexion"#href="https://lyze-conciergerie.vercel.app/connexion"#g' _site/*.html _site/{ar,en,it,es}/*.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
