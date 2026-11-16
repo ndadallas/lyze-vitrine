@@ -18,9 +18,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/style.css?v=47">
+  <link rel="stylesheet" href="../assets/css/style.css?v=48">
   <script>document.documentElement.classList.add('js')</script>
-  <script src="../assets/js/main.js?v=38" defer></script>
+  <script src="../assets/js/main.js?v=39" defer></script>
 </head>
 <body class="accueil">
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -160,12 +160,7 @@
             <div class="plats">
               <label class="plat"><input type="radio" name="plateforme" data-nom="Airbnb" data-taux="18" checked><img src="../assets/img/plateformes/airbnb.svg" alt=""><b>Airbnb</b><small>18٪</small></label>
               <label class="plat"><input type="radio" name="plateforme" data-nom="Booking" data-taux="20"><img src="../assets/img/plateformes/booking.svg" alt=""><b>Booking</b><small>20٪</small></label>
-              <label class="plat"><input type="radio" name="plateforme" data-nom="أخرى" data-taux="15" data-autre><svg class="plat-ico" aria-hidden="true" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M12 5v14M5 12h14"/></svg><b>أخرى</b><small>حسب اختيارك</small></label>
-            </div>
-            <div class="plat-autre" data-plat-autre hidden>
-              <label><span>اسم المنصة</span><input type="text" maxlength="40" list="plateformes-autres" placeholder="مثلاً Vrbo" data-autre-nom></label>
-              <label><span>العمولة (قابلة للتعديل)</span><span class="saisie"><input type="number" min="0" max="50" step="0.5" value="15" inputmode="decimal" data-autre-taux><small>%</small></span></label>
-              <datalist id="plateformes-autres"><option value="Expedia"><option value="Vrbo"><option value="Abritel"><option value="Hotels.com"><option value="Agoda"><option value="Tripadvisor"></datalist>
+              <label class="plat"><input type="radio" name="plateforme" data-nom="أخرى" data-taux="15" data-autre><svg class="plat-ico" aria-hidden="true" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M12 5v14M5 12h14"/></svg><b>أخرى</b><small>15 %</small></label>
             </div>
           </fieldset>
           <ul class="resultats" data-resultats aria-live="polite"></ul>
