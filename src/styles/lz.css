@@ -277,3 +277,6 @@
   .app .calcul .ligne-prix { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
   .app .calcul .ligne-prix > span:first-child { flex: 1 1 100%; }
 }
+/* cartes de biens : assez larges pour ne jamais couper un mot */
+@media (max-width: 1499px) { .app .liste ul { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); } }
+.app .liste button strong, .app .arrivees strong { overflow-wrap: break-word; hyphens: manual; }
