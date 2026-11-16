@@ -263,3 +263,8 @@
   .app .liste .stats { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .app .liste .stats > .titre-p { grid-column: 1 / -1; }
 }
+/* tableau des dépenses : tient dans la largeur au lieu de défiler */
+.app .lz-table-dep { min-width: 0; table-layout: auto; }
+.app .lz-table-defile { overflow: visible; }
+.app .lz-table-dep td, .app .lz-table-dep th { white-space: normal; }
+.app .lz-table-dep td:nth-child(4) { white-space: nowrap; }
