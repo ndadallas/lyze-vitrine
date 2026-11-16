@@ -200,3 +200,14 @@
   .lz-liste-docs li { gap: 10px; }
   .lz-doc-actions { flex-wrap: wrap; gap: 12px; }
 }
+/* priorité sur les anciennes règles d'espace.css (même spécificité, chargées après) */
+@media (max-width: 900px) {
+  .app .side .bas > span { display: block; }
+  .app .arrivees li .plateforme { display: inline-flex; }
+}
+@media (max-width: 700px) {
+  .lz-filtres, .lz-choix-bien { max-width: 100%; min-width: 0; }
+}
+@media (max-width: 520px) {
+  .app .arrivees li { grid-template-columns: 52px minmax(0, 1fr) auto auto; gap: 8px; }
+}
