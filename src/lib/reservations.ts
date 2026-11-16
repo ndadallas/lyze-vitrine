@@ -63,5 +63,5 @@ export async function findClash(propertyId: string, start: Date, end: Date, exce
     orderBy: { startDate: "asc" },
   });
   if (!clash) return null;
-  return `Ces dates chevauchent ${clash.kind === "RESERVED" ? "une réservation" : clash.kind === "MANAGED" ? "une période « Barka s’en charge »" : "un blocage"} existant (${formatShortDate(clash.startDate)} → ${formatShortDate(clash.endDate)}).`;
+  return `Ces dates chevauchent ${clash.kind === "RESERVED" ? "une réservation" : clash.kind === "MANAGED" ? "une période « Réservé par l’entreprise »" : "un blocage"} existant (${formatShortDate(clash.startDate)} → ${formatShortDate(clash.endDate)}).`;
 }

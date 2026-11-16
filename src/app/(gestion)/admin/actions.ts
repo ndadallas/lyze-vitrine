@@ -264,7 +264,7 @@ export async function addBooking(_prev: ActionState, formData: FormData): Promis
   });
   revalidatePath(`/admin/clients/${property.ownerId}`);
   return {
-    message: b.kind === "RESERVED" ? "Réservation ajoutée." : b.kind === "MANAGED" ? "Période « Barka s’en charge » ajoutée." : "Blocage ajouté.",
+    message: b.kind === "RESERVED" ? "Réservation ajoutée." : b.kind === "MANAGED" ? "Période « Réservé par l’entreprise » ajoutée." : "Blocage ajouté.",
     done: Date.now(),
   };
 }

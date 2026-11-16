@@ -8,7 +8,7 @@
   var BIENS = [
     {
       id: 'villa', nom: 'Villa [Nom]', ville: 'Marrakech',
-      barka: [{ du: '2026-11-17', au: '2026-11-19' }], // « Barka s'en charge » (bleu)
+      barka: [{ du: '2026-11-17', au: '2026-11-19' }], // « Réservé par l'entreprise » (bleu)
       photos: ['1708804654353-7ef66cba7776', '1565020244281-fe53df7df170', '1628642393776-70a715f2cc40', '1527760370098-806667fa3750', '1505576391880-b3f9d713dc4f', '1628642004970-1da51c8c7dec'],
       resas: [
         { client: 'Inès Haddad', du: '2026-10-08', au: '2026-10-12', voyageurs: 5, source: 'Booking' },
@@ -123,7 +123,7 @@
       var b = !r && (etat.bien.barka || []).filter(function (p) { return jour >= date(p.du) && jour <= date(p.au); })[0];
       if (b) {
         el.classList.add('barka');
-        if (d === 1 || +jour === +date(b.du)) el.insertAdjacentHTML('beforeend', '<span class="etiquette">Barka</span>');
+        if (d === 1 || +jour === +date(b.du)) el.insertAdjacentHTML('beforeend', '<span class="etiquette">Entreprise</span>');
       }
       if (r) {
         el.type = 'button';

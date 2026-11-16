@@ -61,7 +61,7 @@ export function Planning({
         </div>
         <div className="legende-app">
           <span><i className="l-brique" />Réservé</span>
-          <span><i className="l-barka" />Barka s’en charge</span>
+          <span><i className="l-barka" />Réservé par l’entreprise</span>
           <span><i className="l-bloque" />Bloqué</span>
         </div>
       </div>
@@ -112,7 +112,7 @@ export function Planning({
                       {span > 1 && <span>{r.initiale}.</span>}
                     </>
                   ) : (
-                    span > 2 && <span>{r.type === "MANAGED" ? "Barka" : r.note || "Bloqué"}</span>
+                    span > 2 && <span>{r.type === "MANAGED" ? "Entreprise" : r.note || "Bloqué"}</span>
                   )}
                 </button>
               )),

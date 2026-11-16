@@ -31,7 +31,7 @@ export function BookingRow({ b }: { b: BookingRowData }) {
       <tr>
         <td>
           <span className={`pill ${{ RESERVED: "pill-occupied", BLOCKED: "pill-blocked", MANAGED: "pill-barka" }[b.kind]}`}>
-            {{ RESERVED: "Réservé", BLOCKED: "Bloqué", MANAGED: "Barka s’en charge" }[b.kind]}
+            {{ RESERVED: "Réservé", BLOCKED: "Bloqué", MANAGED: "Réservé par l’entreprise" }[b.kind]}
           </span>
           {b.kind === "RESERVED" && <LogoPlateforme code={b.platform} />}
         </td>
@@ -66,7 +66,7 @@ export function BookingRow({ b }: { b: BookingRowData }) {
                 <select id={`${p}-kind`} name="kind" defaultValue={b.kind}>
                   <option value="RESERVED">Réservation</option>
                   <option value="BLOCKED">Blocage (travaux, usage perso…)</option>
-                  <option value="MANAGED">Barka s’en charge</option>
+                  <option value="MANAGED">Réservé par l’entreprise</option>
                 </select>
               </div>
               <div className="field">

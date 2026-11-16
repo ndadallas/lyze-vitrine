@@ -252,7 +252,7 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
                   Réservation sélectionnée
                 </span>
                 <span><i className="l-brique" />Réservé</span>
-                <span><i className="l-barka" />Barka s’en charge</span>
+                <span><i className="l-barka" />Réservé par l’entreprise</span>
                 <span><i className="l-bloque" />Bloqué</span>
                 <span><i className="l-libre" />Libre</span>
               </div>
@@ -437,11 +437,11 @@ function Calendrier({
           key={d}
           type="button"
           className={`jour ${r.type === "MANAGED" ? "barka" : "bloque"}${choisie ? " choisi" : ""}`}
-          aria-label={`${d} ${MOIS[m]} : ${r.type === "MANAGED" ? "Barka s’en charge" : "bloqué"}`}
+          aria-label={`${d} ${MOIS[m]} : ${r.type === "MANAGED" ? "Réservé par l’entreprise" : "bloqué"}`}
           onClick={() => onJour(leJour)}
         >
           {d}
-          {debutOuPremier && <span className="etiquette">{r.type === "MANAGED" ? "Barka" : "Bloqué"}</span>}
+          {debutOuPremier && <span className="etiquette">{r.type === "MANAGED" ? "Entreprise" : "Bloqué"}</span>}
         </button>,
       );
     } else {

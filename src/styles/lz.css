@@ -211,3 +211,17 @@
 @media (max-width: 520px) {
   .app .arrivees li { grid-template-columns: 52px minmax(0, 1fr) auto auto; gap: 8px; }
 }
+
+/* ===== Calendriers (demande 2026-11-16) : BLANC = libre, ROUGE = réservé, BLEU = réservé par l'entreprise ===== */
+.app .cal-jours .jour:not(.vide, .loue, .reserve, .bloque, .barka) { background: #fff; color: var(--brunF, #4a3426); border-color: rgba(43, 29, 21, .12); }
+.app .cal-jours .jour:not(.vide, .loue, .reserve, .bloque, .barka):hover { background: #fbf6ef; }
+.app .jour.loue { background: #c0392b; color: #fff; border-color: transparent; }
+.app .jour.loue:hover { background: #a93226; }
+.app .jour.reserve { background: #8e1f17; color: #fff; }
+.app .jour.barka { background: #3e6a8f; color: #fff; }
+.app .legende-app .l-libre { background: #fff; border: 1px solid rgba(43, 29, 21, .3); }
+.app .legende-app .l-brique { background: #c0392b; }
+.app .legende-app .l-vert { background: #8e1f17; }
+.app .legende-app .l-barka { background: #3e6a8f; }
+.lz-pl-reserved { background: #c0392b; }
+.lz-pl-managed { background: #3e6a8f; }
