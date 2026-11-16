@@ -1648,3 +1648,9 @@ html[lang="ar"] .histoire-signe span { letter-spacing: 0; font-size: 14px; }
 .accueil .carte-logement:not(.carte-avenir) h3, .accueil .carte-logement:not(.carte-avenir) .lieu { padding-inline: 14px; }
 /* Formulaire : « Nom et prénom » sur toute la largeur */
 .contact-form .champ-large { grid-column: 1 / -1; }
+
+/* Retours 2026-11-17 : formulaire de réservation, nom / e-mail / téléphone saisis à gauche sous leur libellé */
+.carte-resa label:has(input) { flex-direction: column; align-items: stretch; gap: 8px; }
+.carte-resa label input { width: 100%; text-align: start; }
+/* Notre histoire : le titre du nom sans étiquette au-dessus */
+.recit-nom h2 { margin-top: 0; color: var(--brique); }
