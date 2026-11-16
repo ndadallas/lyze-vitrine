@@ -225,3 +225,41 @@
 .app .legende-app .l-barka { background: #3e6a8f; }
 .lz-pl-reserved { background: #c0392b; }
 .lz-pl-managed { background: #3e6a8f; }
+
+/* ===== Mise en page rangée à toutes les tailles d'écran (2026-11-16) ===== */
+/* boutons d'action dans la liste des biens : ne pas prendre le style « carte de bien » (grille 3 colonnes) */
+.app .liste button.lz-lien, .app .liste button.lz-bouton { display: inline-flex; width: auto; grid-template-columns: none; gap: 0; text-align: left; }
+.app .liste button.lz-lien { padding: 0; background: none; }
+.app .liste button.lz-bouton { padding: 0 16px; background: var(--lz-accent); color: #f6f0e4; }
+.app .liste .lz-ajout-bien { margin: 16px 14px 0; white-space: nowrap; }
+.app .liste button strong { overflow-wrap: anywhere; }
+
+/* écrans moyens : biens en haut sur toute la largeur, calendrier + détail côte à côte */
+@media (max-width: 1499px) {
+  .app .grille-app { grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); }
+  .app .grille-app > .liste { grid-column: 1 / -1; }
+  .app .grille-app > .detail { grid-column: auto; }
+  .app .liste ul { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .app .liste .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .app .jour.barka .etiquette, .app .jour.bloque .etiquette { display: none; }
+  .app .revenus-grille { grid-template-columns: minmax(0, 1fr); }
+  .app .lz-demandes { grid-template-columns: minmax(0, 1fr); }
+}
+/* barre latérale plus étroite entre 900 et 1100 px */
+@media (min-width: 901px) and (max-width: 1100px) {
+  .app { grid-template-columns: 210px minmax(0, 1fr); }
+  .app .side nav a { padding-inline: 14px; }
+}
+/* petits écrans : tout en une colonne */
+@media (max-width: 1100px) {
+  .app .grille-app { grid-template-columns: minmax(0, 1fr); }
+  .app .lz-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .app .lz-large { grid-column: 1 / -1; }
+}
+@media (max-width: 700px) {
+  .app .lz-grille { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 520px) {
+  .app .liste .stats { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .app .liste .stats > .titre-p { grid-column: 1 / -1; }
+}
