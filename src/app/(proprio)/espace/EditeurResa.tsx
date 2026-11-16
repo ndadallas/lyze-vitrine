@@ -16,7 +16,7 @@ const court = (iso: string) => {
   const d = jour(iso);
   return `${d.getUTCDate()} ${MOIS_COURT[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 };
-const TYPES = { RESERVED: "Réservation voyageur", BLOCKED: "Bloqué (usage perso, travaux…)", MANAGED: "Réservé par l’entreprise" } as const;
+const TYPES = { RESERVED: "Réservation voyageur", BLOCKED: "Bloqué par le propriétaire (usage perso, travaux…)", MANAGED: "Réservé par l’entreprise" } as const;
 
 export type Brouillon = { du: string; au: string };
 

@@ -62,7 +62,7 @@ export function Planning({
         <div className="legende-app">
           <span><i className="l-brique" />Réservé</span>
           <span><i className="l-barka" />Réservé par l’entreprise</span>
-          <span><i className="l-bloque" />Bloqué</span>
+          <span><i className="l-bloque" />Bloqué par le propriétaire</span>
         </div>
       </div>
 

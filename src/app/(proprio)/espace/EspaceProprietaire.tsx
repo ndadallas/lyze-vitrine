@@ -10,7 +10,6 @@ import { Documents } from "@/components/Documents";
 import { FicheBienForm } from "@/components/FicheBienForm";
 import { PhotoManager, type PhotoItem } from "@/components/PhotoManager";
 import type { DemandeItem, DepenseItem, DocumentItem, FicheBien } from "@/lib/espace";
-import { Simulateur } from "@/components/Simulateur";
 import { DAY_MS, daysInMonth, formatMAD, monthStart, parseDay } from "@/lib/dates";
 import { monthStats, nights } from "@/lib/stats";
 import { LogoPlateforme, PLATEFORMES, type Plateforme } from "@/lib/plateformes";
@@ -108,7 +107,6 @@ const ONGLETS = [
   ["fiche", "Fiche du bien"],
   ["documents", "Documents"],
   ["demandes", "Demandes"],
-  ["revenus", "Simulateur"],
   ["compte", "Mon compte"],
 ] as const;
 
@@ -253,7 +251,7 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
                 </span>
                 <span><i className="l-brique" />Réservé</span>
                 <span><i className="l-barka" />Réservé par l’entreprise</span>
-                <span><i className="l-bloque" />Bloqué</span>
+                <span><i className="l-bloque" />Bloqué par le propriétaire</span>
                 <span><i className="l-libre" />Libre</span>
               </div>
             </div>
@@ -387,11 +385,6 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
             {aTraiter > 0 && ` ${aTraiter} réponse${aTraiter > 1 ? "s" : ""} de Lyze ci-dessous.`}
           </p>
           <DemandesProprio demandes={demandes} biens={listeBiens} />
-        </section>
-
-        <section className="panneau simulateur" id="revenus">
-          <span className="eyebrow eyebrow--brique">Simulateur de revenus</span>
-          <Simulateur />
         </section>
 
         <MonCompte compte={compte} />

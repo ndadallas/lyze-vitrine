@@ -280,3 +280,9 @@
 /* cartes de biens : assez larges pour ne jamais couper un mot */
 @media (max-width: 1499px) { .app .liste ul { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); } }
 .app .liste button strong, .app .arrivees strong { overflow-wrap: break-word; hyphens: manual; }
+
+/* Dates bloquées par le propriétaire : JAUNE (demande 2026-11-16) */
+.app .jour.bloque { background: #f4c542; color: #4a3426; border-color: transparent; }
+.app .jour.bloque.choisi { outline-color: #4a3426; }
+.app .legende-app .l-bloque { background: #f4c542; border: 0; }
+.lz-pl-blocked { background: #f4c542; color: #4a3426; }
