@@ -1615,3 +1615,12 @@ html[lang="ar"] .histoire-signe span { letter-spacing: 0; font-size: 14px; }
 .galerie-grille img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s var(--ease); }
 .galerie-grille a:hover img { transform: scale(1.04); }
 @media (max-width: 560px) { .galerie-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; } }
+
+/* Simulateur « Autre » : champs nom + commission bien visibles (2026-11-16) */
+.plat-autre { padding: 14px; background: #fff; border: 1px solid var(--brique); border-radius: 4px; align-items: end; }
+.plat-autre label > span:first-child { font-weight: 600; color: var(--brunF); }
+.plat-autre input { border: 1px solid rgba(74, 52, 38, .3); border-radius: 4px; padding: 10px 12px; background: var(--creme); }
+.plat-autre input:focus { border-color: var(--brique); box-shadow: 0 0 0 2px rgba(156, 102, 68, .18); }
+.plat-autre .saisie input { width: 4.5em; -moz-appearance: auto; }
+.plat-autre .saisie input::-webkit-outer-spin-button, .plat-autre .saisie input::-webkit-inner-spin-button { -webkit-appearance: auto; }
+@media (max-width: 560px) { .plat-autre { grid-template-columns: minmax(0, 1fr); } .plat-autre .saisie input { flex: 1; } }

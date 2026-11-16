@@ -462,7 +462,11 @@
       });
       nuitsSaisie.addEventListener('change', function () { nuitsSaisie.value = nuits.value; });
     }
-    calcul.addEventListener('change', calculer);
+    calcul.addEventListener('change', function (e) {
+      calculer();
+      // « Autre » choisi : on place le curseur dans le nom de la plateforme
+      if (e.target.matches && e.target.matches('input[data-autre]')) { var n = calcul.querySelector('[data-autre-nom]'); if (n) n.focus(); }
+    });
     calcul.addEventListener('input', function (e) { if (e.target.closest('[data-plat-autre]')) calculer(); });
     calculer();
   }

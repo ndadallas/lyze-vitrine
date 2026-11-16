@@ -78,9 +78,9 @@ export function Simulateur() {
         {plateforme === "AUTRE" && (
           <div className="plat-autre">
             <label><span>Nom de la plateforme</span>
-              <input type="text" maxLength={40} list="plateformes-autres" placeholder="Ex. Vrbo" value={autreNom} onChange={(e) => setAutreNom(e.target.value)} />
+              <input type="text" maxLength={40} list="plateformes-autres" placeholder="Ex. Vrbo" autoFocus value={autreNom} onChange={(e) => setAutreNom(e.target.value)} />
             </label>
-            <label><span>Commission</span>
+            <label><span>Commission (modifiable)</span>
               <span className="saisie">
                 <input type="number" min={0} max={50} step={0.5} inputMode="decimal" value={autreTaux}
                   onChange={(e) => setAutreTaux(Math.min(100, Math.max(0, parseFloat(e.target.value) || 0)))} />
