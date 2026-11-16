@@ -3,6 +3,8 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { ActionForm } from "@/components/ActionForm";
+import { DemandeAdmin } from "@/components/Demandes";
+import { versDemandeItem } from "@/lib/espace";
 import { createOwner } from "./actions";
 
 export const metadata: Metadata = { title: "Clients" };
@@ -22,6 +24,16 @@ export default async function AdminPage() {
     orderBy: [{ active: "desc" }, { lastName: "asc" }],
     include: { _count: { select: { properties: true } } },
   });
+  // Demandes des propriétaires à traiter (toutes fiches confondues)
+  const demandes = await db.ownerRequest.findMany({
+    where: { status: { in: ["NOUVELLE", "EN_COURS"] } },
+    orderBy: { createdAt: "asc" },
+    take: 30,
+    include: {
+      property: { select: { name: true } },
+      owner: { select: { id: true, firstName: true, lastName: true } },
+    },
+  });
 
   return (
     <>
@@ -31,6 +43,23 @@ export default async function AdminPage() {
           <h1>Bonjour, {admin.firstName}</h1>
         </div>
       </div>
+
+      {demandes.length > 0 && (
+        <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="demandes-title">
+          <h2 id="demandes-title" style={{ fontSize: 20 }}>
+            Demandes à traiter <span className="muted" style={{ fontSize: 15 }}>({demandes.length})</span>
+          </h2>
+          <ul className="lz-liste-dem">
+            {demandes.map((r) => (
+              <DemandeAdmin
+                key={`${r.id}-${r.updatedAt.getTime()}`}
+                d={versDemandeItem(r)}
+                client={{ nom: `${r.owner.firstName} ${r.owner.lastName}`, lien: `/admin/clients/${r.owner.id}` }}
+              />
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="card card-pad stack" style={{ gap: 20 }} aria-labelledby="new-client">
         <div>

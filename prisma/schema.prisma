@@ -50,6 +50,8 @@ model User {
 
   sessions   Session[]
   properties Property[]
+  documents  Document[]
+  requests   OwnerRequest[]
 }
 
 // Le cookie contient un jeton aléatoire ; seule son empreinte SHA-256 est stockée.
@@ -80,9 +82,23 @@ model Property {
   city      String
   createdAt DateTime @default(now())
 
-  owner    User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  bookings Booking[]
-  photos   Photo[]
+  // Fiche du bien (remplie par le propriétaire ou la gérante)
+  kind         String? // catégorie : Appartement, Villa, Riad…
+  address      String?
+  bedrooms     Int?
+  capacity     Int?
+  surface      Int?
+  equipment    String[] @default([])
+  wifiName     String?
+  wifiPassword String?
+  arrival      String? // consignes d'arrivée (clés, accès, parking)
+  notes        String?
+
+  owner     User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  bookings  Booking[]
+  photos    Photo[]
+  documents Document[]
+  requests  OwnerRequest[]
 
   @@index([ownerId])
 }
@@ -119,4 +135,69 @@ model Booking {
   property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@index([propertyId, startDate])
+}
+
+enum DocCategory {
+  CONTRAT
+  RELEVE
+  FACTURE
+  ETAT_DES_LIEUX
+  ASSURANCE
+  IDENTITE
+  AUTRE
+}
+
+// Document partagé entre la gérante et un propriétaire (PDF ou image, stocké en base comme les photos).
+model Document {
+  id         String      @id @default(cuid())
+  ownerId    String
+  propertyId String?
+  category   DocCategory @default(AUTRE)
+  title      String
+  fileName   String
+  mimeType   String
+  size       Int
+  data       Bytes
+  byAdmin    Boolean     @default(true)
+  createdAt  DateTime    @default(now())
+
+  owner    User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+
+  @@index([ownerId, createdAt])
+}
+
+enum RequestType {
+  USAGE_PERSO // le propriétaire veut ses dates
+  MENAGE
+  MAINTENANCE
+  QUESTION
+}
+
+enum RequestStatus {
+  NOUVELLE
+  EN_COURS
+  TRAITEE
+  REFUSEE
+}
+
+// Demande d'un propriétaire à Lyze (bloquer des dates, ménage, panne, question).
+model OwnerRequest {
+  id         String        @id @default(cuid())
+  ownerId    String
+  propertyId String?
+  type       RequestType
+  status     RequestStatus @default(NOUVELLE)
+  startDate  DateTime?
+  endDate    DateTime?
+  message    String
+  reply      String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  owner    User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+
+  @@index([ownerId, createdAt])
+  @@index([status])
 }

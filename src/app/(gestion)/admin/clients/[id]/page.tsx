@@ -12,6 +12,10 @@ import { BookingRow } from "@/components/BookingRow";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { EnteteBien } from "@/components/EnteteBien";
 import { PhotoManager } from "@/components/PhotoManager";
+import { DemandeAdmin } from "@/components/Demandes";
+import { Documents } from "@/components/Documents";
+import { FicheBienForm } from "@/components/FicheBienForm";
+import { SELECT_DOCUMENT, ficheDepuis, versDemandeItem, versDocumentItem } from "@/lib/espace";
 import { Repli } from "@/components/Repli";
 import {
   addBooking,
@@ -55,6 +59,8 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
           photos: { orderBy: [{ position: "asc" }, { createdAt: "asc" }], select: { id: true } },
         },
       },
+      documents: { orderBy: { createdAt: "desc" }, select: SELECT_DOCUMENT },
+      requests: { orderBy: { createdAt: "desc" }, take: 50, include: { property: { select: { name: true } } } },
     },
   });
   if (!owner || owner.role !== "OWNER") notFound();
@@ -281,6 +287,14 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
                   />
                 </section>
 
+                <section className="bien-partie" aria-labelledby="fiche-title">
+                  <div className="bien-partie-tete">
+                    <h4 id="fiche-title">Fiche du bien</h4>
+                    <p className="muted">Catégorie, équipements, wifi et consignes d&apos;arrivée. Le client voit et modifie la même fiche.</p>
+                  </div>
+                  <FicheBienForm key={bien.id} propertyId={bien.id} fiche={ficheDepuis(bien)} />
+                </section>
+
                 <section className="bien-partie" aria-labelledby="resas-title">
                   <div className="bien-partie-tete row-between">
                     <h4 id="resas-title">Réservations et blocages</h4>
@@ -381,6 +395,38 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
           <option value="Casablanca" />
           <option value="Marrakech" />
         </datalist>
+      </section>
+
+      {/* ---------- Demandes et documents du client ---------- */}
+      <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="demandes-title">
+        <h2 id="demandes-title" style={{ fontSize: 20 }}>
+          Ses demandes{" "}
+          <span className="muted" style={{ fontSize: 15 }}>
+            ({owner.requests.filter((r) => r.status === "NOUVELLE").length} nouvelle
+            {owner.requests.filter((r) => r.status === "NOUVELLE").length > 1 ? "s" : ""})
+          </span>
+        </h2>
+        {owner.requests.length === 0 ? (
+          <p className="muted" style={{ fontSize: 14 }}>Aucune demande de ce client.</p>
+        ) : (
+          <ul className="lz-liste-dem">
+            {owner.requests.map((r) => (
+              <DemandeAdmin key={`${r.id}-${r.updatedAt.getTime()}`} d={versDemandeItem(r)} />
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="docs-title">
+        <h2 id="docs-title" style={{ fontSize: 20 }}>
+          Ses documents <span className="muted" style={{ fontSize: 15 }}>({owner.documents.length})</span>
+        </h2>
+        <Documents
+          admin
+          ownerId={owner.id}
+          documents={owner.documents.map(versDocumentItem)}
+          biens={owner.properties.map((p) => ({ id: p.id, nom: p.name }))}
+        />
       </section>
 
       <section className="card card-pad row-between zone-danger" style={{ gap: 20, flexWrap: "wrap" }} aria-labelledby="delete-title">

@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { requireOwner } from "@/lib/auth";
 import { addMonths, monthStart, toDayString, today } from "@/lib/dates";
 import { photoUrl } from "@/lib/photos";
+import { SELECT_DOCUMENT, ficheDepuis, versDemandeItem, versDocumentItem } from "@/lib/espace";
 import { EspaceProprietaire, type BienEspace } from "./EspaceProprietaire";
 
 export const metadata: Metadata = { title: "Mes biens" };
@@ -29,11 +30,22 @@ export default async function EspacePage() {
     },
   });
 
+  const [documents, demandes] = await Promise.all([
+    db.document.findMany({ where: { ownerId: user.id }, orderBy: { createdAt: "desc" }, select: SELECT_DOCUMENT }),
+    db.ownerRequest.findMany({
+      where: { ownerId: user.id },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+      include: { property: { select: { name: true } } },
+    }),
+  ]);
+
   // Seule l'initiale du voyageur part vers le navigateur.
   const biens: BienEspace[] = properties.map((p) => ({
     id: p.id,
     nom: p.name,
     ville: p.city,
+    fiche: ficheDepuis(p),
     photos: p.photos.map((ph) => ({ id: ph.id, url: photoUrl(ph.id) })),
     resas: p.bookings.map((b) => ({
       id: b.id,
@@ -51,6 +63,8 @@ export default async function EspacePage() {
       nom={`${user.firstName} ${user.lastName}`}
       aujourdhui={toDayString(now)}
       biens={biens}
+      documents={documents.map(versDocumentItem)}
+      demandes={demandes.map(versDemandeItem)}
       // LYZE_WHATSAPP = numéro international sans + (ex. 212612345678) ; sans lui, le bouton mène au formulaire de contact
       contact={process.env.LYZE_WHATSAPP ? `https://wa.me/${process.env.LYZE_WHATSAPP.replace(/\D/g, "")}` : "/#contact"}
       compte={{

@@ -1,0 +1,186 @@
+"use client";
+
+import "@/styles/lz.css";
+
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { supprimerDocument } from "@/app/actions/espace";
+import { ConfirmButton } from "@/components/ConfirmButton";
+import {
+  CATEGORIES_DOC,
+  CODES_CATEGORIES,
+  MAX_DOC_BYTES,
+  documentUrl,
+  tailleFichier,
+  type CategorieDoc,
+  type DocumentItem,
+} from "@/lib/espace";
+
+const MOIS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+const dateCourte = (iso: string) => {
+  const [a, m, j] = iso.split("-").map(Number);
+  return `${j} ${MOIS[m - 1]} ${a}`;
+};
+
+function IconeFichier({ pdf }: { pdf: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+      <path fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" d="M6 3h8l4 4v14H6z M14 3v4h4" />
+      {pdf ? (
+        <path fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" d="M9 12h6M9 15h6M9 18h4" />
+      ) : (
+        <path fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" d="M8 18l3-4 2 2 2-3 2 5z" />
+      )}
+    </svg>
+  );
+}
+
+/**
+ * Documents d'un propriétaire, classés par catégorie, avec dépôt de fichier.
+ * admin = vue gérante (dépose pour le client ownerId, peut tout supprimer).
+ */
+export function Documents({
+  documents,
+  biens,
+  admin = false,
+  ownerId,
+}: {
+  documents: DocumentItem[];
+  biens: { id: string; nom: string }[];
+  admin?: boolean;
+  ownerId?: string;
+}) {
+  const router = useRouter();
+  const [filtre, setFiltre] = useState<CategorieDoc | "TOUS">("TOUS");
+  const [ouvert, setOuvert] = useState(false);
+  const [envoi, setEnvoi] = useState(false);
+  const [erreur, setErreur] = useState<string | null>(null);
+  const [ok, setOk] = useState(false);
+
+  const presentes = CODES_CATEGORIES.filter((c) => documents.some((d) => d.categorie === c));
+  const visibles = filtre === "TOUS" ? documents : documents.filter((d) => d.categorie === filtre);
+
+  async function deposer(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setErreur(null);
+    setOk(false);
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    const fichier = data.get("file");
+    if (fichier instanceof File && fichier.size > MAX_DOC_BYTES) {
+      setErreur("Fichier trop lourd (4 Mo maximum).");
+      return;
+    }
+    if (ownerId) data.set("ownerId", ownerId);
+    setEnvoi(true);
+    try {
+      const rep = await fetch("/api/documents", { method: "POST", body: data });
+      const json = (await rep.json().catch(() => ({}))) as { error?: string };
+      if (!rep.ok) {
+        setErreur(json.error ?? "L'envoi a échoué, réessayez.");
+        return;
+      }
+      form.reset();
+      setOk(true);
+      setOuvert(false);
+      router.refresh();
+    } catch {
+      setErreur("Connexion impossible, réessayez.");
+    } finally {
+      setEnvoi(false);
+    }
+  }
+
+  return (
+    <div className="lz-docs">
+      <div className="lz-docs-barre">
+        <div className="lz-filtres" role="group" aria-label="Filtrer par catégorie">
+          <button type="button" aria-pressed={filtre === "TOUS"} onClick={() => setFiltre("TOUS")}>
+            Tous <small>{documents.length}</small>
+          </button>
+          {presentes.map((c) => (
+            <button key={c} type="button" aria-pressed={filtre === c} onClick={() => setFiltre(c)}>
+              {CATEGORIES_DOC[c]} <small>{documents.filter((d) => d.categorie === c).length}</small>
+            </button>
+          ))}
+        </div>
+        <button type="button" className="lz-bouton" aria-expanded={ouvert} onClick={() => setOuvert((v) => !v)}>
+          {ouvert ? "Fermer" : "+ Ajouter un document"}
+        </button>
+      </div>
+
+      {ouvert && (
+        <form className="lz-form lz-depot" onSubmit={deposer}>
+          <div className="lz-grille">
+            <label className="lz-champ lz-large">
+              <span>Titre</span>
+              <input name="title" required maxLength={120} placeholder={admin ? "Relevé d'octobre" : "Attestation d'assurance"} />
+            </label>
+            <label className="lz-champ">
+              <span>Catégorie</span>
+              <select name="category" defaultValue={admin ? "RELEVE" : "ASSURANCE"}>
+                {CODES_CATEGORIES.map((c) => (
+                  <option key={c} value={c}>{CATEGORIES_DOC[c]}</option>
+                ))}
+              </select>
+            </label>
+            <label className="lz-champ">
+              <span>Bien concerné</span>
+              <select name="propertyId" defaultValue="">
+                <option value="">Tous les biens</option>
+                {biens.map((b) => (
+                  <option key={b.id} value={b.id}>{b.nom}</option>
+                ))}
+              </select>
+            </label>
+            <label className="lz-champ lz-pleine">
+              <span>Fichier (PDF, JPG ou PNG, 4 Mo max.)</span>
+              <input name="file" type="file" required accept="application/pdf,image/jpeg,image/png,image/webp" />
+            </label>
+          </div>
+          {erreur && <p className="lz-msg lz-erreur" role="alert">{erreur}</p>}
+          <button type="submit" className="lz-bouton" disabled={envoi}>
+            {envoi ? "Envoi…" : "Envoyer le document"}
+          </button>
+        </form>
+      )}
+      {ok && !ouvert && <p className="lz-msg lz-ok" role="status">Document ajouté.</p>}
+
+      {visibles.length === 0 ? (
+        <p className="lz-vide">
+          {documents.length === 0
+            ? admin
+              ? "Aucun document pour ce client. Déposez son contrat, ses relevés ou ses factures."
+              : "Aucun document pour l'instant. Lyze déposera ici votre contrat, vos relevés et vos factures."
+            : "Aucun document dans cette catégorie."}
+        </p>
+      ) : (
+        <ul className="lz-liste-docs">
+          {visibles.map((d) => (
+            <li key={d.id}>
+              <span className="lz-doc-ico"><IconeFichier pdf={d.mime === "application/pdf"} /></span>
+              <span className="lz-doc-texte">
+                <a href={documentUrl(d.id)} target="_blank" rel="noopener">{d.titre}</a>
+                <small>
+                  {CATEGORIES_DOC[d.categorie]} · {d.bien ?? "Tous les biens"} · {dateCourte(d.date)} · {tailleFichier(d.taille)}
+                  {!d.parLyze && (admin ? " · déposé par le client" : " · déposé par vous")}
+                </small>
+              </span>
+              <span className="lz-doc-actions">
+                <a className="lz-lien" href={documentUrl(d.id)} target="_blank" rel="noopener">Ouvrir</a>
+                {(admin || !d.parLyze) && (
+                  <form action={supprimerDocument}>
+                    <input type="hidden" name="documentId" value={d.id} />
+                    <ConfirmButton message={`Supprimer « ${d.titre} » ?`} className="lz-lien lz-danger">
+                      Supprimer
+                    </ConfirmButton>
+                  </form>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}

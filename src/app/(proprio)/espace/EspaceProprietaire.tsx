@@ -2,7 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { logout } from "@/app/actions/auth";
+import { DemandesProprio } from "@/components/Demandes";
+import { Documents } from "@/components/Documents";
+import { FicheBienForm } from "@/components/FicheBienForm";
 import { PhotoManager, type PhotoItem } from "@/components/PhotoManager";
+import type { DemandeItem, DocumentItem, FicheBien } from "@/lib/espace";
 import { Simulateur } from "@/components/Simulateur";
 import { DAY_MS, daysInMonth, formatMAD, monthStart, parseDay } from "@/lib/dates";
 import { monthStats, nights } from "@/lib/stats";
@@ -24,11 +28,20 @@ export type BienEspace = {
   id: string;
   nom: string;
   ville: string;
+  fiche: FicheBien;
   photos: PhotoItem[]; // dans l'ordre ; la première = couverture
   resas: ResaEspace[];
 };
 
-type Props = { nom: string; aujourdhui: string; biens: BienEspace[]; compte: CompteEspace; contact: string };
+type Props = {
+  nom: string;
+  aujourdhui: string;
+  biens: BienEspace[];
+  documents: DocumentItem[];
+  demandes: DemandeItem[];
+  compte: CompteEspace;
+  contact: string;
+};
 
 const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
 const MOIS_COURT = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
@@ -83,11 +96,16 @@ const ONGLETS = [
   ["calendrier", "Calendrier"],
   ["releve", "Revenus"],
   ["photos", "Photos"],
+  ["fiche", "Fiche du bien"],
+  ["documents", "Documents"],
+  ["demandes", "Demandes"],
   ["revenus", "Simulateur"],
   ["compte", "Mon compte"],
 ] as const;
 
-export function EspaceProprietaire({ nom, aujourdhui, biens, compte, contact }: Props) {
+export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes, compte, contact }: Props) {
+  const listeBiens = biens.map((b) => ({ id: b.id, nom: b.nom }));
+  const aTraiter = demandes.filter((d) => d.reponse && d.statut !== "NOUVELLE").length;
   // Onglet souligné = section visible à l'écran (et pas seulement la page)
   const [onglet, setOnglet] = useState<string>("haut");
   useEffect(() => {
@@ -289,8 +307,48 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, compte, contact }: 
               </p>
               <PhotoManager key={bien.id} propertyId={bien.id} initial={bien.photos} />
             </section>
+
+            <section className="panneau lz-section" id="fiche">
+              <span className="eyebrow eyebrow--brique">Fiche du bien</span>
+              <h2>{bien.nom}</h2>
+              <p className="aide-p">
+                Les informations pratiques de votre logement. Lyze s’en sert pour préparer chaque arrivée : tenez-les à
+                jour.
+              </p>
+              {biens.length > 1 && (
+                <div className="lz-choix-bien" role="group" aria-label="Bien affiché">
+                  {biens.map((b) => (
+                    <button key={b.id} type="button" aria-pressed={b.id === bien.id} onClick={() => choisir(b, mois)}>
+                      {b.nom}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <FicheBienForm key={bien.id} propertyId={bien.id} fiche={bien.fiche} />
+            </section>
           </>
         )}
+
+        <section className="panneau lz-section" id="documents">
+          <span className="eyebrow eyebrow--brique">Documents</span>
+          <h2>Vos documents</h2>
+          <p className="aide-p">
+            Contrat, relevés, factures, états des lieux : tout est classé par catégorie. Vous pouvez aussi déposer vos
+            propres pièces (assurance, titre de propriété).
+          </p>
+          <Documents documents={documents} biens={listeBiens} />
+        </section>
+
+        <section className="panneau lz-section" id="demandes">
+          <span className="eyebrow eyebrow--brique">Demandes</span>
+          <h2>Une demande pour Lyze ?</h2>
+          <p className="aide-p">
+            Bloquez des dates pour vous, demandez un ménage ou signalez un problème : Barka suit chaque demande et vous
+            répond ici.
+            {aTraiter > 0 && ` ${aTraiter} réponse${aTraiter > 1 ? "s" : ""} de Lyze ci-dessous.`}
+          </p>
+          <DemandesProprio demandes={demandes} biens={listeBiens} />
+        </section>
 
         <section className="panneau simulateur" id="revenus">
           <span className="eyebrow eyebrow--brique">Simulateur de revenus</span>
