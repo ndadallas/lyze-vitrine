@@ -1,7 +1,9 @@
 import * as z from "zod";
+import { db } from "@/lib/db";
 
 // Formulaire de contact de la vitrine → e-mail à Lyze via l'API HTTP de Resend (pas de dépendance).
-// Variables : RESEND_API_KEY (obligatoire), CONTACT_TO (défaut contact@lyze.ma), CONTACT_FROM (expéditeur vérifié chez Resend).
+// Le message est d'abord enregistré en base (SiteMessage, visible dans l'admin), puis envoyé par mail si configuré.
+// Variables : RESEND_API_KEY (sans elle : enregistrement seul), CONTACT_TO (défaut contact@lyze.ma), CONTACT_FROM (expéditeur vérifié chez Resend).
 
 const ContactSchema = z.object({
   nom: z.string().trim().min(1).max(120),
@@ -35,8 +37,29 @@ export async function POST(req: Request) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "inconnue";
   if (tropDeMessages(ip)) return Response.json({ error: "Trop de messages, réessayez plus tard." }, { status: 429 });
 
+  // Toujours enregistré : la gérante le retrouve dans l'admin même si le mail ne part pas.
+  const message = await db.siteMessage
+    .create({
+      data: {
+        type: d.type ?? "rappel",
+        name: d.nom,
+        email: d.email,
+        phone: d.telephone || null,
+        subject: d.ville || null,
+        body: [d.meuble ? `Meublé : ${d.meuble}` : "", d.message ?? ""].filter(Boolean).join(" · ") || null,
+        language: d.langue ?? "fr",
+      },
+      select: { id: true },
+    })
+    .catch((e) => {
+      console.error("Contact : enregistrement impossible", e);
+      return null;
+    });
+
   const cle = process.env.RESEND_API_KEY;
-  if (!cle) return Response.json({ error: "Envoi d'e-mails non configuré." }, { status: 503 });
+  if (!cle) {
+    return message ? Response.json({ ok: true }) : Response.json({ error: "Envoi impossible." }, { status: 503 });
+  }
 
   const texte = [
     `Nom : ${d.nom}`,
@@ -63,7 +86,9 @@ export async function POST(req: Request) {
 
   if (!r?.ok) {
     console.error("Contact : échec de l'envoi Resend", r?.status, await r?.text().catch(() => ""));
-    return Response.json({ error: "L'envoi a échoué." }, { status: 502 });
+    // le message est quand même enregistré : pas d'échec côté visiteur
+    return message ? Response.json({ ok: true }) : Response.json({ error: "L'envoi a échoué." }, { status: 502 });
   }
+  if (message) await db.siteMessage.update({ where: { id: message.id }, data: { mailSent: true } }).catch(() => null);
   return Response.json({ ok: true });
 }

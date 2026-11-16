@@ -18,6 +18,19 @@ export function FicheBienForm({ propertyId, fiche }: { propertyId: string; fiche
       <fieldset className="lz-groupe">
         <legend>Le logement</legend>
         <div className="lz-grille">
+          <label className="lz-champ lz-large">
+            <span>Nom du bien</span>
+            <input name="name" defaultValue={fiche.name} required maxLength={120} />
+          </label>
+          <label className="lz-champ">
+            <span>Ville</span>
+            <input name="city" defaultValue={fiche.city} required maxLength={80} list="lz-villes" />
+            <datalist id="lz-villes">
+              <option value="El Jadida" />
+              <option value="Casablanca" />
+              <option value="Marrakech" />
+            </datalist>
+          </label>
           <label className="lz-champ">
             <span>Catégorie</span>
             <select name="kind" defaultValue={fiche.kind}>
@@ -27,7 +40,7 @@ export function FicheBienForm({ propertyId, fiche }: { propertyId: string; fiche
               ))}
             </select>
           </label>
-          <label className="lz-champ lz-large">
+          <label className="lz-champ lz-pleine">
             <span>Adresse</span>
             <input name="address" defaultValue={fiche.address} autoComplete="off" placeholder="Rue, quartier, ville" />
           </label>

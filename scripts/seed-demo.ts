@@ -210,6 +210,17 @@ async function main() {
       },
     ],
   });
+  // Dépenses (déduites du relevé)
+  await db.expense.createMany({
+    data: [
+      { propertyId: mer.id, date: day(-25), category: "MENAGE", label: "Ménages du mois", amount: 900 },
+      { propertyId: mer.id, date: day(-55), category: "CHARGES", label: "Électricité et internet", amount: 640 },
+      { propertyId: villa.id, date: day(-18), category: "ENTRETIEN", label: "Révision de la pompe de piscine", amount: 1500 },
+      { propertyId: villa.id, date: day(-80), category: "LINGE", label: "Blanchisserie", amount: 700 },
+      { propertyId: studio.id, date: day(-40), category: "EQUIPEMENT", label: "Nouvelle machine à café", amount: 450, byOwner: true },
+      { propertyId: studio.id, date: day(-10), category: "TAXES", label: "Taxe de séjour", amount: 320 },
+    ],
+  });
   await db.$disconnect();
 
   console.log("\nCompte de démo créé :");

@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { requireOwner } from "@/lib/auth";
 import { addMonths, monthStart, toDayString, today } from "@/lib/dates";
 import { photoUrl } from "@/lib/photos";
-import { SELECT_DOCUMENT, ficheDepuis, versDemandeItem, versDocumentItem } from "@/lib/espace";
+import { SELECT_DOCUMENT, ficheDepuis, versDemandeItem, versDepenseItem, versDocumentItem } from "@/lib/espace";
 import { EspaceProprietaire, type BienEspace } from "./EspaceProprietaire";
 
 export const metadata: Metadata = { title: "Mes biens" };
@@ -30,13 +30,17 @@ export default async function EspacePage() {
     },
   });
 
-  const [documents, demandes] = await Promise.all([
+  const [documents, demandes, depenses] = await Promise.all([
     db.document.findMany({ where: { ownerId: user.id }, orderBy: { createdAt: "desc" }, select: SELECT_DOCUMENT }),
     db.ownerRequest.findMany({
       where: { ownerId: user.id },
       orderBy: { createdAt: "desc" },
       take: 50,
       include: { property: { select: { name: true } } },
+    }),
+    db.expense.findMany({
+      where: { property: { ownerId: user.id }, date: { gte: from } },
+      orderBy: { date: "desc" },
     }),
   ]);
 
@@ -55,6 +59,7 @@ export default async function EspacePage() {
       initiale: b.kind === "RESERVED" ? (b.guestName?.trim().charAt(0) || "V").toUpperCase() : null,
       montant: b.kind === "RESERVED" ? b.amount : 0,
       plateforme: b.platform,
+      note: b.note,
     })),
   }));
 
@@ -65,6 +70,7 @@ export default async function EspacePage() {
       biens={biens}
       documents={documents.map(versDocumentItem)}
       demandes={demandes.map(versDemandeItem)}
+      depenses={depenses.map(versDepenseItem)}
       // LYZE_WHATSAPP = numéro international sans + (ex. 212612345678) ; sans lui, le bouton mène au formulaire de contact
       contact={process.env.LYZE_WHATSAPP ? `https://wa.me/${process.env.LYZE_WHATSAPP.replace(/\D/g, "")}` : "/#contact"}
       compte={{

@@ -112,3 +112,54 @@
   .lz-liste-docs li { grid-template-columns: 40px minmax(0, 1fr); }
   .lz-doc-actions { grid-column: 2; }
 }
+
+/* ===== Calendrier modifiable, planning, dépenses (2026-11-16) ===== */
+.app button.jour { font: inherit; text-align: left; color: inherit; width: 100%; }
+.app button.jour:not(.loue, .reserve, .barka, .bloque):hover { outline: 2px solid var(--lz-texte); outline-offset: -2px; }
+.app .jour.choisi { outline: 3px solid var(--lz-texte); outline-offset: -3px; }
+.lz-actions-resa { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 18px; }
+.lz-actions-resa form { margin: 0; }
+.lz-form-resa { gap: 14px; margin-top: 14px; }
+.lz-form-resa .lz-champ :is(input, select) { min-height: 40px; padding: 8px 10px; font-size: 14px; }
+.lz-deux { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.lz-h-petit { font-family: var(--lz-titre); font-weight: 400; font-size: 24px; margin-top: 6px; }
+.lz-ajout-bien { display: block; margin: 12px 12px 0; }
+.lz-form-bien { margin: 12px; gap: 12px; }
+.lz-form-bien .lz-champ :is(input) { min-height: 40px; }
+.vide-biens .lz-form-bien { margin: 20px 0 0; max-width: 420px; }
+.lz-zone-suppr { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--lz-ligne); }
+
+.lz-planning-tete { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 22px; }
+.lz-planning-defile { margin-top: 18px; overflow-x: auto; border: 1px solid var(--lz-ligne); background: #fff; }
+.lz-planning { display: grid; grid-auto-rows: minmax(52px, auto); min-width: 980px; position: relative; }
+.lz-pl-coin, .lz-pl-jour { position: sticky; top: 0; background: var(--lz-fond); border-bottom: 1px solid var(--lz-ligne); z-index: 2; }
+.lz-pl-coin { grid-row: 1; grid-column: 1; left: 0; z-index: 3; }
+.lz-pl-jour { grid-row: 1; display: grid; place-items: center; align-content: center; gap: 1px; padding: 6px 0; font-size: 13px; font-weight: 600; }
+.lz-pl-jour small { font-size: 10px; font-weight: 500; color: var(--lz-gris); }
+.lz-pl-jour.lz-we { background: var(--lz-sable); }
+.lz-pl-jour.lz-aujourdhui { background: var(--lz-texte); color: #f6f0e4; }
+.lz-pl-jour.lz-aujourdhui small { color: inherit; }
+.lz-pl-bien { position: sticky; left: 0; z-index: 1; display: grid; align-content: center; gap: 1px; padding: 8px 12px; background: var(--lz-fond); border-right: 1px solid var(--lz-ligne); border-bottom: 1px solid var(--lz-ligne); min-width: 0; }
+.lz-pl-bien strong { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lz-pl-bien small { font-size: 12px; color: var(--lz-gris); }
+.lz-pl-case { border: 0; border-left: 1px solid rgba(74, 52, 38, .06); border-bottom: 1px solid var(--lz-ligne); background: none; cursor: pointer; padding: 0; }
+.lz-pl-case:hover { background: rgba(156, 102, 68, .1); }
+.lz-pl-barre {
+  z-index: 1; align-self: center; height: 34px; margin: 0 2px; display: flex; align-items: center; gap: 6px; padding: 0 8px;
+  overflow: hidden; white-space: nowrap; font: inherit; font-size: 12px; font-weight: 600; border: 0; border-radius: 6px; cursor: pointer; color: #f6f0e4;
+}
+.lz-pl-barre:hover { filter: brightness(1.08); }
+.lz-pl-reserved { background: var(--lz-vert); }
+.lz-pl-managed { background: #3e6a8f; }
+.lz-pl-blocked { background: repeating-linear-gradient(135deg, #d8c8ad 0 6px, #ede4d3 6px 12px); color: var(--lz-texte); }
+.lz-pl-barre img, .lz-pl-barre svg { flex: none; background: #fff; border-radius: 3px; }
+
+.lz-table-defile { overflow-x: auto; }
+.lz-table-dep { min-width: 560px; }
+.lz-table-dep td, .lz-table-dep th { text-align: left; white-space: normal; }
+.lz-table-dep td:nth-child(4) { text-align: right; white-space: nowrap; }
+.lz-dep-libelle small { display: block; font-size: 12px; color: var(--lz-gris); margin-top: 2px; }
+.releve td:nth-child(5) { color: #8a3b2a; }
+@media (max-width: 900px) {
+  .lz-deux { grid-template-columns: minmax(0, 1fr); }
+}

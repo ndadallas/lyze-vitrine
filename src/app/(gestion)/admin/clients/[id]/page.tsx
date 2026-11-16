@@ -13,9 +13,10 @@ import { ConfirmButton } from "@/components/ConfirmButton";
 import { EnteteBien } from "@/components/EnteteBien";
 import { PhotoManager } from "@/components/PhotoManager";
 import { DemandeAdmin } from "@/components/Demandes";
+import { Depenses } from "@/components/Depenses";
 import { Documents } from "@/components/Documents";
 import { FicheBienForm } from "@/components/FicheBienForm";
-import { SELECT_DOCUMENT, ficheDepuis, versDemandeItem, versDocumentItem } from "@/lib/espace";
+import { SELECT_DOCUMENT, ficheDepuis, versDemandeItem, versDepenseItem, versDocumentItem } from "@/lib/espace";
 import { Repli } from "@/components/Repli";
 import {
   addBooking,
@@ -57,6 +58,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
             orderBy: { startDate: "asc" },
           },
           photos: { orderBy: [{ position: "asc" }, { createdAt: "asc" }], select: { id: true } },
+          expenses: { orderBy: { date: "desc" }, take: 200 },
         },
       },
       documents: { orderBy: { createdAt: "desc" }, select: SELECT_DOCUMENT },
@@ -293,6 +295,19 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
                     <p className="muted">Catégorie, équipements, wifi et consignes d&apos;arrivée. Le client voit et modifie la même fiche.</p>
                   </div>
                   <FicheBienForm key={bien.id} propertyId={bien.id} fiche={ficheDepuis(bien)} />
+                </section>
+
+                <section className="bien-partie" aria-labelledby="dep-title">
+                  <div className="bien-partie-tete">
+                    <h4 id="dep-title">Dépenses</h4>
+                    <p className="muted">Ménage, réparations, charges : déduites des revenus dans le relevé du client.</p>
+                  </div>
+                  <Depenses
+                    admin
+                    depenses={bien.expenses.map(versDepenseItem)}
+                    biens={[{ id: bien.id, nom: bien.name }]}
+                    aujourdhui={toDayString(today())}
+                  />
                 </section>
 
                 <section className="bien-partie" aria-labelledby="resas-title">

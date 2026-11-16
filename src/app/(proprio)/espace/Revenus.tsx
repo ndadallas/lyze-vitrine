@@ -4,6 +4,7 @@ import { useState } from "react";
 import { addMonths, daysInMonth, formatMAD, parseDay } from "@/lib/dates";
 import { nights, overlapNights } from "@/lib/stats";
 import { LogoPlateforme } from "@/lib/plateformes";
+import type { DepenseItem } from "@/lib/espace";
 import type { BienEspace } from "./EspaceProprietaire";
 
 const MOIS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
@@ -12,7 +13,7 @@ const jour = (iso: string) => parseDay(iso)!;
 const court = (d: Date) => `${d.getUTCDate()} ${MOIS_COURT[d.getUTCMonth()]}`;
 
 /** Relevé mois par mois (12 derniers mois, mois en cours compris) + prochaines arrivées, tous biens ou un seul. */
-export function Revenus({ biens, aujourdhui }: { biens: BienEspace[]; aujourdhui: string }) {
+export function Revenus({ biens, aujourdhui, depenses }: { biens: BienEspace[]; aujourdhui: string; depenses: DepenseItem[] }) {
   const [filtre, setFiltre] = useState("tous");
   const choisis = filtre === "tous" ? biens : biens.filter((b) => b.id === filtre);
   const t0 = jour(aujourdhui);
@@ -36,6 +37,10 @@ export function Revenus({ biens, aujourdhui }: { biens: BienEspace[]; aujourdhui
       montant += (r.montant * n) / (nights(r) || 1); // réservation à cheval : au prorata des nuits
     }
     const dispo = daysInMonth(debut) * choisis.length;
+    const ids = new Set(choisis.map((b) => b.id));
+    const frais = depenses
+      .filter((d) => ids.has(d.bienId) && jour(d.date) >= debut && jour(d.date) < fin)
+      .reduce((s, d) => s + d.montant, 0);
     return {
       cle: debut.toISOString(),
       libelle: `${MOIS[debut.getUTCMonth()]} ${debut.getUTCFullYear()}`,
@@ -43,12 +48,16 @@ export function Revenus({ biens, aujourdhui }: { biens: BienEspace[]; aujourdhui
       nuits,
       occupation: dispo ? Math.round((nuits / dispo) * 100) : 0,
       montant: Math.round(montant),
+      frais,
     };
   });
   // pas de mois vides avant la première réservation (au moins 3 lignes)
-  const derniere = lignes.findLastIndex((l) => l.nuits > 0);
+  const derniere = lignes.findLastIndex((l) => l.nuits > 0 || l.frais > 0);
   lignes.splice(Math.max(derniere + 1, 3));
-  const total = lignes.reduce((s, l) => ({ nuits: s.nuits + l.nuits, montant: s.montant + l.montant }), { nuits: 0, montant: 0 });
+  const total = lignes.reduce(
+    (s, l) => ({ nuits: s.nuits + l.nuits, montant: s.montant + l.montant, frais: s.frais + l.frais }),
+    { nuits: 0, montant: 0, frais: 0 },
+  );
 
   const prochaines = resas
     .filter((r) => r.startDate.getTime() >= t0.getTime())
@@ -77,8 +86,8 @@ export function Revenus({ biens, aujourdhui }: { biens: BienEspace[]; aujourdhui
 
       <div className="revenus-chiffres">
         <div><span>{lignes.length === 12 ? "Sur 12 mois" : `Depuis ${lignes[lignes.length - 1].libelle.toLowerCase()}`}</span><strong>{formatMAD(total.montant)}</strong></div>
-        <div><span>Nuits réservées</span><strong>{total.nuits}</strong></div>
-        <div><span>Ce mois-ci</span><strong>{formatMAD(lignes[0].montant)}</strong></div>
+        <div><span>Dépenses</span><strong>{formatMAD(total.frais)}</strong></div>
+        <div><span>Net après dépenses</span><strong>{formatMAD(total.montant - total.frais)}</strong></div>
       </div>
 
       <div className="revenus-grille">
@@ -86,7 +95,7 @@ export function Revenus({ biens, aujourdhui }: { biens: BienEspace[]; aujourdhui
           <span className="titre-p">Relevé mois par mois</span>
           <table className="releve">
             <thead>
-              <tr><th scope="col">Mois</th><th scope="col">Nuits</th><th scope="col">Occupation</th><th scope="col">Montant net</th></tr>
+              <tr><th scope="col">Mois</th><th scope="col">Nuits</th><th scope="col">Occupation</th><th scope="col">Revenus</th><th scope="col">Dépenses</th><th scope="col">Net</th></tr>
             </thead>
             <tbody>
               {lignes.map((l) => (
@@ -95,11 +104,13 @@ export function Revenus({ biens, aujourdhui }: { biens: BienEspace[]; aujourdhui
                   <td>{l.nuits}</td>
                   <td>{l.occupation} %</td>
                   <td>{l.montant ? formatMAD(l.montant) : "—"}</td>
+                  <td>{l.frais ? `− ${formatMAD(l.frais)}` : "—"}</td>
+                  <td>{l.montant || l.frais ? formatMAD(l.montant - l.frais) : "—"}</td>
                 </tr>
               ))}
             </tbody>
             <tfoot>
-              <tr><th scope="row">Total</th><td>{total.nuits}</td><td /><td>{formatMAD(total.montant)}</td></tr>
+              <tr><th scope="row">Total</th><td>{total.nuits}</td><td /><td>{formatMAD(total.montant)}</td><td>{total.frais ? `− ${formatMAD(total.frais)}` : "—"}</td><td>{formatMAD(total.montant - total.frais)}</td></tr>
             </tfoot>
           </table>
         </div>

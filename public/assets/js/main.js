@@ -172,11 +172,11 @@
     /* Carte « Demander à réserver » */
     var resaForm = document.querySelector('[data-reserver]');
     var TR = {
-      fr: { dates: 'Choisissez vos dates d’arrivée et de départ dans le calendrier.', ok: 'Merci ! Votre demande est envoyée : Barka vous répond sur WhatsApp sous 24 h.', sujet: 'Demande de réservation', bien: 'Bien', arr: 'Arrivée', dep: 'Départ', nuits: 'Nuits', voy: 'Voyageurs', titre: 'Demande de réservation' },
-      en: { dates: 'Choose your check-in and check-out dates in the calendar.', ok: 'Thank you! Your request has been sent: Barka will reply on WhatsApp within 24 hours.', sujet: 'Booking request', bien: 'Property', arr: 'Check-in', dep: 'Check-out', nuits: 'Nights', voy: 'Guests', titre: 'Booking request' },
-      ar: { dates: 'اختر تاريخَي الوصول والمغادرة من التقويم.', ok: 'شكرًا! تم إرسال طلبك: ستردّ عليك بركة عبر واتساب خلال 24 ساعة.', sujet: 'طلب حجز', bien: 'العقار', arr: 'الوصول', dep: 'المغادرة', nuits: 'الليالي', voy: 'الضيوف', titre: 'طلب حجز' },
-      it: { dates: 'Scegli le date di arrivo e di partenza nel calendario.', ok: 'Grazie! La tua richiesta è stata inviata: Barka ti risponderà su WhatsApp entro 24 ore.', sujet: 'Richiesta di prenotazione', bien: 'Struttura', arr: 'Arrivo', dep: 'Partenza', nuits: 'Notti', voy: 'Ospiti', titre: 'Richiesta di prenotazione' },
-      es: { dates: 'Elige tus fechas de llegada y salida en el calendario.', ok: '¡Gracias! Tu solicitud se ha enviado: Barka te responderá por WhatsApp en menos de 24 horas.', sujet: 'Solicitud de reserva', bien: 'Alojamiento', arr: 'Llegada', dep: 'Salida', nuits: 'Noches', voy: 'Huéspedes', titre: 'Solicitud de reserva' }
+      fr: { redir: 'Demande envoyée à Lyze. Redirection vers la plateforme pour finaliser la réservation…', dates: 'Choisissez vos dates d’arrivée et de départ dans le calendrier.', ok: 'Merci ! Votre demande est envoyée : Barka vous répond sur WhatsApp sous 24 h.', sujet: 'Demande de réservation', bien: 'Bien', arr: 'Arrivée', dep: 'Départ', nuits: 'Nuits', voy: 'Voyageurs', titre: 'Demande de réservation' },
+      en: { redir: 'Request sent to Lyze. Redirecting you to the platform to complete the booking…', dates: 'Choose your check-in and check-out dates in the calendar.', ok: 'Thank you! Your request has been sent: Barka will reply on WhatsApp within 24 hours.', sujet: 'Booking request', bien: 'Property', arr: 'Check-in', dep: 'Check-out', nuits: 'Nights', voy: 'Guests', titre: 'Booking request' },
+      ar: { redir: 'تم إرسال الطلب إلى Lyze. جارٍ تحويلك إلى المنصة لإتمام الحجز…', dates: 'اختر تاريخَي الوصول والمغادرة من التقويم.', ok: 'شكرًا! تم إرسال طلبك: ستردّ عليك بركة عبر واتساب خلال 24 ساعة.', sujet: 'طلب حجز', bien: 'العقار', arr: 'الوصول', dep: 'المغادرة', nuits: 'الليالي', voy: 'الضيوف', titre: 'طلب حجز' },
+      it: { redir: 'Richiesta inviata a Lyze. Ti reindirizziamo alla piattaforma per completare la prenotazione…', dates: 'Scegli le date di arrivo e di partenza nel calendario.', ok: 'Grazie! La tua richiesta è stata inviata: Barka ti risponderà su WhatsApp entro 24 ore.', sujet: 'Richiesta di prenotazione', bien: 'Struttura', arr: 'Arrivo', dep: 'Partenza', nuits: 'Notti', voy: 'Ospiti', titre: 'Richiesta di prenotazione' },
+      es: { redir: 'Solicitud enviada a Lyze. Te redirigimos a la plataforma para completar la reserva…', dates: 'Elige tus fechas de llegada y salida en el calendario.', ok: '¡Gracias! Tu solicitud se ha enviado: Barka te responderá por WhatsApp en menos de 24 horas.', sujet: 'Solicitud de reserva', bien: 'Alojamiento', arr: 'Llegada', dep: 'Salida', nuits: 'Noches', voy: 'Huéspedes', titre: 'Solicitud de reserva' }
     }[lang];
     var nbNuits = function () { return choix.au !== null ? Math.round((choix.au - choix.du) / JOUR) : 0; };
     var majCarte = function () {
@@ -211,7 +211,13 @@
         dire(T.envoi);
         fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(donnees) })
           .then(function (r) {
-            if (r.ok) { resaForm.reset(); choix = { du: null, au: null }; rendre(); majCarte(); dire(TR.ok, 'ok'); }
+            if (r.ok) {
+              resaForm.reset(); choix = { du: null, au: null }; rendre(); majCarte();
+              // le bien est réservable sur une plateforme : on y envoie le voyageur après avoir prévenu Lyze
+              var lien = resaForm.dataset.lien;
+              if (lien && /^https:\/\//.test(lien)) { dire(TR.redir, 'ok'); setTimeout(function () { window.location.href = lien; }, 1800); }
+              else dire(TR.ok, 'ok');
+            }
             else if (r.status === 400) dire(T.invalide, 'erreur');
             else repli(); // démo GitHub Pages (404/405) ou mail pas encore branché (503)
           })

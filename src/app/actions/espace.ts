@@ -5,7 +5,8 @@ import * as z from "zod";
 import { db } from "@/lib/db";
 import { requireAdmin, requireOwner } from "@/lib/auth";
 import { parseDay, today } from "@/lib/dates";
-import { CODES_STATUTS, CODES_TYPES_DEMANDE, EQUIPEMENTS, TYPES_BIEN } from "@/lib/espace";
+import { CODES_DEPENSES, CODES_STATUTS, CODES_TYPES_DEMANDE, EQUIPEMENTS, TYPES_BIEN } from "@/lib/espace";
+import { findClash, parseBooking } from "@/lib/reservations";
 import { getManageableProperty } from "@/lib/photos";
 import { getSessionUser } from "@/lib/session";
 
@@ -36,6 +37,8 @@ function rafraichir(ownerId: string) {
 /* ------------------------------------------------------------------ */
 
 const FicheSchema = z.object({
+  name: z.string().trim().min(1, { error: "Nom du bien requis." }).max(120),
+  city: z.string().trim().min(1, { error: "Ville requise." }).max(80),
   kind: z.union([z.enum(TYPES_BIEN), z.literal("")]).transform((v) => v || null),
   address: texte(300),
   bedrooms: entier(50, "Chambres"),
@@ -53,6 +56,8 @@ export async function enregistrerFiche(_prev: EspaceState, formData: FormData): 
   if (!bien) return { error: "Accès refusé." };
 
   const parsed = FicheSchema.safeParse({
+    name: formData.get("name") ?? "",
+    city: formData.get("city") ?? "",
     kind: formData.get("kind") ?? "",
     address: formData.get("address") ?? "",
     bedrooms: formData.get("bedrooms") ?? "",
@@ -207,4 +212,131 @@ export async function traiterDemande(_prev: EspaceState, formData: FormData): Pr
   });
   rafraichir(demande.ownerId);
   return { ok: Date.now() };
+}
+
+/* ------------------------------------------------------------------ */
+/* Biens (le propriétaire ajoute, renomme, supprime les siens)         */
+/* ------------------------------------------------------------------ */
+
+const BienSchema = z.object({
+  name: z.string().trim().min(1, { error: "Nom du bien requis." }).max(120),
+  city: z.string().trim().min(1, { error: "Ville requise." }).max(80),
+});
+
+export async function ajouterBien(_prev: EspaceState, formData: FormData): Promise<EspaceState> {
+  const user = await requireOwner();
+  const parsed = BienSchema.safeParse({ name: formData.get("name") ?? "", city: formData.get("city") ?? "" });
+  if (!parsed.success) return { error: premier(parsed.error) };
+  if ((await db.property.count({ where: { ownerId: user.id } })) >= 50) return { error: "Maximum 50 biens par compte." };
+  await db.property.create({ data: { ...parsed.data, ownerId: user.id } });
+  rafraichir(user.id);
+  return { ok: Date.now() };
+}
+
+export async function supprimerBien(formData: FormData) {
+  const bien = await getManageableProperty(String(formData.get("propertyId") ?? ""));
+  if (!bien) return;
+  await db.property.delete({ where: { id: bien.id } });
+  rafraichir(bien.ownerId);
+}
+
+/* ------------------------------------------------------------------ */
+/* Calendrier : réservations et blocages saisis depuis l'espace        */
+/* ------------------------------------------------------------------ */
+
+/** Ajoute (sans bookingId) ou modifie (avec bookingId) une ligne du calendrier d'un bien. */
+export async function enregistrerResa(_prev: EspaceState, formData: FormData): Promise<EspaceState> {
+  const bookingId = String(formData.get("bookingId") ?? "");
+  const existante = bookingId ? await db.booking.findUnique({ where: { id: bookingId } }) : null;
+  if (bookingId && !existante) return { error: "Réservation introuvable." };
+  if (existante) formData.set("propertyId", existante.propertyId);
+
+  const bien = await getManageableProperty(String(formData.get("propertyId") ?? ""));
+  if (!bien) return { error: "Accès refusé." };
+
+  const parsed = parseBooking(formData);
+  if (!parsed.success) return { error: premier(parsed.error) };
+  const b = parsed.data;
+
+  const clash = await findClash(bien.id, b.startDate, b.endDate, existante?.id);
+  if (clash) return { error: clash };
+
+  const data = {
+    kind: b.kind,
+    platform: b.platform,
+    startDate: b.startDate,
+    endDate: b.endDate,
+    // le propriétaire ne voit que l'initiale : champ vide = nom inchangé
+    guestName: b.guestName ?? existante?.guestName ?? null,
+    amount: b.kind === "RESERVED" ? b.amount : 0,
+    note: b.note,
+  };
+  if (existante) await db.booking.update({ where: { id: existante.id }, data });
+  else await db.booking.create({ data: { ...data, propertyId: bien.id } });
+  rafraichir(bien.ownerId);
+  return { ok: Date.now() };
+}
+
+export async function supprimerResa(formData: FormData) {
+  const resa = await db.booking.findUnique({ where: { id: String(formData.get("bookingId") ?? "") } });
+  if (!resa || !(await getManageableProperty(resa.propertyId))) return;
+  await db.booking.delete({ where: { id: resa.id } });
+  const bien = await db.property.findUnique({ where: { id: resa.propertyId }, select: { ownerId: true } });
+  if (bien) rafraichir(bien.ownerId);
+}
+
+/* ------------------------------------------------------------------ */
+/* Dépenses                                                            */
+/* ------------------------------------------------------------------ */
+
+const DepenseSchema = z.object({
+  date: z.string().transform((v, ctx) => {
+    const d = parseDay(v);
+    if (!d) ctx.addIssue({ code: "custom", message: "Date invalide." });
+    return d ?? new Date(NaN);
+  }),
+  category: z.enum(CODES_DEPENSES, { error: "Catégorie invalide." }),
+  label: z.string().trim().min(1, { error: "Indiquez un libellé." }).max(120),
+  amount: z.coerce
+    .number({ error: "Montant invalide." })
+    .int({ error: "Montant en MAD, sans centimes." })
+    .min(1, { error: "Montant invalide." })
+    .max(10_000_000),
+});
+
+export async function ajouterDepense(_prev: EspaceState, formData: FormData): Promise<EspaceState> {
+  const user = await getSessionUser();
+  const bien = await getManageableProperty(String(formData.get("propertyId") ?? ""));
+  if (!user || !bien) return { error: "Accès refusé." };
+  const parsed = DepenseSchema.safeParse({
+    date: formData.get("date") ?? "",
+    category: formData.get("category") ?? "",
+    label: formData.get("label") ?? "",
+    amount: formData.get("amount") ?? "",
+  });
+  if (!parsed.success) return { error: premier(parsed.error) };
+  await db.expense.create({ data: { ...parsed.data, propertyId: bien.id, byOwner: user.role === "OWNER" } });
+  rafraichir(bien.ownerId);
+  return { ok: Date.now() };
+}
+
+export async function supprimerDepense(formData: FormData) {
+  const dep = await db.expense.findUnique({ where: { id: String(formData.get("expenseId") ?? "") } });
+  const bien = dep ? await getManageableProperty(dep.propertyId) : null;
+  if (!dep || !bien) return;
+  await db.expense.delete({ where: { id: dep.id } });
+  rafraichir(bien.ownerId);
+}
+
+/* ------------------------------------------------------------------ */
+/* Messages des formulaires du site (admin)                            */
+/* ------------------------------------------------------------------ */
+
+export async function basculerMessage(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("messageId") ?? "");
+  const m = await db.siteMessage.findUnique({ where: { id }, select: { handled: true } });
+  if (!m) return;
+  await db.siteMessage.update({ where: { id }, data: { handled: !m.handled } });
+  revalidatePath("/admin");
 }

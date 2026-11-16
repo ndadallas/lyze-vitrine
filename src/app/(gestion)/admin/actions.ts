@@ -5,10 +5,9 @@ import { redirect } from "next/navigation";
 import * as z from "zod";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
-import { formatShortDate, parseDay } from "@/lib/dates";
-import { CODES_PLATEFORMES } from "@/lib/plateformes";
 import { generatePassword, hashPassword, slugUsername } from "@/lib/passwords";
 import { revokeUserSessions } from "@/lib/session";
+import { findClash, parseBooking } from "@/lib/reservations";
 
 export type Credentials = {
   name: string;
@@ -247,61 +246,6 @@ export async function deleteProperty(formData: FormData) {
 /* ------------------------------------------------------------------ */
 /* Réservations / blocages                                            */
 /* ------------------------------------------------------------------ */
-
-const BookingSchema = z
-  .object({
-    propertyId: z.string().min(1),
-    kind: z.enum(["RESERVED", "BLOCKED", "MANAGED"]),
-    platform: z.enum(CODES_PLATEFORMES, { error: "Plateforme invalide." }),
-    startDate: z.string().transform((v, ctx) => {
-      const d = parseDay(v);
-      if (!d) ctx.addIssue({ code: "custom", message: "Date d'arrivée invalide." });
-      return d ?? new Date(NaN);
-    }),
-    endDate: z.string().transform((v, ctx) => {
-      const d = parseDay(v);
-      if (!d) ctx.addIssue({ code: "custom", message: "Date de départ invalide." });
-      return d ?? new Date(NaN);
-    }),
-    guestName: optionalText,
-    amount: z.coerce
-      .number({ error: "Montant invalide." })
-      .int({ error: "Montant en MAD, sans centimes." })
-      .min(0, { error: "Montant invalide." })
-      .max(10_000_000),
-    note: optionalText,
-  })
-  .refine((b) => b.endDate > b.startDate, {
-    error: "La date de départ doit être après la date d'arrivée.",
-  });
-
-function parseBooking(formData: FormData) {
-  return BookingSchema.safeParse({
-    propertyId: formData.get("propertyId") ?? "",
-    kind: formData.get("kind") ?? "RESERVED",
-    platform: formData.get("platform") ?? "AIRBNB",
-    startDate: formData.get("startDate") ?? "",
-    endDate: formData.get("endDate") ?? "",
-    guestName: formData.get("guestName") ?? "",
-    amount: formData.get("amount") || 0,
-    note: formData.get("note") ?? "",
-  });
-}
-
-/** Message d'erreur si les dates chevauchent une autre ligne du même bien (hors `exceptId`). */
-async function findClash(propertyId: string, start: Date, end: Date, exceptId?: string) {
-  const clash = await db.booking.findFirst({
-    where: {
-      propertyId,
-      startDate: { lt: end },
-      endDate: { gt: start },
-      ...(exceptId ? { id: { not: exceptId } } : {}),
-    },
-    orderBy: { startDate: "asc" },
-  });
-  if (!clash) return null;
-  return `Ces dates chevauchent ${clash.kind === "RESERVED" ? "une réservation" : clash.kind === "MANAGED" ? "une période « Barka s’en charge »" : "un blocage"} existant (${formatShortDate(clash.startDate)} → ${formatShortDate(clash.endDate)}).`;
-}
 
 export async function addBooking(_prev: ActionState, formData: FormData): Promise<ActionState> {
   await requireAdmin();

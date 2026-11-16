@@ -99,6 +99,7 @@ model Property {
   photos    Photo[]
   documents Document[]
   requests  OwnerRequest[]
+  expenses  Expense[]
 
   @@index([ownerId])
 }
@@ -200,4 +201,48 @@ model OwnerRequest {
 
   @@index([ownerId, createdAt])
   @@index([status])
+}
+
+enum ExpenseCategory {
+  MENAGE
+  LINGE
+  ENTRETIEN
+  EQUIPEMENT
+  CHARGES
+  TAXES
+  AUTRE
+}
+
+// Dépense liée à un bien (ménage, réparation, charges…), déduite des revenus dans le relevé.
+model Expense {
+  id         String          @id @default(cuid())
+  propertyId String
+  date       DateTime
+  category   ExpenseCategory @default(AUTRE)
+  label      String
+  amount     Int // MAD
+  byOwner    Boolean         @default(false)
+  createdAt  DateTime        @default(now())
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId, date])
+}
+
+// Message envoyé par un formulaire du site (demande de réservation d'un voyageur, demande de rappel d'un propriétaire).
+// Toujours enregistré, même si l'envoi du mail échoue ou n'est pas configuré : la gérante le voit dans l'admin.
+model SiteMessage {
+  id        String   @id @default(cuid())
+  type      String // "reservation" | "rappel"
+  name      String
+  email     String
+  phone     String?
+  subject   String? // bien ou ville
+  body      String?
+  language  String?
+  mailSent  Boolean  @default(false)
+  handled   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
 }

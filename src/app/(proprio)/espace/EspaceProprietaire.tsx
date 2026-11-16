@@ -1,17 +1,22 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useState } from "react";
 import { logout } from "@/app/actions/auth";
+import { ajouterBien, supprimerBien } from "@/app/actions/espace";
+import { ConfirmButton } from "@/components/ConfirmButton";
+import { Depenses } from "@/components/Depenses";
 import { DemandesProprio } from "@/components/Demandes";
 import { Documents } from "@/components/Documents";
 import { FicheBienForm } from "@/components/FicheBienForm";
 import { PhotoManager, type PhotoItem } from "@/components/PhotoManager";
-import type { DemandeItem, DocumentItem, FicheBien } from "@/lib/espace";
+import type { DemandeItem, DepenseItem, DocumentItem, FicheBien } from "@/lib/espace";
 import { Simulateur } from "@/components/Simulateur";
 import { DAY_MS, daysInMonth, formatMAD, monthStart, parseDay } from "@/lib/dates";
 import { monthStats, nights } from "@/lib/stats";
 import { LogoPlateforme, PLATEFORMES, type Plateforme } from "@/lib/plateformes";
+import { EditeurResa, type Brouillon } from "./EditeurResa";
 import { MonCompte, type CompteEspace } from "./MonCompte";
+import { Planning } from "./Planning";
 import { Revenus } from "./Revenus";
 
 export type ResaEspace = {
@@ -22,6 +27,7 @@ export type ResaEspace = {
   initiale: string | null;
   montant: number;
   plateforme: Plateforme;
+  note: string | null;
 };
 
 export type BienEspace = {
@@ -39,6 +45,7 @@ type Props = {
   biens: BienEspace[];
   documents: DocumentItem[];
   demandes: DemandeItem[];
+  depenses: DepenseItem[];
   compte: CompteEspace;
   contact: string;
 };
@@ -94,7 +101,9 @@ function IconeCoche(props: React.SVGProps<SVGSVGElement>) {
 const ONGLETS = [
   ["haut", "Mes biens"],
   ["calendrier", "Calendrier"],
+  ["planning", "Planning"],
   ["releve", "Revenus"],
+  ["depenses", "Dépenses"],
   ["photos", "Photos"],
   ["fiche", "Fiche du bien"],
   ["documents", "Documents"],
@@ -103,7 +112,7 @@ const ONGLETS = [
   ["compte", "Mon compte"],
 ] as const;
 
-export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes, compte, contact }: Props) {
+export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes, depenses, compte, contact }: Props) {
   const listeBiens = biens.map((b) => ({ id: b.id, nom: b.nom }));
   const aTraiter = demandes.filter((d) => d.reponse && d.statut !== "NOUVELLE").length;
   // Onglet souligné = section visible à l'écran (et pas seulement la page)
@@ -134,10 +143,30 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
   const [resaId, setResaId] = useState(() => premiereResaDuMois(biens[0], mois)?.id ?? null);
   const resa = bien?.resas.find((r) => r.id === resaId) ?? null;
 
+  // Jour libre cliqué : nouvelle ligne pré-remplie dans le panneau de droite
+  const [brouillon, setBrouillon] = useState<Brouillon | null>(null);
+
   function choisir(b: BienEspace | undefined, m: Date) {
     setBienId(b?.id);
     setMois(m);
     setResaId(premiereResaDuMois(b, m)?.id ?? null);
+    setBrouillon(null);
+  }
+
+  /** Jour cliqué (calendrier ou planning) : ouvre la ligne existante, sinon un ajout pré-rempli. */
+  function ouvrirJour(b: BienEspace, jourIso: string) {
+    const d = jour(jourIso);
+    const r = resaDuJour(b, d.getTime());
+    setBienId(b.id);
+    setMois(monthStart(d.getUTCFullYear(), d.getUTCMonth()));
+    if (r) {
+      setResaId(r.id);
+      setBrouillon(null);
+    } else {
+      setResaId(null);
+      setBrouillon({ du: jourIso, au: isoJour(d.getTime() + DAY_MS) });
+    }
+    document.getElementById("calendrier")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function changerMois(delta: number) {
@@ -185,7 +214,8 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
         {!bien ? (
           <section className="panneau vide-biens">
             <span className="titre-p">Vos biens</span>
-            <p>Aucun bien n&apos;est encore rattaché à votre compte. Lyze les ajoute pour vous : ils apparaîtront ici avec leur calendrier.</p>
+            <p>Aucun bien n&apos;est encore rattaché à votre compte. Ajoutez votre premier bien : son calendrier, sa fiche et ses photos apparaîtront ici.</p>
+            <AjoutBien ouvertAuDepart />
           </section>
         ) : (
           <>
@@ -211,6 +241,9 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
                 <span>{titreMois}</span>
                 <button type="button" onClick={() => changerMois(1)} aria-label="Mois suivant">›</button>
               </div>
+              <button type="button" className="lz-bouton lz-petit" onClick={() => ouvrirJour(bien, jourParDefaut(mois, aujourdhui))}>
+                + Ajouter au calendrier
+              </button>
               <div className="legende-app">
                 <span>
                   <i className="l-vert" style={{ color: "var(--creme)" }}>
@@ -248,6 +281,7 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
                     </li>
                   ))}
                 </ul>
+                <AjoutBien />
                 {stats && (
                   <div className="stats">
                     <span className="titre-p">{titreMois}</span>
@@ -262,41 +296,37 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
                 <div className="cal-entete">
                   {JOURS.map((j) => <span key={j}>{j}</span>)}
                 </div>
-                <Calendrier bien={bien} mois={mois} resaChoisie={resa} onChoisir={setResaId} />
+                <Calendrier bien={bien} mois={mois} resaChoisie={resa} onJour={(j) => ouvrirJour(bien, j)} />
               </section>
 
-              <section className="panneau detail" aria-live="polite">
-                <span className="titre-p">Réservation sélectionnée</span>
-                {resa ? (
-                  <>
-                    <h2>Voyageur {resa.initiale}.</h2>
-                    <dl>
-                      <div>
-                        <dt>Séjour</dt>
-                        <dd>
-                          {court(jour(resa.du))} → {court(jour(resa.au))} ({nights(versStats(resa))} nuits)
-                        </dd>
-                      </div>
-                      <div>
-                        <dt>Plateforme</dt>
-                        <dd><LogoPlateforme code={resa.plateforme} taille={18} /></dd>
-                      </div>
-                      <div><dt>Montant</dt><dd>{resa.montant > 0 ? formatMAD(resa.montant) : "—"}</dd></div>
-                      <div>
-                        <dt>Statut</dt>
-                        <dd className="ok">Réservé <IconeCoche width={14} height={14} /></dd>
-                      </div>
-                    </dl>
-                  </>
-                ) : (
-                  <p className="vide-msg">
-                    Aucune réservation ce mois-ci pour ce bien. Cliquez sur un jour loué pour voir son détail.
-                  </p>
-                )}
-              </section>
+              <EditeurResa
+                key={`${bien.id}-${resa?.id ?? ""}-${brouillon?.du ?? ""}`}
+                bien={bien}
+                resa={resa}
+                brouillon={brouillon}
+                onFini={() => setBrouillon(null)}
+              />
             </div>
 
-            <Revenus biens={biens} aujourdhui={aujourdhui} />
+            <Planning
+              biens={biens}
+              mois={mois}
+              aujourdhui={aujourdhui}
+              onMois={changerMois}
+              onResa={(b, r) => ouvrirJour(b, r.du < isoJour(mois.getTime()) ? isoJour(mois.getTime()) : r.du)}
+              onJourLibre={ouvrirJour}
+            />
+
+            <Revenus biens={biens} aujourdhui={aujourdhui} depenses={depenses} />
+
+            <section className="panneau lz-section" id="depenses">
+              <span className="eyebrow eyebrow--brique">Dépenses</span>
+              <h2>Vos dépenses</h2>
+              <p className="aide-p">
+                Ménage, réparations, charges, taxes : notez chaque dépense, elle est déduite de vos revenus dans le relevé.
+              </p>
+              <Depenses depenses={depenses} biens={listeBiens} aujourdhui={aujourdhui} />
+            </section>
 
             <section className="panneau photos" id="photos">
               <span className="eyebrow eyebrow--brique">Photos</span>
@@ -325,6 +355,15 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
                 </div>
               )}
               <FicheBienForm key={bien.id} propertyId={bien.id} fiche={bien.fiche} />
+              <form action={supprimerBien} className="lz-zone-suppr">
+                <input type="hidden" name="propertyId" value={bien.id} />
+                <ConfirmButton
+                  message={`Supprimer « ${bien.nom} » avec ses photos, son calendrier et ses dépenses ? C'est définitif.`}
+                  className="lz-lien lz-danger"
+                >
+                  Supprimer ce bien
+                </ConfirmButton>
+              </form>
             </section>
           </>
         )}
@@ -365,12 +404,12 @@ function Calendrier({
   bien,
   mois,
   resaChoisie,
-  onChoisir,
+  onJour,
 }: {
   bien: BienEspace;
   mois: Date;
   resaChoisie: ResaEspace | null;
-  onChoisir: (id: string) => void;
+  onJour: (jourIso: string) => void;
 }) {
   const an = mois.getUTCFullYear();
   const m = mois.getUTCMonth();
@@ -381,34 +420,38 @@ function Calendrier({
 
   for (let d = 1; d <= daysInMonth(mois); d++) {
     const t = Date.UTC(an, m, d);
+    const leJour = isoJour(t);
     const r = resaDuJour(bien, t);
     const debutOuPremier = r && (d === 1 || t === jour(r.du).getTime());
+    const choisie = !!r && r.id === resaChoisie?.id;
 
     if (!r) {
-      cases.push(<div key={d} className="jour">{d}</div>);
-    } else if (r.type === "MANAGED") {
       cases.push(
-        <div key={d} className="jour barka">
+        <button key={d} type="button" className="jour" aria-label={`${d} ${MOIS[m]} : libre, ajouter`} onClick={() => onJour(leJour)}>
           {d}
-          {debutOuPremier && <span className="etiquette">Barka</span>}
-        </div>,
+        </button>,
       );
-    } else if (r.type === "BLOCKED") {
+    } else if (r.type !== "RESERVED") {
       cases.push(
-        <div key={d} className="jour bloque">
+        <button
+          key={d}
+          type="button"
+          className={`jour ${r.type === "MANAGED" ? "barka" : "bloque"}${choisie ? " choisi" : ""}`}
+          aria-label={`${d} ${MOIS[m]} : ${r.type === "MANAGED" ? "Barka s’en charge" : "bloqué"}`}
+          onClick={() => onJour(leJour)}
+        >
           {d}
-          {debutOuPremier && <span className="etiquette">Bloqué</span>}
-        </div>,
+          {debutOuPremier && <span className="etiquette">{r.type === "MANAGED" ? "Barka" : "Bloqué"}</span>}
+        </button>,
       );
     } else {
-      const choisie = r.id === resaChoisie?.id;
       cases.push(
         <button
           key={d}
           type="button"
           className={`jour ${choisie ? "reserve" : "loue"}`}
           aria-label={`${d} ${MOIS[m]} : réservé via ${PLATEFORMES[r.plateforme].nom}`}
-          onClick={() => onChoisir(r.id)}
+          onClick={() => onJour(leJour)}
         >
           {d}
           {choisie && <IconeCoche className="coche" />}
@@ -424,4 +467,59 @@ function Calendrier({
   }
 
   return <div className="cal-jours">{cases}</div>;
+}
+
+const isoJour = (t: number) => new Date(t).toISOString().slice(0, 10);
+
+/** Jour proposé par « + Ajouter » : aujourd'hui si on regarde le mois en cours, sinon le 1er du mois affiché. */
+function jourParDefaut(mois: Date, aujourdhui: string) {
+  const debut = isoJour(mois.getTime());
+  const fin = isoJour(Date.UTC(mois.getUTCFullYear(), mois.getUTCMonth() + 1, 1));
+  return aujourdhui >= debut && aujourdhui < fin ? aujourdhui : debut;
+}
+
+/** Ajout d'un bien par le propriétaire (nom + ville), dépliable. */
+function AjoutBien({ ouvertAuDepart = false }: { ouvertAuDepart?: boolean }) {
+  const [ouvert, setOuvert] = useState(ouvertAuDepart);
+  const [etat, action, envoi] = useActionState(async (prev: Awaited<ReturnType<typeof ajouterBien>>, fd: FormData) => {
+    const r = await ajouterBien(prev, fd);
+    if (r?.ok && !ouvertAuDepart) setOuvert(false);
+    return r;
+  }, undefined);
+
+  if (!ouvert) {
+    return (
+      <button type="button" className="lz-lien lz-ajout-bien" onClick={() => setOuvert(true)}>
+        + Ajouter un bien
+      </button>
+    );
+  }
+  return (
+    <form action={action} className="lz-form lz-form-bien">
+      <label className="lz-champ">
+        <span>Nom du bien</span>
+        <input name="name" required maxLength={120} placeholder="Appartement Vue Mer" />
+      </label>
+      <label className="lz-champ">
+        <span>Ville</span>
+        <input name="city" required maxLength={80} list="lz-villes-ajout" placeholder="El Jadida" />
+        <datalist id="lz-villes-ajout">
+          <option value="El Jadida" />
+          <option value="Casablanca" />
+          <option value="Marrakech" />
+        </datalist>
+      </label>
+      {etat?.error && <p className="lz-msg lz-erreur" role="alert">{etat.error}</p>}
+      <div className="lz-actions-resa">
+        <button type="submit" className="lz-bouton lz-petit" disabled={envoi}>
+          {envoi ? "Ajout…" : "Ajouter le bien"}
+        </button>
+        {!ouvertAuDepart && (
+          <button type="button" className="lz-lien" onClick={() => setOuvert(false)}>
+            Annuler
+          </button>
+        )}
+      </div>
+    </form>
+  );
 }

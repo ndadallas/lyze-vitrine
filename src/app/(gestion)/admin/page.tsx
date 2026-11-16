@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { ActionForm } from "@/components/ActionForm";
 import { DemandeAdmin } from "@/components/Demandes";
+import { basculerMessage } from "@/app/actions/espace";
 import { versDemandeItem } from "@/lib/espace";
 import { createOwner } from "./actions";
 
@@ -35,6 +36,12 @@ export default async function AdminPage() {
     },
   });
 
+  const messages = await db.siteMessage.findMany({
+    orderBy: [{ handled: "asc" }, { createdAt: "desc" }],
+    take: 40,
+  });
+  const nonTraites = messages.filter((m) => !m.handled).length;
+
   return (
     <>
       <div className="topbar">
@@ -43,6 +50,47 @@ export default async function AdminPage() {
           <h1>Bonjour, {admin.firstName}</h1>
         </div>
       </div>
+
+      {messages.length > 0 && (
+        <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="messages-title">
+          <h2 id="messages-title" style={{ fontSize: 20 }}>
+            Messages du site <span className="muted" style={{ fontSize: 15 }}>({nonTraites} à traiter)</span>
+          </h2>
+          <p className="muted" style={{ fontSize: 14 }}>
+            Demandes de réservation des voyageurs et demandes de rappel des propriétaires, envoyées depuis le site.
+          </p>
+          <ul className="lz-liste-dem">
+            {messages.map((m) => (
+              <li key={m.id} style={m.handled ? { opacity: 0.55 } : undefined}>
+                <div className="lz-dem-tete">
+                  <strong>
+                    {m.type === "reservation" ? "Réservation" : "Rappel"} · {m.name}
+                    {m.subject ? ` · ${m.subject}` : ""}
+                  </strong>
+                  <span className={`lz-statut ${m.handled ? "lz-statut-traitee" : "lz-statut-nouvelle"}`}>
+                    {m.handled ? "Traité" : "Nouveau"}
+                  </span>
+                </div>
+                <small className="lz-dem-meta">
+                  {lastLogin.format(m.createdAt)} · <a href={`mailto:${m.email}`}>{m.email}</a>
+                  {m.phone && (
+                    <>
+                      {" · "}
+                      <a href={`https://wa.me/${m.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener">{m.phone}</a>
+                    </>
+                  )}
+                  {!m.mailSent && " · mail non envoyé (clé Resend absente)"}
+                </small>
+                {m.body && <p className="lz-dem-message">{m.body}</p>}
+                <form action={basculerMessage}>
+                  <input type="hidden" name="messageId" value={m.id} />
+                  <button type="submit" className="lz-lien">{m.handled ? "Remettre à traiter" : "Marquer comme traité"}</button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {demandes.length > 0 && (
         <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="demandes-title">

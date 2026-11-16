@@ -60,6 +60,8 @@ export function tailleFichier(octets: number) {
 
 /** Forme envoyée au navigateur pour la fiche d'un bien. */
 export type FicheBien = {
+  name: string;
+  city: string;
   kind: string;
   address: string;
   bedrooms: number | null;
@@ -73,6 +75,8 @@ export type FicheBien = {
 };
 
 export const ficheDepuis = (p: {
+  name: string;
+  city: string;
   kind: string | null;
   address: string | null;
   bedrooms: number | null;
@@ -84,6 +88,8 @@ export const ficheDepuis = (p: {
   arrival: string | null;
   notes: string | null;
 }): FicheBien => ({
+  name: p.name,
+  city: p.city,
   kind: p.kind ?? "",
   address: p.address ?? "",
   bedrooms: p.bedrooms,
@@ -179,3 +185,44 @@ export const SELECT_DOCUMENT = {
   mimeType: true,
   byAdmin: true,
 } as const;
+
+/* Dépenses par bien */
+export const CATEGORIES_DEPENSE = {
+  MENAGE: "Ménage",
+  LINGE: "Linge et blanchisserie",
+  ENTRETIEN: "Entretien et réparations",
+  EQUIPEMENT: "Équipement et mobilier",
+  CHARGES: "Charges (eau, électricité, internet, syndic)",
+  TAXES: "Taxes et impôts",
+  AUTRE: "Autre",
+} as const;
+export type CategorieDepense = keyof typeof CATEGORIES_DEPENSE;
+export const CODES_DEPENSES = Object.keys(CATEGORIES_DEPENSE) as [CategorieDepense, ...CategorieDepense[]];
+
+export type DepenseItem = {
+  id: string;
+  bienId: string;
+  date: string; // "2026-11-16"
+  categorie: CategorieDepense;
+  libelle: string;
+  montant: number;
+  parProprio: boolean;
+};
+
+export const versDepenseItem = (e: {
+  id: string;
+  propertyId: string;
+  date: Date;
+  category: CategorieDepense;
+  label: string;
+  amount: number;
+  byOwner: boolean;
+}): DepenseItem => ({
+  id: e.id,
+  bienId: e.propertyId,
+  date: jourIso(e.date),
+  categorie: e.category,
+  libelle: e.label,
+  montant: e.amount,
+  parProprio: e.byOwner,
+});
