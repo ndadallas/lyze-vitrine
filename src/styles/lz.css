@@ -268,3 +268,4 @@
 .app .lz-table-defile { overflow: visible; }
 .app .lz-table-dep td, .app .lz-table-dep th { white-space: normal; }
 .app .lz-table-dep td:nth-child(4) { white-space: nowrap; }
+@media (max-width: 1499px) { .app .liste .stats > .titre-p { grid-column: 1 / -1; padding-inline: 0; } }
