@@ -269,3 +269,11 @@
 .app .lz-table-dep td, .app .lz-table-dep th { white-space: normal; }
 .app .lz-table-dep td:nth-child(4) { white-space: nowrap; }
 @media (max-width: 1499px) { .app .liste .stats > .titre-p { grid-column: 1 / -1; padding-inline: 0; } }
+/* petits téléphones : dates d'arrivée, noms longs et libellés du simulateur ne débordent plus */
+@media (max-width: 520px) {
+  .app .arrivees li { grid-template-columns: 66px minmax(0, 1fr) auto auto; }
+  .app .arrivee-date { font-size: 17px; }
+  .app .arrivees strong, .app .liste button strong { overflow-wrap: anywhere; hyphens: auto; }
+  .app .calcul .ligne-prix { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
+  .app .calcul .ligne-prix > span:first-child { flex: 1 1 100%; }
+}
