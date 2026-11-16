@@ -65,6 +65,7 @@ export function EditeurResa({
       <section className="panneau detail" aria-live="polite">
         <span className="titre-p">{resa.type === "RESERVED" ? "Réservation sélectionnée" : TYPES[resa.type]}</span>
         <h2>{resa.type === "RESERVED" ? `Voyageur ${resa.initiale}.` : resa.note || TYPES[resa.type]}</h2>
+        {resa.attente && <p className="lz-attente">En attente de validation par Lyze</p>}
         <dl>
           <div>
             <dt>Dates</dt>

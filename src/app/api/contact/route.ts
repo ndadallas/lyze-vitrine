@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 
 // Formulaire de contact de la vitrine → e-mail à Lyze via l'API HTTP de Resend (pas de dépendance).
 // Le message est d'abord enregistré en base (SiteMessage, visible dans l'admin), puis envoyé par mail si configuré.
-// Variables : RESEND_API_KEY (sans elle : enregistrement seul), CONTACT_TO (défaut contact@lyze.ma), CONTACT_FROM (expéditeur vérifié chez Resend).
+// Variables : RESEND_API_KEY (sans elle : enregistrement seul), CONTACT_TO (défaut contact@lyze.com), CONTACT_FROM (expéditeur vérifié chez Resend).
 
 const ContactSchema = z.object({
   nom: z.string().trim().min(1).max(120),
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
     headers: { Authorization: `Bearer ${cle}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       from: process.env.CONTACT_FROM || "Site Lyze <onboarding@resend.dev>",
-      to: [process.env.CONTACT_TO || "contact@lyze.ma"],
+      to: [process.env.CONTACT_TO || "contact@lyze.com"],
       reply_to: d.email,
       subject: `${d.type === "reservation" ? "Demande de réservation" : "Demande de rappel"} — ${d.nom}${d.ville ? ` (${d.ville})` : ""}`.slice(0, 150),
       text: texte,

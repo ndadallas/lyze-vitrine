@@ -286,3 +286,26 @@
 .app .jour.bloque.choisi { outline-color: #4a3426; }
 .app .legende-app .l-bloque { background: #f4c542; border: 0; }
 .lz-pl-blocked { background: #f4c542; color: #4a3426; }
+
+/* Onglets : une section par page (l'attribut hidden doit gagner sur les display des sections) */
+.app [hidden] { display: none !important; }
+.app .contenu > section:not([hidden]):first-of-type, .app .contenu > div:not([hidden]) > section:first-child { margin-top: 0; }
+
+/* Espace : VERT = réservé, BLEU = réservé par l'entreprise, BLANC = libre, JAUNE = bloqué par le propriétaire (2026-11-16) */
+.app .jour.loue { background: #4f7a4a; color: #fff; }
+.app .jour.loue:hover { background: #3e6239; }
+.app .jour.reserve { background: #2f4a2c; color: #fff; }
+.app .legende-app .l-brique { background: #4f7a4a; }
+.app .legende-app .l-vert { background: #2f4a2c; }
+.lz-pl-reserved { background: #4f7a4a; }
+
+/* Lignes saisies par le propriétaire, en attente de validation par Lyze */
+.app .jour.attente { background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, .28) 0 6px, transparent 6px 12px); }
+.lz-pl-attente { background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, .3) 0 6px, transparent 6px 12px); }
+.lz-attente { display: inline-block; margin-top: 10px; padding: 4px 10px; font-size: 12px; font-weight: 600; border-radius: 999px; background: rgba(244, 197, 66, .25); color: #6b5100; }
+/* Recherche de clients (admin) */
+.lz-recherche { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.lz-recherche input { flex: 1 1 320px; min-height: 44px; padding: 10px 14px; font: inherit; font-size: 15px; border: 1px solid var(--lz-ligne); border-radius: 0; background: #fff; color: var(--lz-texte); }
+.lz-recherche input:focus { outline: none; border-color: var(--lz-accent); }
+/* légende : en attente de validation */
+.app .legende-app .l-attente { background: #4f7a4a repeating-linear-gradient(135deg, rgba(255, 255, 255, .35) 0 3px, transparent 3px 6px); }

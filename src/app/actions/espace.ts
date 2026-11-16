@@ -270,6 +270,8 @@ export async function enregistrerResa(_prev: EspaceState, formData: FormData): P
     guestName: b.guestName ?? existante?.guestName ?? null,
     amount: b.kind === "RESERVED" ? b.amount : 0,
     note: b.note,
+    // saisi par le propriétaire = à valider par la gérante ; saisi par la gérante = validé
+    pending: (await getSessionUser())?.role !== "ADMIN",
   };
   if (existante) await db.booking.update({ where: { id: existante.id }, data });
   else await db.booking.create({ data: { ...data, propertyId: bien.id } });
@@ -339,4 +341,24 @@ export async function basculerMessage(formData: FormData) {
   if (!m) return;
   await db.siteMessage.update({ where: { id }, data: { handled: !m.handled } });
   revalidatePath("/admin");
+}
+
+/* ------------------------------------------------------------------ */
+/* Validation par la gérante des lignes saisies par le propriétaire     */
+/* ------------------------------------------------------------------ */
+
+export async function validerResa(formData: FormData) {
+  await requireAdmin();
+  const resa = await db.booking
+    .update({ where: { id: String(formData.get("bookingId") ?? "") }, data: { pending: false }, include: { property: { select: { ownerId: true } } } })
+    .catch(() => null);
+  if (resa) rafraichir(resa.property.ownerId);
+}
+
+export async function refuserResa(formData: FormData) {
+  await requireAdmin();
+  const resa = await db.booking
+    .delete({ where: { id: String(formData.get("bookingId") ?? "") }, include: { property: { select: { ownerId: true } } } })
+    .catch(() => null);
+  if (resa) rafraichir(resa.property.ownerId);
 }

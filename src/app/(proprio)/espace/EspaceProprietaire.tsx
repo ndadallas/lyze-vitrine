@@ -27,6 +27,7 @@ export type ResaEspace = {
   montant: number;
   plateforme: Plateforme;
   note: string | null;
+  attente: boolean; // saisi par le propriétaire, pas encore validé par Lyze
 };
 
 export type BienEspace = {
@@ -97,9 +98,9 @@ function IconeCoche(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+// Une section par onglet (demande cliente 2026-11-16) ; « Mes biens » = liste + calendrier + détail.
 const ONGLETS = [
-  ["haut", "Mes biens"],
-  ["calendrier", "Calendrier"],
+  ["biens", "Mes biens"],
   ["planning", "Planning"],
   ["releve", "Revenus"],
   ["depenses", "Dépenses"],
@@ -113,27 +114,13 @@ const ONGLETS = [
 export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes, depenses, compte, contact }: Props) {
   const listeBiens = biens.map((b) => ({ id: b.id, nom: b.nom }));
   const aTraiter = demandes.filter((d) => d.reponse && d.statut !== "NOUVELLE").length;
-  // Onglet souligné = section visible à l'écran (et pas seulement la page)
-  const [onglet, setOnglet] = useState<string>("haut");
-  useEffect(() => {
-    const maj = () => {
-      let actif = "haut";
-      for (const [id] of ONGLETS) {
-        const el = document.getElementById(id);
-        if (el && el.getBoundingClientRect().top < 160) actif = id;
-      }
-      // tout en bas de la page : dernière section
-      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) actif = ONGLETS[ONGLETS.length - 1][0];
-      setOnglet(actif);
-    };
-    maj();
-    window.addEventListener("scroll", maj, { passive: true });
-    window.addEventListener("resize", maj);
-    return () => {
-      window.removeEventListener("scroll", maj);
-      window.removeEventListener("resize", maj);
-    };
-  }, []);
+  const [onglet, setOnglet] = useState<string>("biens");
+  // sans bien, seuls les onglets qui ne dépendent pas d'un bien sont proposés
+  const onglets = biens.length ? ONGLETS : ONGLETS.filter(([id]) => ["biens", "documents", "demandes", "compte"].includes(id));
+  function aller(id: string) {
+    setOnglet(id);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
   const t0 = jour(aujourdhui);
   const [bienId, setBienId] = useState<string | undefined>(biens[0]?.id);
   const [mois, setMois] = useState(() => monthStart(t0.getUTCFullYear(), t0.getUTCMonth()));
@@ -164,7 +151,8 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
       setResaId(null);
       setBrouillon({ du: jourIso, au: isoJour(d.getTime() + DAY_MS) });
     }
-    document.getElementById("calendrier")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setOnglet("biens");
+    requestAnimationFrame(() => document.getElementById("calendrier")?.scrollIntoView({ behavior: "smooth", block: "start" }));
   }
 
   function changerMois(delta: number) {
@@ -180,8 +168,16 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
         <a className="logo" href="/"><img src="/assets/img/logo-lyze-creme.png" alt="Lyze Conciergerie" width={599} height={200} />{/* eslint-disable-line @next/next/no-img-element */}</a>
         <span className="role">ESPACE PROPRIÉTAIRE</span>
         <nav aria-label="Espace propriétaire">
-          {ONGLETS.map(([id, libelle]) => (
-            <a key={id} href={`#${id}`} aria-current={onglet === id ? "location" : undefined}>
+          {onglets.map(([id, libelle]) => (
+            <a
+              key={id}
+              href={`#${id}`}
+              aria-current={onglet === id ? "page" : undefined}
+              onClick={(e) => {
+                e.preventDefault();
+                aller(id);
+              }}
+            >
               {libelle}
             </a>
           ))}
@@ -203,21 +199,21 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
       </aside>
 
       <main className="contenu" id="haut">
-        <header className="entete-app">
+        <header className="entete-app" hidden={onglet !== "biens"}>
           <span className="eyebrow eyebrow--brique">Espace propriétaire</span>
           <h1>Mes biens</h1>
           <p className="lead">Vos réservations, vos photos et vos revenus, réunis au même endroit.</p>
         </header>
 
         {!bien ? (
-          <section className="panneau vide-biens">
+          <section className="panneau vide-biens" hidden={onglet !== "biens"}>
             <span className="titre-p">Vos biens</span>
             <p>Aucun bien n&apos;est encore rattaché à votre compte. Ajoutez votre premier bien : son calendrier, sa fiche et ses photos apparaîtront ici.</p>
             <AjoutBien ouvertAuDepart />
           </section>
         ) : (
           <>
-            <div className="outils" id="calendrier">
+            <div className="outils" id="calendrier" hidden={onglet !== "biens"}>
               <label className="champ-app select">
                 <select
                   aria-label="Bien affiché"
@@ -252,11 +248,12 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
                 <span><i className="l-brique" />Réservé</span>
                 <span><i className="l-barka" />Réservé par l’entreprise</span>
                 <span><i className="l-bloque" />Bloqué par le propriétaire</span>
+                <span><i className="l-attente" />En attente de validation</span>
                 <span><i className="l-libre" />Libre</span>
               </div>
             </div>
 
-            <div className="grille-app">
+            <div className="grille-app" hidden={onglet !== "biens"}>
               <section className="panneau liste" aria-labelledby="titre-liste">
                 <span className="titre-p" id="titre-liste">Vos biens</span>
                 <p className="aide-p">Cliquez sur un bien pour voir son calendrier</p>
@@ -306,6 +303,7 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
               />
             </div>
 
+            <div hidden={onglet !== "planning"}>
             <Planning
               biens={biens}
               mois={mois}
@@ -315,9 +313,13 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
               onJourLibre={ouvrirJour}
             />
 
-            <Revenus biens={biens} aujourdhui={aujourdhui} depenses={depenses} />
+            </div>
 
-            <section className="panneau lz-section" id="depenses">
+            <div hidden={onglet !== "releve"}>
+              <Revenus biens={biens} aujourdhui={aujourdhui} depenses={depenses} />
+            </div>
+
+            <section className="panneau lz-section" id="depenses" hidden={onglet !== "depenses"}>
               <span className="eyebrow eyebrow--brique">Dépenses</span>
               <h2>Vos dépenses</h2>
               <p className="aide-p">
@@ -326,7 +328,7 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
               <Depenses depenses={depenses} biens={listeBiens} aujourdhui={aujourdhui} />
             </section>
 
-            <section className="panneau photos" id="photos">
+            <section className="panneau photos" id="photos" hidden={onglet !== "photos"}>
               <span className="eyebrow eyebrow--brique">Photos</span>
               <h2>{bien.nom}</h2>
               <p className="aide-p">
@@ -336,7 +338,7 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
               <PhotoManager key={bien.id} propertyId={bien.id} initial={bien.photos} />
             </section>
 
-            <section className="panneau lz-section" id="fiche">
+            <section className="panneau lz-section" id="fiche" hidden={onglet !== "fiche"}>
               <span className="eyebrow eyebrow--brique">Fiche du bien</span>
               <h2>{bien.nom}</h2>
               <p className="aide-p">
@@ -366,7 +368,7 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
           </>
         )}
 
-        <section className="panneau lz-section" id="documents">
+        <section className="panneau lz-section" id="documents" hidden={onglet !== "documents"}>
           <span className="eyebrow eyebrow--brique">Documents</span>
           <h2>Vos documents</h2>
           <p className="aide-p">
@@ -376,7 +378,7 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
           <Documents documents={documents} biens={listeBiens} />
         </section>
 
-        <section className="panneau lz-section" id="demandes">
+        <section className="panneau lz-section" id="demandes" hidden={onglet !== "demandes"}>
           <span className="eyebrow eyebrow--brique">Demandes</span>
           <h2>Une demande pour Lyze ?</h2>
           <p className="aide-p">
@@ -387,7 +389,9 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
           <DemandesProprio demandes={demandes} biens={listeBiens} />
         </section>
 
-        <MonCompte compte={compte} />
+        <div hidden={onglet !== "compte"}>
+          <MonCompte compte={compte} />
+        </div>
       </main>
     </div>
   );
@@ -429,7 +433,7 @@ function Calendrier({
         <button
           key={d}
           type="button"
-          className={`jour ${r.type === "MANAGED" ? "barka" : "bloque"}${choisie ? " choisi" : ""}`}
+          className={`jour ${r.type === "MANAGED" ? "barka" : "bloque"}${choisie ? " choisi" : ""}${r.attente ? " attente" : ""}`}
           aria-label={`${d} ${MOIS[m]} : ${r.type === "MANAGED" ? "Réservé par l’entreprise" : "bloqué"}`}
           onClick={() => onJour(leJour)}
         >
@@ -442,7 +446,7 @@ function Calendrier({
         <button
           key={d}
           type="button"
-          className={`jour ${choisie ? "reserve" : "loue"}`}
+          className={`jour ${choisie ? "reserve" : "loue"}${r.attente ? " attente" : ""}`}
           aria-label={`${d} ${MOIS[m]} : réservé via ${PLATEFORMES[r.plateforme].nom}`}
           onClick={() => onJour(leJour)}
         >

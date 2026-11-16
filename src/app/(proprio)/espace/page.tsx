@@ -60,6 +60,7 @@ export default async function EspacePage() {
       montant: b.kind === "RESERVED" ? b.amount : 0,
       plateforme: b.platform,
       note: b.note,
+      attente: b.pending,
     })),
   }));
 
@@ -72,7 +73,7 @@ export default async function EspacePage() {
       demandes={demandes.map(versDemandeItem)}
       depenses={depenses.map(versDepenseItem)}
       // « Contacter Lyze » = mail uniquement (plus de numéro affiché) ; LYZE_CONTACT_EMAIL pour changer l'adresse
-      contact={`mailto:${process.env.LYZE_CONTACT_EMAIL || "contact@lyze.ma"}`}
+      contact={`mailto:${process.env.LYZE_CONTACT_EMAIL || "contact@lyze.com"}`}
       compte={{
         identifiant: user.username,
         phone: user.phone ?? "",

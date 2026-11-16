@@ -205,7 +205,7 @@
         };
         var repli = function () {
           dire(T.repli);
-          window.location.href = 'mailto:contact@lyze.ma?subject=' + encodeURIComponent(TR.sujet) + '&body=' + encodeURIComponent(details + '\n\n' + donnees.nom + '\n' + donnees.email + '\n' + donnees.telephone);
+          window.location.href = 'mailto:contact@lyze.com?subject=' + encodeURIComponent(TR.sujet) + '&body=' + encodeURIComponent(details + '\n\n' + donnees.nom + '\n' + donnees.email + '\n' + donnees.telephone);
         };
         boutonResa.disabled = true;
         dire(T.envoi);
@@ -555,7 +555,7 @@
       var f = new FormData(contact);
       var tel = String(f.get('telephone') || '').trim();
       var donnees = {
-        nom: (String(f.get('prenom') || '').trim() + ' ' + String(f.get('nom') || '').trim()).trim(), // prénom + nom envoyés ensemble (API inchangée)
+        nom: String(f.get('nom') || '').trim(), // « Nom et prénom » en un seul champ
         email: String(f.get('email') || '').trim(),
         telephone: tel ? f.get('indicatif') + ' ' + tel : '',
         ville: f.get('ville') === 'Autre ville' ? String(f.get('ville_autre') || '').trim() : String(f.get('ville') || ''),
@@ -566,7 +566,7 @@
       };
       var repli = function () {
         afficher(T.repli);
-        window.location.href = 'mailto:contact@lyze.ma?subject=' + encodeURIComponent(T.sujet) + '&body=' + encodeURIComponent(T.corps(donnees));
+        window.location.href = 'mailto:contact@lyze.com?subject=' + encodeURIComponent(T.sujet) + '&body=' + encodeURIComponent(T.corps(donnees));
       };
       bouton.disabled = true;
       afficher(T.envoi);
@@ -593,7 +593,7 @@
         else document.getElementById('contact').scrollIntoView({ behavior: reduit ? 'auto' : 'smooth' });
         contact.elements.nom.focus({ preventScroll: true });
       } else {
-        window.location.href = 'mailto:contact@lyze.ma?subject=' + encodeURIComponent('Lyze') + '&body=' + encodeURIComponent(corps);
+        window.location.href = 'mailto:contact@lyze.com?subject=' + encodeURIComponent('Lyze') + '&body=' + encodeURIComponent(corps);
       }
     });
   }

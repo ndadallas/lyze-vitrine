@@ -1632,3 +1632,19 @@ html[lang="ar"] .histoire-signe span { letter-spacing: 0; font-size: 14px; }
 .mois .jours .pris::after { content: none; }
 .legende .pris { background: #c0392b; }
 .legende .libre { background: #fff; border: 1px solid rgba(43, 29, 21, .3); }
+
+/* ===== Retours cliente 2026-11-16 ===== */
+/* Notre histoire : titres centrés, chocolat, sans effet collant ni animation ; plus de lettrine */
+.recit { grid-template-columns: minmax(0, 720px); justify-content: center; }
+.recit-tete { position: static; text-align: center; }
+.recit-tete h2 { color: var(--brique); border-top: 0; padding-top: 0; }
+.recit .lettrine-ligne { display: block; }
+.recit .lettrine-ligne p { margin-top: 28px; }
+/* Zones d'intervention : phrase d'appel */
+.zones-note { margin-top: 22px; font-size: 16px; color: var(--brun); }
+.zones-note a { color: var(--brique); text-decoration: underline; text-underline-offset: 3px; }
+/* Nos biens en gestion : texte de chaque carte encadré en beige */
+.accueil .carte-logement:not(.carte-avenir) { background: var(--sable); border-radius: 16px; padding-bottom: 14px; overflow: hidden; }
+.accueil .carte-logement:not(.carte-avenir) h3, .accueil .carte-logement:not(.carte-avenir) .lieu { padding-inline: 14px; }
+/* Formulaire : « Nom et prénom » sur toute la largeur */
+.contact-form .champ-large { grid-column: 1 / -1; }

@@ -131,11 +131,14 @@ model Booking {
   guestName  String?
   amount     Int         @default(0) // MAD, montant net propriétaire
   note       String?
+  // Ajouté ou modifié par le propriétaire : en attente de validation par la gérante
+  pending    Boolean     @default(false)
   createdAt  DateTime    @default(now())
 
   property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@index([propertyId, startDate])
+  @@index([pending])
 }
 
 enum DocCategory {

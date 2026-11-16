@@ -4,7 +4,9 @@ import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { ActionForm } from "@/components/ActionForm";
 import { DemandeAdmin } from "@/components/Demandes";
-import { basculerMessage } from "@/app/actions/espace";
+import { basculerMessage, refuserResa, validerResa } from "@/app/actions/espace";
+
+const jourCourt = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 import { versDemandeItem } from "@/lib/espace";
 import { createOwner } from "./actions";
 
@@ -17,13 +19,38 @@ const lastLogin = new Intl.DateTimeFormat("fr-FR", {
   timeZone: "Africa/Casablanca",
 });
 
-export default async function AdminPage() {
+export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
   const admin = await requireAdmin();
+  // Recherche de clients (nom, identifiant, téléphone, e-mail, nom d'un bien) ; vide = tous les clients
+  const q = String((await searchParams).q ?? "").trim().slice(0, 80);
+  const contient = { contains: q, mode: "insensitive" as const };
 
   const owners = await db.user.findMany({
-    where: { role: "OWNER" },
+    where: {
+      role: "OWNER",
+      ...(q
+        ? {
+            OR: [
+              { firstName: contient },
+              { lastName: contient },
+              { username: contient },
+              { phone: contient },
+              { email: contient },
+              { properties: { some: { OR: [{ name: contient }, { city: contient }] } } },
+            ],
+          }
+        : {}),
+    },
     orderBy: [{ active: "desc" }, { lastName: "asc" }],
     include: { _count: { select: { properties: true } } },
+  });
+  const totalClients = q ? await db.user.count({ where: { role: "OWNER" } }) : owners.length;
+  // Réservations / blocages saisis par les propriétaires, à valider
+  const aValider = await db.booking.findMany({
+    where: { pending: true },
+    orderBy: { startDate: "asc" },
+    take: 50,
+    include: { property: { select: { name: true, owner: { select: { id: true, firstName: true, lastName: true } } } } },
   });
   // Demandes des propriétaires à traiter (toutes fiches confondues)
   const demandes = await db.ownerRequest.findMany({
@@ -50,6 +77,51 @@ export default async function AdminPage() {
           <h1>Bonjour, {admin.firstName}</h1>
         </div>
       </div>
+
+      {aValider.length > 0 && (
+        <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="valider-title">
+          <h2 id="valider-title" style={{ fontSize: 20 }}>
+            À valider <span className="muted" style={{ fontSize: 15 }}>({aValider.length})</span>
+          </h2>
+          <p className="muted" style={{ fontSize: 14 }}>
+            Réservations et blocages ajoutés ou modifiés par les propriétaires dans leur espace. Validez-les ou refusez-les
+            (refuser supprime la ligne du calendrier).
+          </p>
+          <ul className="lz-liste-dem">
+            {aValider.map((b) => (
+              <li key={b.id}>
+                <div className="lz-dem-tete">
+                  <strong>
+                    {b.kind === "RESERVED" ? "Réservation" : b.kind === "BLOCKED" ? "Blocage" : "Réservé par l’entreprise"} ·{" "}
+                    {b.property.name}
+                  </strong>
+                  <span className="lz-statut lz-statut-nouvelle">À valider</span>
+                </div>
+                <small className="lz-dem-meta">
+                  <Link href={`/admin/clients/${b.property.owner.id}`}>
+                    {b.property.owner.firstName} {b.property.owner.lastName}
+                  </Link>
+                  {" · "}
+                  du {jourCourt.format(b.startDate)} au {jourCourt.format(b.endDate)}
+                  {b.kind === "RESERVED" && ` · ${b.amount.toLocaleString("fr-FR")} MAD`}
+                  {b.guestName && ` · ${b.guestName}`}
+                </small>
+                {b.note && <p className="lz-dem-message">{b.note}</p>}
+                <div className="lz-actions-resa" style={{ marginTop: 6 }}>
+                  <form action={validerResa}>
+                    <input type="hidden" name="bookingId" value={b.id} />
+                    <button type="submit" className="lz-bouton lz-petit">Valider</button>
+                  </form>
+                  <form action={refuserResa}>
+                    <input type="hidden" name="bookingId" value={b.id} />
+                    <button type="submit" className="lz-lien lz-danger">Refuser</button>
+                  </form>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {messages.length > 0 && (
         <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="messages-title">
@@ -139,11 +211,25 @@ export default async function AdminPage() {
 
       <section className="stack" aria-labelledby="clients-title">
         <h2 id="clients-title" style={{ fontSize: 20 }}>
-          Clients <span className="muted" style={{ fontSize: 15 }}>({owners.length})</span>
+          Clients{" "}
+          <span className="muted" style={{ fontSize: 15 }}>
+            ({q ? `${owners.length} sur ${totalClients}` : owners.length})
+          </span>
         </h2>
+        <form className="lz-recherche" role="search" action="/admin">
+          <input
+            type="search"
+            name="q"
+            defaultValue={q}
+            placeholder="Rechercher un client : nom, identifiant, téléphone, e-mail, bien…"
+            aria-label="Rechercher un client"
+          />
+          <button type="submit" className="btn btn-primary">Rechercher</button>
+          {q && <Link href="/admin" className="link">Tout voir</Link>}
+        </form>
 
         {owners.length === 0 ? (
-          <div className="card empty">Aucun client pour l&apos;instant.</div>
+          <div className="card empty">{q ? `Aucun client ne correspond à « ${q} ».` : "Aucun client pour l'instant."}</div>
         ) : (
           <div className="card table-wrap">
             <table className="table table-fiches">

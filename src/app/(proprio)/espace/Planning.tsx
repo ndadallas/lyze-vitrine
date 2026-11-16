@@ -101,7 +101,7 @@ export function Planning({
                 <button
                   key={r.id}
                   type="button"
-                  className={`lz-pl-barre lz-pl-${r.type.toLowerCase()}`}
+                  className={`lz-pl-barre lz-pl-${r.type.toLowerCase()}${r.attente ? " lz-pl-attente" : ""}`}
                   style={{ gridRow: rangee, gridColumn: `${col + 1} / span ${span}` }}
                   title={r.type === "RESERVED" ? `Voyageur ${r.initiale}.` : (r.note ?? undefined)}
                   onClick={() => onResa(b, r)}
