@@ -114,7 +114,7 @@
 }
 
 /* ===== Calendrier modifiable, planning, dépenses (2026-11-16) ===== */
-.app button.jour { font: inherit; text-align: left; color: inherit; width: 100%; }
+.app button.jour { font: inherit; text-align: left; width: 100%; }
 .app button.jour:not(.loue, .reserve, .barka, .bloque):hover { outline: 2px solid var(--lz-texte); outline-offset: -2px; }
 .app .jour.choisi { outline: 3px solid var(--lz-texte); outline-offset: -3px; }
 .lz-actions-resa { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 18px; }
@@ -162,4 +162,41 @@
 .releve td:nth-child(5) { color: #8a3b2a; }
 @media (max-width: 900px) {
   .lz-deux { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ===== Téléphone : rien de masqué (2026-11-16) ===== */
+.app .jour.loue, .app .jour.reserve, .app .jour.barka { color: var(--creme, #f6f0e4); }
+@media (max-width: 900px) {
+  .side .bas > span { display: block; font-size: 13px; }
+  .arrivees li .plateforme { display: inline-flex; }
+  .jour.barka .etiquette, .jour.bloque .etiquette { display: none; }
+  .jour .etiquette { left: 4px; bottom: 4px; }
+  .jour .etiquette img, .jour .etiquette svg { width: 12px; height: 12px; }
+}
+@media (max-width: 700px) {
+  /* tableaux (relevé, dépenses) : une fiche par ligne avec le nom de chaque valeur */
+  .lz-fiches-mobile, .lz-fiches-mobile tbody, .lz-fiches-mobile tfoot { display: block; width: 100%; min-width: 0; }
+  .lz-fiches-mobile thead { display: none; }
+  .lz-fiches-mobile tr { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px 14px; padding: 14px 0; border-bottom: 1px solid rgba(74, 52, 38, .14); }
+  .lz-fiches-mobile tr > * { display: block !important; padding: 0 !important; border: 0 !important; text-align: left !important; white-space: normal !important; }
+  .lz-fiches-mobile tr > th { grid-column: 1 / -1; font-weight: 600; font-size: 15px; }
+  .lz-fiches-mobile td::before { content: attr(data-label); display: block; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--lz-gris); margin-bottom: 2px; }
+  .lz-fiches-mobile td:not([data-label])::before { content: none; }
+  .lz-fiches-mobile .lz-vide-mobile { display: none !important; }
+  .lz-fiches-mobile .lz-dep-libelle, .lz-fiches-mobile .lz-actions-cellule { grid-column: 1 / -1; }
+  .lz-fiches-mobile tfoot tr { border-top: 2px solid var(--lz-texte); border-bottom: 0; }
+  .lz-table-dep { min-width: 0; }
+  .lz-table-defile { overflow: visible; }
+  .lz-docs-barre { flex-direction: column; align-items: stretch; }
+  .lz-docs-barre .lz-bouton { width: 100%; }
+  .lz-filtres { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+  .lz-filtres button { flex: none; }
+  .lz-choix-bien { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+  .lz-choix-bien button { flex: none; }
+  .lz-coches { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .lz-coches label { font-size: 13px; padding: 9px 10px; }
+  .lz-planning-tete { flex-direction: column; align-items: flex-start; }
+  .lz-section { margin-top: 32px; padding: 22px 18px; }
+  .lz-liste-docs li { gap: 10px; }
+  .lz-doc-actions { flex-wrap: wrap; gap: 12px; }
 }

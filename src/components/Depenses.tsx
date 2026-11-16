@@ -97,7 +97,7 @@ export function Depenses({
         <p className="lz-vide">Aucune dépense enregistrée.</p>
       ) : (
         <div className="lz-table-defile">
-          <table className="releve lz-table-dep">
+          <table className="releve lz-table-dep lz-fiches-mobile">
             <thead>
               <tr>
                 <th scope="col">Date</th>
@@ -118,9 +118,9 @@ export function Depenses({
                       {d.parProprio ? (admin ? " · saisie par le client" : " · saisie par vous") : " · saisie par Lyze"}
                     </small>
                   </td>
-                  <td>{nomBien.get(d.bienId) ?? "—"}</td>
-                  <td>{formatMAD(d.montant)}</td>
-                  <td>
+                  <td data-label="Bien">{nomBien.get(d.bienId) ?? "—"}</td>
+                  <td data-label="Montant">{formatMAD(d.montant)}</td>
+                  <td className="lz-actions-cellule">
                     {(admin || d.parProprio) && (
                       <form action={supprimerDepense}>
                         <input type="hidden" name="expenseId" value={d.id} />
@@ -136,10 +136,10 @@ export function Depenses({
             <tfoot>
               <tr>
                 <th scope="row">Total</th>
-                <td />
-                <td />
-                <td>{formatMAD(total)}</td>
-                <td />
+                <td className="lz-vide-mobile" />
+                <td className="lz-vide-mobile" />
+                <td data-label="Montant">{formatMAD(total)}</td>
+                <td className="lz-vide-mobile" />
               </tr>
             </tfoot>
           </table>

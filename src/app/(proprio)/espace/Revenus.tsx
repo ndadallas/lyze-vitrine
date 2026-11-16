@@ -93,7 +93,7 @@ export function Revenus({ biens, aujourdhui, depenses }: { biens: BienEspace[]; 
       <div className="revenus-grille">
         <div>
           <span className="titre-p">Relevé mois par mois</span>
-          <table className="releve">
+          <table className="releve lz-fiches-mobile">
             <thead>
               <tr><th scope="col">Mois</th><th scope="col">Nuits</th><th scope="col">Occupation</th><th scope="col">Revenus</th><th scope="col">Dépenses</th><th scope="col">Net</th></tr>
             </thead>
@@ -101,16 +101,16 @@ export function Revenus({ biens, aujourdhui, depenses }: { biens: BienEspace[]; 
               {lignes.map((l) => (
                 <tr key={l.cle}>
                   <th scope="row">{l.libelle}{l.enCours && <small> en cours</small>}</th>
-                  <td>{l.nuits}</td>
-                  <td>{l.occupation} %</td>
-                  <td>{l.montant ? formatMAD(l.montant) : "—"}</td>
-                  <td>{l.frais ? `− ${formatMAD(l.frais)}` : "—"}</td>
-                  <td>{l.montant || l.frais ? formatMAD(l.montant - l.frais) : "—"}</td>
+                  <td data-label="Nuits">{l.nuits}</td>
+                  <td data-label="Occupation">{l.occupation} %</td>
+                  <td data-label="Revenus">{l.montant ? formatMAD(l.montant) : "—"}</td>
+                  <td data-label="Dépenses">{l.frais ? `− ${formatMAD(l.frais)}` : "—"}</td>
+                  <td data-label="Net">{l.montant || l.frais ? formatMAD(l.montant - l.frais) : "—"}</td>
                 </tr>
               ))}
             </tbody>
             <tfoot>
-              <tr><th scope="row">Total</th><td>{total.nuits}</td><td /><td>{formatMAD(total.montant)}</td><td>{total.frais ? `− ${formatMAD(total.frais)}` : "—"}</td><td>{formatMAD(total.montant - total.frais)}</td></tr>
+              <tr><th scope="row">Total</th><td data-label="Nuits">{total.nuits}</td><td className="lz-vide-mobile" /><td data-label="Revenus">{formatMAD(total.montant)}</td><td data-label="Dépenses">{total.frais ? `− ${formatMAD(total.frais)}` : "—"}</td><td data-label="Net">{formatMAD(total.montant - total.frais)}</td></tr>
             </tfoot>
           </table>
         </div>

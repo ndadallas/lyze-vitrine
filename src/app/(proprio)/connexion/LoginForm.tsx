@@ -47,7 +47,7 @@ export function LoginForm() {
       </button>
       <p className="aide">
         Pas encore d&apos;accès ou identifiants perdus ? Ils sont créés par Lyze :{" "}
-        <a href="tel:+212714250547">appelez-nous</a>.
+        <a href="mailto:contact@lyze.ma">écrivez-nous à contact@lyze.ma</a>.
       </p>
     </form>
   );

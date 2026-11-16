@@ -71,8 +71,8 @@ export default async function EspacePage() {
       documents={documents.map(versDocumentItem)}
       demandes={demandes.map(versDemandeItem)}
       depenses={depenses.map(versDepenseItem)}
-      // LYZE_WHATSAPP = numéro international sans + (ex. 212612345678) ; sans lui, le bouton mène au formulaire de contact
-      contact={process.env.LYZE_WHATSAPP ? `https://wa.me/${process.env.LYZE_WHATSAPP.replace(/\D/g, "")}` : "/#contact"}
+      // « Contacter Lyze » = mail uniquement (plus de numéro affiché) ; LYZE_CONTACT_EMAIL pour changer l'adresse
+      contact={`mailto:${process.env.LYZE_CONTACT_EMAIL || "contact@lyze.ma"}`}
       compte={{
         identifiant: user.username,
         phone: user.phone ?? "",
