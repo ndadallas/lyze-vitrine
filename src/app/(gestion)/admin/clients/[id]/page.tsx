@@ -161,10 +161,6 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
           <div><dt>Adresse</dt><dd>{[owner.address, owner.country].filter(Boolean).join(" — ") || "—"}</dd></div>
           <div><dt>Contact préféré</dt><dd>{owner.contactPreference || "—"}</dd></div>
           <div>
-            <dt>Fiche de bienvenue</dt>
-            <dd>{owner.onboardedAt ? `Remplie le ${lastLogin.format(owner.onboardedAt)}` : "Pas encore remplie"}</dd>
-          </div>
-          <div>
             <dt>Dernière connexion</dt>
             <dd>{owner.lastLoginAt ? lastLogin.format(owner.lastLoginAt) : "Jamais connecté"}</dd>
           </div>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireOwner } from "@/lib/auth";
 import { addMonths, monthStart, toDayString, today } from "@/lib/dates";
@@ -18,7 +18,6 @@ export default async function EspacePage({ params }: PageProps<"/espace/[[...ong
   const { onglet } = await params;
   if ((onglet?.length ?? 0) > 1 || onglet?.[0] === "biens" || !libelle(onglet)) notFound();
   const user = await requireOwner();
-  if (!user.onboardedAt) redirect("/espace/bienvenue"); // fiche de première connexion
   const now = today();
   const month = monthStart(now.getUTCFullYear(), now.getUTCMonth());
   // Fenêtre consultable dans le calendrier : 12 mois en arrière, 18 mois en avant.

@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import * as z from "zod";
 import { db } from "@/lib/db";
 import { requireOwner } from "@/lib/auth";
@@ -45,16 +44,6 @@ function versBase(d: z.infer<typeof ProfilSchema>) {
     country: d.country,
     contactPreference: d.contactPreference,
   };
-}
-
-/** Fiche de bienvenue : complétée une fois, à la première connexion du propriétaire. */
-export async function enregistrerProfil(_prev: ProfilState, formData: FormData): Promise<ProfilState> {
-  const user = await requireOwner();
-  const parsed = lireProfil(formData);
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Formulaire invalide." };
-
-  await db.user.update({ where: { id: user.id }, data: { ...versBase(parsed.data), onboardedAt: new Date() } });
-  redirect("/espace");
 }
 
 /** « Mon compte » : le propriétaire corrige ses coordonnées. */
