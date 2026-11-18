@@ -362,3 +362,53 @@ export async function refuserResa(formData: FormData) {
     .catch(() => null);
   if (resa) rafraichir(resa.property.ownerId);
 }
+
+/* ------------------------------------------------------------------ */
+/* Messages de Lyze aux propriétaires (fuite, panne, intervention…)    */
+/* ------------------------------------------------------------------ */
+
+const AvisSchema = z.object({
+  ownerId: z.string().min(1),
+  propertyId: z.string().transform((v) => v || null),
+  title: z.string().trim().min(3, { error: "Donnez un objet au message." }).max(120, { error: "Objet trop long." }),
+  message: z.string().trim().min(5, { error: "Écrivez le message." }).max(3000, { error: "Message trop long (3000 caractères maximum)." }),
+  eventDate: z.string().transform((v) => (v ? parseDay(v) : null)),
+});
+
+export async function envoyerAvis(_prev: EspaceState, formData: FormData): Promise<EspaceState> {
+  await requireAdmin();
+  const parsed = AvisSchema.safeParse({
+    ownerId: String(formData.get("ownerId") ?? ""),
+    propertyId: String(formData.get("propertyId") ?? ""),
+    title: String(formData.get("title") ?? ""),
+    message: String(formData.get("message") ?? ""),
+    eventDate: String(formData.get("eventDate") ?? ""),
+  });
+  if (!parsed.success) return { error: premier(parsed.error) };
+  const d = parsed.data;
+
+  const owner = await db.user.findFirst({ where: { id: d.ownerId, role: "OWNER" }, select: { id: true } });
+  if (!owner) return { error: "Client introuvable." };
+  if (d.propertyId) {
+    const bien = await db.property.findFirst({ where: { id: d.propertyId, ownerId: owner.id }, select: { id: true } });
+    if (!bien) return { error: "Bien introuvable." };
+  }
+  await db.ownerNotice.create({ data: d });
+  rafraichir(owner.id);
+  return { ok: Date.now() };
+}
+
+export async function supprimerAvis(formData: FormData) {
+  await requireAdmin();
+  const avis = await db.ownerNotice.findUnique({ where: { id: String(formData.get("avisId") ?? "") }, select: { id: true, ownerId: true } });
+  if (!avis) return;
+  await db.ownerNotice.delete({ where: { id: avis.id } });
+  rafraichir(avis.ownerId);
+}
+
+/** Le propriétaire ouvre l'onglet Messages : tout devient lu (la gérante voit « Lu le … »). */
+export async function marquerAvisLus() {
+  const user = await requireOwner();
+  const { count } = await db.ownerNotice.updateMany({ where: { ownerId: user.id, readAt: null }, data: { readAt: new Date() } });
+  if (count) rafraichir(user.id);
+}

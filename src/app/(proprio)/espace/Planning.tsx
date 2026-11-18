@@ -12,6 +12,30 @@ const jour = (iso: string) => parseDay(iso)!.getTime();
 const iso = (t: number) => new Date(t).toISOString().slice(0, 10);
 const DAY = 86_400_000;
 
+/** Flèches + menus déroulants mois / année (demande 2026-11-17). `onMois` reçoit un décalage en mois. */
+export function ChoixMois({ mois, aujourdhui, onMois }: { mois: Date; aujourdhui: string; onMois: (delta: number) => void }) {
+  const m = mois.getUTCMonth();
+  const an = mois.getUTCFullYear();
+  const an0 = Number(aujourdhui.slice(0, 4));
+  // la page charge 12 mois en arrière et 18 en avant : années proposées en conséquence
+  const annees = [an0 - 1, an0, an0 + 1, an0 + 2];
+  if (!annees.includes(an)) annees.push(an);
+  return (
+    <div className="champ-app mois-nav">
+      <button type="button" onClick={() => onMois(-1)} aria-label="Mois précédent">‹</button>
+      <span>
+        <select aria-label="Mois" value={m} onChange={(e) => onMois(Number(e.target.value) - m)}>
+          {MOIS.map((nom, i) => <option key={nom} value={i}>{nom}</option>)}
+        </select>
+        <select aria-label="Année" value={an} onChange={(e) => onMois((Number(e.target.value) - an) * 12)}>
+          {annees.sort().map((a) => <option key={a} value={a}>{a}</option>)}
+        </select>
+      </span>
+      <button type="button" onClick={() => onMois(1)} aria-label="Mois suivant">›</button>
+    </div>
+  );
+}
+
 /** Barres du mois pour un bien : colonne de départ (1 = 1er du mois) et longueur en jours. */
 function barres(bien: BienEspace, debutMois: number, nbJours: number) {
   const finMois = debutMois + nbJours * DAY;
@@ -54,11 +78,7 @@ export function Planning({
         barre pour la modifier.
       </p>
       <div className="lz-planning-tete">
-        <div className="champ-app mois-nav">
-          <button type="button" onClick={() => onMois(-1)} aria-label="Mois précédent">‹</button>
-          <span>{MOIS[mois.getUTCMonth()]} {mois.getUTCFullYear()}</span>
-          <button type="button" onClick={() => onMois(1)} aria-label="Mois suivant">›</button>
-        </div>
+        <ChoixMois mois={mois} aujourdhui={aujourdhui} onMois={onMois} />
         <div className="legende-app">
           <span><i className="l-brique" />Réservé</span>
           <span><i className="l-barka" />Réservé par l’entreprise</span>

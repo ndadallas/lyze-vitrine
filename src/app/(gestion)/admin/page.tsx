@@ -191,6 +191,14 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
         </div>
         <ActionForm action={createOwner} submitLabel="Créer les accès" className="form-grid">
           <div className="field">
+            <label htmlFor="civility">Civilité</label>
+            <select id="civility" name="civility">
+              <option value="">—</option>
+              <option value="M">M.</option>
+              <option value="MME">Mme</option>
+            </select>
+          </div>
+          <div className="field">
             <label htmlFor="firstName">Prénom</label>
             <input id="firstName" name="firstName" required autoComplete="off" />
           </div>

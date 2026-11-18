@@ -754,3 +754,52 @@
   document.querySelectorAll('.calcul input[type="range"]').forEach(pct);
   document.addEventListener('input', function (e) { if (e.target.matches && e.target.matches('.calcul input[type="range"]')) pct(e.target); });
 })();
+
+/* Visionneuse des photos d'un bien (demande 2026-11-17) : flèches au lieu d'un onglet par photo */
+(function () {
+  var liens = Array.prototype.slice.call(document.querySelectorAll('.galerie-grille a'));
+  if (!liens.length) return;
+  var L = {
+    fr: ['Fermer', 'Photo précédente', 'Photo suivante'], en: ['Close', 'Previous photo', 'Next photo'],
+    ar: ['إغلاق', 'الصورة السابقة', 'الصورة التالية'], it: ['Chiudi', 'Foto precedente', 'Foto successiva'],
+    es: ['Cerrar', 'Foto anterior', 'Foto siguiente']
+  }[(document.documentElement.lang || 'fr').slice(0, 2)] || ['Fermer', 'Photo précédente', 'Photo suivante'];
+  var d = document.createElement('dialog');
+  d.className = 'visionneuse';
+  d.innerHTML = '<img alt=""><button type="button" class="v-fermer" aria-label="' + L[0] + '">×</button>' +
+    '<button type="button" class="v-prec" aria-label="' + L[1] + '">‹</button>' +
+    '<button type="button" class="v-suiv" aria-label="' + L[2] + '">›</button><p class="v-compte" aria-live="polite"></p>';
+  document.body.appendChild(d);
+  var img = d.querySelector('img'), compte = d.querySelector('.v-compte'), i = 0;
+  function voir(n) {
+    i = (n + liens.length) % liens.length;
+    img.src = liens[i].href;
+    img.alt = liens[i].querySelector('img').alt;
+    compte.textContent = (i + 1) + ' / ' + liens.length;
+  }
+  function ouvrir(n) { voir(n); if (!d.open) d.showModal(); }
+  liens.forEach(function (a, n) { a.addEventListener('click', function (e) { e.preventDefault(); ouvrir(n); }); });
+  // les grandes photos du haut ouvrent la même visionneuse, à la même photo
+  document.querySelectorAll('.mosaique figure img').forEach(function (im) {
+    var n = liens.findIndex(function (a) { return a.href === im.src; });
+    if (n < 0) return;
+    im.style.cursor = 'zoom-in';
+    im.addEventListener('click', function () { ouvrir(n); });
+  });
+  var rtl = document.documentElement.dir === 'rtl';
+  d.querySelector('.v-prec').addEventListener('click', function () { voir(i + (rtl ? 1 : -1)); });
+  d.querySelector('.v-suiv').addEventListener('click', function () { voir(i + (rtl ? -1 : 1)); });
+  d.querySelector('.v-fermer').addEventListener('click', function () { d.close(); });
+  d.addEventListener('click', function (e) { if (e.target === d) d.close(); });
+  d.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') voir(i + (rtl ? 1 : -1));
+    if (e.key === 'ArrowRight') voir(i + (rtl ? -1 : 1));
+  });
+  var x0 = null; // glissé au doigt
+  d.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+  d.addEventListener('touchend', function (e) {
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0; x0 = null;
+    if (Math.abs(dx) > 40) voir(i + ((dx < 0) !== rtl ? 1 : -1));
+  });
+})();

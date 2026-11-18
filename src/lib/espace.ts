@@ -226,3 +226,34 @@ export const versDepenseItem = (e: {
   montant: e.amount,
   parProprio: e.byOwner,
 });
+
+/** Message de Lyze à un propriétaire, tel qu'envoyé au navigateur. */
+export type AvisItem = {
+  id: string;
+  titre: string;
+  message: string;
+  bien: string | null;
+  intervention: string | null; // "2026-11-20"
+  date: string;
+  lu: string | null;
+};
+
+export function versAvisItem(a: {
+  id: string;
+  title: string;
+  message: string;
+  property: { name: string } | null;
+  eventDate: Date | null;
+  readAt: Date | null;
+  createdAt: Date;
+}): AvisItem {
+  return {
+    id: a.id,
+    titre: a.title,
+    message: a.message,
+    bien: a.property?.name ?? null,
+    intervention: a.eventDate ? jourIso(a.eventDate) : null,
+    date: jourIso(a.createdAt),
+    lu: a.readAt ? jourIso(a.readAt) : null,
+  };
+}

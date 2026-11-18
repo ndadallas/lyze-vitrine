@@ -13,10 +13,11 @@ import { ConfirmButton } from "@/components/ConfirmButton";
 import { EnteteBien } from "@/components/EnteteBien";
 import { PhotoManager } from "@/components/PhotoManager";
 import { DemandeAdmin } from "@/components/Demandes";
+import { MessagesAdmin } from "@/components/Messages";
 import { Depenses } from "@/components/Depenses";
 import { Documents } from "@/components/Documents";
 import { FicheBienForm } from "@/components/FicheBienForm";
-import { SELECT_DOCUMENT, ficheDepuis, versDemandeItem, versDepenseItem, versDocumentItem } from "@/lib/espace";
+import { SELECT_DOCUMENT, ficheDepuis, versAvisItem, versDemandeItem, versDepenseItem, versDocumentItem } from "@/lib/espace";
 import { Repli } from "@/components/Repli";
 import {
   addBooking,
@@ -63,6 +64,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
       },
       documents: { orderBy: { createdAt: "desc" }, select: SELECT_DOCUMENT },
       requests: { orderBy: { createdAt: "desc" }, take: 50, include: { property: { select: { name: true } } } },
+      notices: { orderBy: { createdAt: "desc" }, take: 50, include: { property: { select: { name: true } } } },
     },
   });
   if (!owner || owner.role !== "OWNER") notFound();
@@ -109,6 +111,14 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
           <Repli label="Modifier les infos du client">
             <ActionForm action={updateOwner} submitLabel="Enregistrer" className="form-grid">
               <input type="hidden" name="userId" value={owner.id} />
+              <div className="field">
+                <label htmlFor="civility">Civilité</label>
+                <select id="civility" name="civility" defaultValue={owner.civility ?? ""}>
+                  <option value="">—</option>
+                  <option value="M">M.</option>
+                  <option value="MME">Mme</option>
+                </select>
+              </div>
               <div className="field">
                 <label htmlFor="firstName">Prénom</label>
                 <input id="firstName" name="firstName" defaultValue={owner.firstName} required autoComplete="off" />
@@ -410,6 +420,19 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
           <option value="Casablanca" />
           <option value="Marrakech" />
         </datalist>
+      </section>
+
+      {/* ---------- Messages de Lyze au client (fuite, panne, intervention…) ---------- */}
+      <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="messages-title">
+        <h2 id="messages-title" style={{ fontSize: 20 }}>
+          Lui envoyer un message{" "}
+          <span className="muted" style={{ fontSize: 15 }}>(visible dans son espace, onglet Messages)</span>
+        </h2>
+        <MessagesAdmin
+          ownerId={owner.id}
+          biens={owner.properties.map((p) => ({ id: p.id, nom: p.name }))}
+          avis={owner.notices.map(versAvisItem)}
+        />
       </section>
 
       {/* ---------- Demandes et documents du client ---------- */}

@@ -33,6 +33,7 @@ const firstIssue = (e: z.ZodError) => e.issues[0]?.message ?? "Formulaire invali
 /* ------------------------------------------------------------------ */
 
 const OwnerSchema = z.object({
+  civility: z.enum(["M", "MME", ""]).transform((v) => v || null),
   firstName: z.string().trim().min(1, { error: "Prénom requis." }).max(80),
   lastName: z.string().trim().min(1, { error: "Nom requis." }).max(80),
   email: optionalText.pipe(z.email({ error: "Email invalide." }).nullable()),
@@ -52,6 +53,7 @@ export async function createOwner(_prev: ActionState, formData: FormData): Promi
   await requireAdmin();
 
   const parsed = OwnerSchema.safeParse({
+    civility: formData.get("civility") ?? "",
     firstName: formData.get("firstName") ?? "",
     lastName: formData.get("lastName") ?? "",
     email: formData.get("email") ?? "",
@@ -130,6 +132,7 @@ export async function updateOwner(_prev: ActionState, formData: FormData): Promi
 
   const parsed = OwnerUpdateSchema.safeParse({
     id: formData.get("userId") ?? "",
+    civility: formData.get("civility") ?? "",
     firstName: formData.get("firstName") ?? "",
     lastName: formData.get("lastName") ?? "",
     username: formData.get("username") ?? "",

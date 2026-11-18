@@ -6,16 +6,18 @@ import { ajouterBien, supprimerBien } from "@/app/actions/espace";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { Depenses } from "@/components/Depenses";
 import { DemandesProprio } from "@/components/Demandes";
+import { MessagesProprio } from "@/components/Messages";
+import { marquerAvisLus } from "@/app/actions/espace";
 import { Documents } from "@/components/Documents";
 import { FicheBienForm } from "@/components/FicheBienForm";
 import { PhotoManager, type PhotoItem } from "@/components/PhotoManager";
-import type { DemandeItem, DepenseItem, DocumentItem, FicheBien } from "@/lib/espace";
+import type { AvisItem, DemandeItem, DepenseItem, DocumentItem, FicheBien } from "@/lib/espace";
 import { DAY_MS, daysInMonth, formatMAD, monthStart, parseDay } from "@/lib/dates";
 import { monthStats, nights } from "@/lib/stats";
 import { LogoPlateforme, PLATEFORMES, type Plateforme } from "@/lib/plateformes";
 import { EditeurResa, type Brouillon } from "./EditeurResa";
 import { MonCompte, type CompteEspace } from "./MonCompte";
-import { Planning } from "./Planning";
+import { ChoixMois, Planning } from "./Planning";
 import { Revenus } from "./Revenus";
 
 export type ResaEspace = {
@@ -41,6 +43,8 @@ export type BienEspace = {
 
 type Props = {
   nom: string;
+  salutation: string; // « Mme Barka Exemple » : civilité + prénom + nom
+  avis: AvisItem[];
   aujourdhui: string;
   biens: BienEspace[];
   documents: DocumentItem[];
@@ -108,17 +112,25 @@ const ONGLETS = [
   ["fiche", "Fiche du bien"],
   ["documents", "Documents"],
   ["demandes", "Demandes"],
+  ["messages", "Messages"],
   ["compte", "Mon compte"],
 ] as const;
 
-export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes, depenses, compte, contact }: Props) {
+export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, documents, demandes, depenses, compte, contact }: Props) {
   const listeBiens = biens.map((b) => ({ id: b.id, nom: b.nom }));
   const aTraiter = demandes.filter((d) => d.reponse && d.statut !== "NOUVELLE").length;
   const [onglet, setOnglet] = useState<string>("biens");
   // sans bien, seuls les onglets qui ne dépendent pas d'un bien sont proposés
-  const onglets = biens.length ? ONGLETS : ONGLETS.filter(([id]) => ["biens", "documents", "demandes", "compte"].includes(id));
+  const onglets = biens.length ? ONGLETS : ONGLETS.filter(([id]) => ["biens", "documents", "demandes", "messages", "compte"].includes(id));
+  // messages non lus à l'arrivée : gardés pour la pastille « Nouveau » le temps de la visite
+  const [nonLus] = useState(() => avis.filter((a) => !a.lu).map((a) => a.id));
+  const [lus, setLus] = useState(false);
   function aller(id: string) {
     setOnglet(id);
+    if (id === "messages" && nonLus.length && !lus) {
+      setLus(true);
+      marquerAvisLus();
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   const t0 = jour(aujourdhui);
@@ -179,6 +191,9 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
               }}
             >
               {libelle}
+              {id === "messages" && nonLus.length > 0 && !lus && (
+                <span className="lz-badge" aria-label={`${nonLus.length} non lu${nonLus.length > 1 ? "s" : ""}`}>{nonLus.length}</span>
+              )}
             </a>
           ))}
         </nav>
@@ -201,8 +216,13 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
       <main className="contenu" id="haut">
         <header className="entete-app" hidden={onglet !== "biens"}>
           <span className="eyebrow eyebrow--brique">Espace propriétaire</span>
-          <h1>Mes biens</h1>
+          <h1>Bienvenue dans votre espace, {salutation}</h1>
           <p className="lead">Vos réservations, vos photos et vos revenus, réunis au même endroit.</p>
+          {nonLus.length > 0 && !lus && (
+            <button type="button" className="lz-alerte-msg" onClick={() => aller("messages")}>
+              {nonLus.length === 1 ? "Vous avez un nouveau message de Lyze" : `Vous avez ${nonLus.length} nouveaux messages de Lyze`} →
+            </button>
+          )}
         </header>
 
         {!bien ? (
@@ -230,11 +250,7 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
                   <path fill="none" stroke="currentColor" strokeWidth="2" d="M5 9l7 7 7-7" />
                 </svg>
               </label>
-              <div className="champ-app mois-nav">
-                <button type="button" onClick={() => changerMois(-1)} aria-label="Mois précédent">‹</button>
-                <span>{titreMois}</span>
-                <button type="button" onClick={() => changerMois(1)} aria-label="Mois suivant">›</button>
-              </div>
+              <ChoixMois mois={mois} aujourdhui={aujourdhui} onMois={changerMois} />
               <button type="button" className="lz-bouton lz-petit" onClick={() => ouvrirJour(bien, jourParDefaut(mois, aujourdhui))}>
                 + Ajouter au calendrier
               </button>
@@ -387,6 +403,16 @@ export function EspaceProprietaire({ nom, aujourdhui, biens, documents, demandes
             {aTraiter > 0 && ` ${aTraiter} réponse${aTraiter > 1 ? "s" : ""} de Lyze ci-dessous.`}
           </p>
           <DemandesProprio demandes={demandes} biens={listeBiens} />
+        </section>
+
+        <section className="panneau lz-section" id="messages" hidden={onglet !== "messages"}>
+          <span className="eyebrow eyebrow--brique">Messages</span>
+          <h2>Messages de Lyze</h2>
+          <p className="aide-p">
+            Interventions, pannes, informations sur vos biens : Lyze vous tient au courant ici. Pour répondre, passez par
+            l’onglet Demandes.
+          </p>
+          <MessagesProprio avis={avis} nonLus={nonLus} />
         </section>
 
         <div hidden={onglet !== "compte"}>

@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { requireOwner } from "@/lib/auth";
 import { addMonths, monthStart, toDayString, today } from "@/lib/dates";
 import { photoUrl } from "@/lib/photos";
-import { SELECT_DOCUMENT, ficheDepuis, versDemandeItem, versDepenseItem, versDocumentItem } from "@/lib/espace";
+import { SELECT_DOCUMENT, ficheDepuis, versAvisItem, versDemandeItem, versDepenseItem, versDocumentItem } from "@/lib/espace";
 import { EspaceProprietaire, type BienEspace } from "./EspaceProprietaire";
 
 export const metadata: Metadata = { title: "Mes biens" };
@@ -30,7 +30,7 @@ export default async function EspacePage() {
     },
   });
 
-  const [documents, demandes, depenses] = await Promise.all([
+  const [documents, demandes, depenses, avis] = await Promise.all([
     db.document.findMany({ where: { ownerId: user.id }, orderBy: { createdAt: "desc" }, select: SELECT_DOCUMENT }),
     db.ownerRequest.findMany({
       where: { ownerId: user.id },
@@ -41,6 +41,12 @@ export default async function EspacePage() {
     db.expense.findMany({
       where: { property: { ownerId: user.id }, date: { gte: from } },
       orderBy: { date: "desc" },
+    }),
+    db.ownerNotice.findMany({
+      where: { ownerId: user.id },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+      include: { property: { select: { name: true } } },
     }),
   ]);
 
@@ -67,6 +73,8 @@ export default async function EspacePage() {
   return (
     <EspaceProprietaire
       nom={`${user.firstName} ${user.lastName}`}
+      salutation={[{ M: "M.", MME: "Mme" }[user.civility ?? ""], user.firstName, user.lastName].filter(Boolean).join(" ")}
+      avis={avis.map(versAvisItem)}
       aujourdhui={toDayString(now)}
       biens={biens}
       documents={documents.map(versDocumentItem)}

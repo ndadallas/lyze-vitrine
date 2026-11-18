@@ -309,3 +309,29 @@
 .lz-recherche input:focus { outline: none; border-color: var(--lz-accent); }
 /* légende : en attente de validation */
 .app .legende-app .l-attente { background: #4f7a4a repeating-linear-gradient(135deg, rgba(255, 255, 255, .35) 0 3px, transparent 3px 6px); }
+
+/* Retours 2026-11-17 : « Vos biens » en bannière au-dessus du calendrier à toutes les tailles (avant : colonne de gauche ≥ 1500 px) */
+@media (min-width: 1101px) {
+  .app .grille-app { grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); }
+  .app .grille-app > .liste { grid-column: 1 / -1; }
+  .app .grille-app > .detail { grid-column: auto; }
+}
+.app .liste ul { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.app .liste .stats > .titre-p { grid-column: 1 / -1; padding-inline: 0; }
+@media (min-width: 521px) { .app .liste .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* Choix du mois et de l'année par menus déroulants */
+.app .mois-nav select { appearance: none; border: 0; background: transparent; font: inherit; color: inherit; padding: 0 4px; cursor: pointer; text-align: center; }
+.app .mois-nav select:focus-visible { outline: 2px solid var(--lz-accent, #9c6644); outline-offset: 2px; }
+
+/* Message d'accueil + messages de Lyze */
+.app .entete-app .lz-alerte-msg { margin-top: 16px; display: inline-flex; gap: 10px; align-items: center; padding: 10px 16px; border-radius: 10px; background: #fbeee2; color: #4a3426; font-size: 15px; border: 1px solid rgba(156, 102, 68, .35); cursor: pointer; font-family: inherit; }
+.app .side nav .lz-badge { display: inline-grid; place-items: center; min-width: 20px; height: 20px; margin-left: 8px; padding: 0 6px; border-radius: 10px; background: #f6f0e4; color: #4a3426; font-size: 12px; font-weight: 700; }
+.lz-avis-nouveau { border-left: 3px solid var(--lz-accent, #9c6644); padding-left: 14px; }
+.lz-avis-date { margin-top: 8px; font-weight: 600; color: #7e4f33; }
+.lz-avis-texte { white-space: pre-line; }
+.app .mois-nav { width: auto; min-width: 230px; }
+.app .mois-nav > span { display: flex; align-items: center; white-space: nowrap; }
+.app .mois-nav select { height: 100%; }
+.app .mois-nav select:hover { background: var(--sable, #e9dcc7); }
+.app .contenu .entete-app h1 { font-size: clamp(32px, 3.4vw, 52px); }
