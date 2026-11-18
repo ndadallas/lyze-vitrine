@@ -3,7 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
-import { addDays, formatMAD, formatShortDate, toDayString, today } from "@/lib/dates";
+import { addDays, addMonths, formatMAD, formatShortDate, monthStart, toDayString, today } from "@/lib/dates";
+import { PlanningAdmin } from "@/components/PlanningAdmin";
+import { Revenus } from "@/app/(proprio)/espace/Revenus";
+import type { BienEspace } from "@/app/(proprio)/espace/EspaceProprietaire";
 import { photoUrl } from "@/lib/photos";
 import { CHOIX_PLATEFORMES, PLATEFORMES } from "@/lib/plateformes";
 import { nights } from "@/lib/stats";
@@ -41,6 +44,19 @@ const lastLogin = new Intl.DateTimeFormat("fr-FR", {
 
 const pluriel = (n: number, mot: string) => `${n} ${mot}${n > 1 ? "s" : ""}`;
 
+const ONGLETS_ADMIN = [
+  ["biens", "Biens"],
+  ["planning", "Planning"],
+  ["revenus", "Revenus"],
+  ["depenses", "Dépenses"],
+  ["photos", "Photos"],
+  ["fiche", "Fiche du bien"],
+  ["documents", "Documents"],
+  ["demandes", "Demandes"],
+  ["messages", "Messages"],
+  ["compte", "Compte du client"],
+] as const;
+
 export default async function ClientPage({ params, searchParams }: PageProps<"/admin/clients/[id]">) {
   await requireAdmin();
   const { id } = await params;
@@ -74,7 +90,43 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
   const ajout = sp.bien === "nouveau" || owner.properties.length === 0;
   const bien = ajout ? null : (owner.properties.find((p) => p.id === sp.bien) ?? owner.properties[0]);
   const base = `/admin/clients/${owner.id}`;
-  const lien = (bienId: string, hist = historique) => `${base}?bien=${bienId}${hist ? "&historique=1" : ""}`;
+  // Mêmes rubriques que l'espace du client (demande 2026-11-18) : ?onglet=…, « biens » par défaut
+  const onglet = ONGLETS_ADMIN.some(([o]) => o === sp.onglet) ? String(sp.onglet) : "biens";
+  const lien = (bienId: string, hist = historique, o = onglet) =>
+    `${base}?onglet=${o}&bien=${bienId}${hist ? "&historique=1" : ""}`;
+  const avecBien = ["biens", "photos", "fiche", "depenses"].includes(onglet);
+
+  // Planning et revenus : même fenêtre que l'espace du client (12 mois en arrière, 18 en avant)
+  const vueClient = onglet === "planning" || onglet === "revenus";
+  const mois0 = monthStart(today().getUTCFullYear(), today().getUTCMonth());
+  const biensClient: BienEspace[] = vueClient
+    ? (
+        await db.property.findMany({
+          where: { ownerId: owner.id },
+          orderBy: { createdAt: "asc" },
+          include: {
+            bookings: { where: { endDate: { gt: addMonths(mois0, -12) }, startDate: { lt: addMonths(mois0, 18) } }, orderBy: { startDate: "asc" } },
+          },
+        })
+      ).map((p) => ({
+        id: p.id,
+        nom: p.name,
+        ville: p.city,
+        fiche: ficheDepuis(p),
+        photos: [],
+        resas: p.bookings.map((b) => ({
+          id: b.id,
+          type: b.kind,
+          du: toDayString(b.startDate),
+          au: toDayString(b.endDate),
+          initiale: b.kind === "RESERVED" ? (b.guestName?.trim().charAt(0) || "V").toUpperCase() : null,
+          montant: b.kind === "RESERVED" ? b.amount : 0,
+          plateforme: b.platform,
+          note: b.note,
+          attente: b.pending,
+        })),
+      }))
+    : [];
 
   return (
     <>
@@ -90,7 +142,17 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
         </span>
       </div>
 
+      <nav className="onglets-admin" aria-label="Rubriques du client">
+        {ONGLETS_ADMIN.map(([o, libelle]) => (
+          <Link key={o} href={bien ? lien(bien.id, historique, o) : `${base}?onglet=${o}`} aria-current={onglet === o ? "page" : undefined}>
+            {libelle}
+            {o === "demandes" && owner.requests.some((r) => r.status === "NOUVELLE") && <span className="onglet-point" aria-label="nouvelles demandes" />}
+          </Link>
+        ))}
+      </nav>
+
       {/* ---------- Le client ---------- */}
+      {onglet === "compte" && (
       <section className="card card-pad stack" style={{ gap: 20 }} aria-label="Informations du client">
         <dl className="fiche-resume">
           <div><dt>Identifiant</dt><dd><code>{owner.username}</code></dd></div>
@@ -188,8 +250,31 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
           </Repli>
         </div>
       </section>
+      )}
+
+      {/* ---------- Planning et revenus : la même vue que le client ---------- */}
+      {onglet === "planning" && (
+        <section className="card card-pad app vue-client" aria-label="Planning du client">
+          {biensClient.length ? (
+            <PlanningAdmin biens={biensClient} aujourdhui={toDayString(today())} base={base} />
+          ) : (
+            <p className="muted">Aucun bien pour ce client.</p>
+          )}
+        </section>
+      )}
+      {onglet === "revenus" && (
+        <section className="card card-pad app vue-client" aria-label="Revenus du client">
+          <Revenus
+            biens={biensClient}
+            aujourdhui={toDayString(today())}
+            depenses={owner.properties.flatMap((p) => p.expenses).map(versDepenseItem)}
+            titre="Ses revenus"
+          />
+        </section>
+      )}
 
       {/* ---------- Ses biens, un par un ---------- */}
+      {avecBien && (
       <section className="stack" style={{ gap: 16 }} aria-labelledby="biens-title">
         <h2 id="biens-title" style={{ fontSize: 22 }}>
           Ses biens <span className="muted" style={{ fontSize: 16 }}>({owner.properties.length})</span>
@@ -293,6 +378,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
                   }
                 />
 
+                {onglet === "photos" && (
                 <section className="bien-partie" aria-labelledby="photos-title">
                   <div className="bien-partie-tete">
                     <h4 id="photos-title">Photos</h4>
@@ -307,7 +393,9 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
                     initial={bien.photos.map((ph) => ({ id: ph.id, url: photoUrl(ph.id) }))}
                   />
                 </section>
+                )}
 
+                {onglet === "fiche" && (
                 <section className="bien-partie" aria-labelledby="fiche-title">
                   <div className="bien-partie-tete">
                     <h4 id="fiche-title">Fiche du bien</h4>
@@ -315,7 +403,9 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
                   </div>
                   <FicheBienForm key={bien.id} propertyId={bien.id} fiche={ficheDepuis(bien)} />
                 </section>
+                )}
 
+                {onglet === "depenses" && (
                 <section className="bien-partie" aria-labelledby="dep-title">
                   <div className="bien-partie-tete">
                     <h4 id="dep-title">Dépenses</h4>
@@ -328,7 +418,9 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
                     aujourdhui={toDayString(today())}
                   />
                 </section>
+                )}
 
+                {onglet === "biens" && (
                 <section className="bien-partie" aria-labelledby="resas-title">
                   <div className="bien-partie-tete row-between">
                     <h4 id="resas-title">Réservations et blocages</h4>
@@ -420,6 +512,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
                     </p>
                   )}
                 </section>
+                )}
               </>
             )}
           </div>
@@ -430,8 +523,10 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
           <option value="Marrakech" />
         </datalist>
       </section>
+      )}
 
       {/* ---------- Messages de Lyze au client (fuite, panne, intervention…) ---------- */}
+      {onglet === "messages" && (
       <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="messages-title">
         <h2 id="messages-title" style={{ fontSize: 20 }}>
           Lui envoyer un message{" "}
@@ -443,8 +538,10 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
           avis={owner.notices.map(versAvisItem)}
         />
       </section>
+      )}
 
       {/* ---------- Demandes et documents du client ---------- */}
+      {onglet === "demandes" && (
       <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="demandes-title">
         <h2 id="demandes-title" style={{ fontSize: 20 }}>
           Ses demandes{" "}
@@ -463,7 +560,9 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
           </ul>
         )}
       </section>
+      )}
 
+      {onglet === "documents" && (
       <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="docs-title">
         <h2 id="docs-title" style={{ fontSize: 20 }}>
           Ses documents <span className="muted" style={{ fontSize: 15 }}>({owner.documents.length})</span>
@@ -475,7 +574,9 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
           biens={owner.properties.map((p) => ({ id: p.id, nom: p.name }))}
         />
       </section>
+      )}
 
+      {onglet === "compte" && (
       <section className="card card-pad row-between zone-danger" style={{ gap: 20, flexWrap: "wrap" }} aria-labelledby="delete-title">
         <div>
           <h2 id="delete-title" style={{ fontSize: 18 }}>Supprimer ce client</h2>
@@ -494,6 +595,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
           </ConfirmButton>
         </form>
       </section>
+      )}
     </>
   );
 }

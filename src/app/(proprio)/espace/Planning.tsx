@@ -56,7 +56,11 @@ export function Planning({
   onMois,
   onResa,
   onJourLibre,
+  titre = "Tous vos biens",
+  aide = "Le mois en un coup d’œil. Cliquez sur une case libre pour ajouter une réservation ou bloquer une date, ou sur une barre pour la modifier.",
 }: {
+  titre?: string;
+  aide?: string;
   biens: BienEspace[];
   mois: Date;
   aujourdhui: string;
@@ -72,11 +76,8 @@ export function Planning({
   return (
     <section className="panneau lz-section" id="planning">
       <span className="eyebrow eyebrow--brique">Planning</span>
-      <h2>Tous vos biens</h2>
-      <p className="aide-p">
-        Le mois en un coup d’œil. Cliquez sur une case libre pour ajouter une réservation ou bloquer une date, ou sur une
-        barre pour la modifier.
-      </p>
+      <h2>{titre}</h2>
+      <p className="aide-p">{aide}</p>
       <div className="lz-planning-tete">
         <ChoixMois mois={mois} aujourdhui={aujourdhui} onMois={onMois} />
         <div className="legende-app">

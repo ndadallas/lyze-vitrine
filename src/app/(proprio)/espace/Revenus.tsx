@@ -13,7 +13,7 @@ const jour = (iso: string) => parseDay(iso)!;
 const court = (d: Date) => `${d.getUTCDate()} ${MOIS_COURT[d.getUTCMonth()]}`;
 
 /** Relevé mois par mois (12 derniers mois, mois en cours compris) + prochaines arrivées, tous biens ou un seul. */
-export function Revenus({ biens, aujourdhui, depenses }: { biens: BienEspace[]; aujourdhui: string; depenses: DepenseItem[] }) {
+export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: { biens: BienEspace[]; aujourdhui: string; depenses: DepenseItem[]; titre?: string }) {
   const [filtre, setFiltre] = useState("tous");
   const choisis = filtre === "tous" ? biens : biens.filter((b) => b.id === filtre);
   const t0 = jour(aujourdhui);
@@ -67,7 +67,7 @@ export function Revenus({ biens, aujourdhui, depenses }: { biens: BienEspace[]; 
   return (
     <section className="panneau revenus" id="releve">
       <span className="eyebrow eyebrow--brique">Revenus</span>
-      <h2>Vos revenus</h2>
+      <h2>{titre}</h2>
       <p className="aide-p">Montants nets qui vous reviennent, après frais de plateforme et commission Lyze Conciergerie.</p>
 
       {biens.length > 1 && (

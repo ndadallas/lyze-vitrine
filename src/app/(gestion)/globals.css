@@ -935,3 +935,63 @@ img.logo-name { display: block; height: 52px; width: auto; }
 .sidebar { background: var(--ink); }
 .sidebar-link.active { background: none; box-shadow: none; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 6px; }
 img.logo-name { height: 44px; }
+
+/* Fiche client : mêmes rubriques que l'espace du client (demande 2026-11-18) */
+.onglets-admin { position: sticky; top: 0; z-index: 5; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; background: var(--ink); border-radius: 12px; padding: 0 8px; }
+.onglets-admin::-webkit-scrollbar { display: none; }
+.onglets-admin a { position: relative; white-space: nowrap; padding: 14px 14px 16px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: rgba(246, 240, 228, .7); }
+.onglets-admin a::after { content: ""; position: absolute; left: 14px; right: 14px; bottom: 0; height: 3px; background: var(--card); transform: scaleX(0); transform-origin: left; transition: transform .25s; }
+.onglets-admin a:hover { color: var(--card); }
+.onglets-admin a:hover::after, .onglets-admin a[aria-current="page"]::after { transform: scaleX(1); }
+.onglets-admin a[aria-current="page"] { color: var(--card); font-weight: 600; }
+.onglets-admin a:focus-visible { outline: 2px solid var(--card); outline-offset: -4px; }
+.onglets-admin .onglet-point { display: inline-block; width: 7px; height: 7px; margin-left: 6px; border-radius: 50%; background: #f4c542; vertical-align: middle; }
+
+/* Planning et revenus du client dans l'admin : composants de l'espace, sans espace.css */
+.vue-client .panneau { background: none; border: 0; padding: 0; margin: 0; }
+.vue-client .eyebrow { display: block; font-size: 12px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; color: var(--brass); }
+.vue-client h2 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(28px, 3vw, 40px); margin-top: 8px; }
+.vue-client .aide-p { font-size: 14px; color: var(--muted); margin-top: 8px; max-width: 640px; }
+.vue-client .champ-app { height: 44px; border: 1px solid var(--line-strong); background: var(--card); display: flex; align-items: center; font-size: 14px; }
+.vue-client .champ-app select { height: 100%; border: 0; background: none; padding: 0 12px; appearance: none; cursor: pointer; font: inherit; color: inherit; }
+.vue-client .champ-app.select { position: relative; width: 300px; }
+.vue-client .mois-nav button { width: 40px; height: 100%; border: 0; background: none; cursor: pointer; font-size: 16px; color: var(--ink); }
+.vue-client .mois-nav button:hover { background: var(--ivory-deep); }
+.vue-client .legende-app { display: flex; flex-wrap: wrap; gap: 10px 24px; font-size: 12px; color: var(--ink-soft); }
+.vue-client .legende-app span { display: flex; align-items: center; gap: 8px; }
+.vue-client .legende-app i { width: 18px; height: 18px; display: inline-block; }
+
+/* Revenus du client dans l'admin (règles d'espace.css, préfixées) */
+.vue-client .revenus { margin-top: 56px; padding: clamp(24px, 3vw, 44px); }
+.vue-client .revenus h2 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(30px, 3.4vw, 48px); line-height: 1.05; margin-top: 12px; }
+.vue-client .revenus > .aide-p { font-size: 14px; margin-top: 10px; max-width: 620px; }
+.vue-client .revenus-filtre { margin-top: 24px; width: max-content; max-width: 100%; }
+.vue-client .revenus-chiffres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 28px; }
+.vue-client .revenus-chiffres div { border-top: 1px solid rgba(74, 52, 38, .vue-client .18); padding-top: 14px; }
+.vue-client .revenus-chiffres span { display: block; font-size: 13px; color: var(--muted); }
+.vue-client .revenus-chiffres strong { font-family: var(--font-serif); font-weight: 400; font-size: clamp(24px, 2.6vw, 36px); }
+.vue-client .revenus-grille { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: clamp(28px, 4vw, 56px); margin-top: 40px; }
+.vue-client .releve { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+.vue-client .releve th, .vue-client .releve td { padding: 10px 8px; text-align: right; border-bottom: 1px solid rgba(74, 52, 38, .vue-client .12); font-weight: 400; white-space: nowrap; }
+.vue-client .releve th:first-child { text-align: left; padding-left: 0; }
+.vue-client .releve thead th { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.vue-client .releve tbody th small { font-size: 12px; color: var(--brass); margin-left: 4px; }
+.vue-client .releve tfoot th, .vue-client .releve tfoot td { font-weight: 600; border-bottom: 0; border-top: 2px solid var(--ink); }
+.vue-client .arrivees { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 4px; }
+.vue-client .arrivees li { display: grid; grid-template-columns: 76px minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(74, 52, 38, .vue-client .12); }
+.vue-client .arrivee-date { font-family: var(--font-serif); font-size: 20px; white-space: nowrap; }
+.vue-client .arrivees strong { display: block; font-size: 15px; font-weight: 500; }
+.vue-client .arrivees small { font-size: 12px; color: var(--muted); }
+.vue-client .arrivee-montant { font-size: 14px; font-weight: 500; white-space: nowrap; }
+@media (max-width: 900px) { .vue-client .revenus-grille { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 520px) {
+  .vue-client .revenus-chiffres { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .vue-client .revenus-chiffres div:first-child { grid-column: 1 / -1; }
+  .vue-client .revenus-chiffres strong { font-size: 24px; white-space: nowrap; }
+  .vue-client .releve th, .vue-client .releve td { padding: 9px 4px; font-size: 13px; }
+  .vue-client .releve th:nth-child(3), .vue-client .releve td:nth-child(3) { display: none; }
+  .vue-client .arrivees li { grid-template-columns: 52px minmax(0, 1fr) auto; }
+  .vue-client .arrivees li .plateforme { display: none; }
+}
+.vue-client .revenus { margin-top: 0; padding: 0; }
+.vue-client .panneau .titre-p { display: block; font-size: 12px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; color: var(--brass); }

@@ -174,7 +174,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
               <DemandeAdmin
                 key={`${r.id}-${r.updatedAt.getTime()}`}
                 d={versDemandeItem(r)}
-                client={{ nom: `${r.owner.firstName} ${r.owner.lastName}`, lien: `/admin/clients/${r.owner.id}` }}
+                client={{ nom: `${r.owner.firstName} ${r.owner.lastName}`, lien: `/admin/clients/${r.owner.id}?onglet=demandes` }}
               />
             ))}
           </ul>
@@ -268,7 +268,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                       </span>
                     </td>
                     <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
-                      <Link href={`/admin/clients/${o.id}#messages-title`} className="btn btn-outline btn-sm" style={{ marginRight: 8 }}>
+                      <Link href={`/admin/clients/${o.id}?onglet=messages`} className="btn btn-outline btn-sm" style={{ marginRight: 8 }}>
                         Message
                       </Link>
                       <Link href={`/admin/clients/${o.id}`} className="btn btn-outline btn-sm">
