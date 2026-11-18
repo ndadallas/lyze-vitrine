@@ -7,7 +7,8 @@ import { homeFor } from "@/lib/auth";
 import { hashPassword, verifyPassword } from "@/lib/passwords";
 import { createSession, deleteSession } from "@/lib/session";
 
-const MAX_ATTEMPTS = 5;
+// 10 et non 5 : compte souvent partagé à plusieurs, 5 fautes bloquaient tout le monde
+const MAX_ATTEMPTS = 10;
 const LOCK_WINDOW_MS = 15 * 60 * 1000;
 
 const LoginSchema = z.object({
@@ -50,8 +51,12 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
   }
 
   const user = await db.user.findUnique({ where: { username } });
+  // Mots de passe générés (« kx7m-pq4t-zr9w ») : accepter aussi majuscule auto du mobile, tirets oubliés ou espaces
+  const brut = password.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const genere = brut.length === 12 ? brut.match(/.{4}/g)!.join("-") : password.toLowerCase();
   const valid = user
-    ? await verifyPassword(password, user.passwordHash)
+    ? (await verifyPassword(password, user.passwordHash)) ||
+      (genere !== password && (await verifyPassword(genere, user.passwordHash)))
     : (await verifyPassword(password, await getDummyHash()), false);
 
   if (!user || !valid || !user.active) {

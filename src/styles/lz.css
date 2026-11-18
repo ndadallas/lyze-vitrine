@@ -335,3 +335,6 @@
 .app .mois-nav select { height: 100%; }
 .app .mois-nav select:hover { background: var(--sable, #e9dcc7); }
 .app .contenu .entete-app h1 { font-size: clamp(32px, 3.4vw, 52px); }
+
+/* Barre latérale de l'espace : défile si l'écran du PC est moins haut que son contenu (retour 18/11) */
+aside.side { overflow-y: auto; overscroll-behavior: contain; }
