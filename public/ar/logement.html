@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lyze</title>
+    <link rel="alternate" hreflang="fr" href="../logement.html">
+  <link rel="alternate" hreflang="en" href="../en/logement.html">
+  <link rel="alternate" hreflang="it" href="../it/logement.html">
+  <link rel="alternate" hreflang="es" href="../es/logement.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css?v=54">
+  <script>document.documentElement.classList.add('js')</script>
+  <meta name="robots" content="noindex">
+  <script src="../assets/js/logement.js?v=1" data-main="../assets/js/main.js?v=42" defer></script>
+</head>
+<body>
+  <header class="bar bar--flottante">
+    <a class="bar-logo" href="index.html"><img src="../assets/img/logo-lyze.png" alt="Lyze Conciergerie" width="599" height="200"><span class="bar-sous">إدارة الكراء</span></a>
+    <nav class="bar-nav" aria-label="التنقل">
+      <a href="index.html">الرئيسية</a>
+      <a href="index.html#simulateur">الملاك</a>
+      <a href="index.html#contact">اتصل بنا</a>
+      <a href="histoire.html">قصتنا</a>
+      <a href="faq.html">الأسئلة الشائعة</a>
+    </nav>
+    <details class="langues"><summary class="lien-langue" aria-label="تغيير اللغة"><img class="drapeau" src="../assets/img/drapeaux/ma.svg" alt="" width="20" height="15">عربي</summary><div class="langues-liste"><a href="../logement.html" lang="fr" hreflang="fr"><img class="drapeau" src="../assets/img/drapeaux/fr.svg" alt="" width="20" height="15">Français</a><a href="../en/logement.html" lang="en" hreflang="en"><img class="drapeau" src="../assets/img/drapeaux/gb.svg" alt="" width="20" height="15">English</a><a href="../it/logement.html" lang="it" hreflang="it"><img class="drapeau" src="../assets/img/drapeaux/it.svg" alt="" width="20" height="15">Italiano</a><a href="../es/logement.html" lang="es" hreflang="es"><img class="drapeau" src="../assets/img/drapeaux/es.svg" alt="" width="20" height="15">Español</a></div></details>
+    <a class="lien-proprio" href="/connexion">فضاء المالك ←</a>
+    <button class="burger" type="button" data-ouvre-menu aria-label="فتح القائمة"><span></span><span></span></button>
+  </header>
+
+  <div class="menu" id="menu" hidden>
+    <button class="menu-fermer" type="button" data-ferme-menu>إغلاق</button>
+    <a href="index.html">الرئيسية</a>
+    <a href="index.html#simulateur">الملاك</a>
+    <a href="index.html#contact">اتصل بنا</a>
+    <a href="histoire.html">قصتنا</a>
+    <a href="faq.html">الأسئلة الشائعة</a>
+    <div class="menu-langues"><a class="lien-langue" href="../logement.html" lang="fr" hreflang="fr"><img class="drapeau" src="../assets/img/drapeaux/fr.svg" alt="" width="20" height="15">FR</a><a class="lien-langue" href="../en/logement.html" lang="en" hreflang="en"><img class="drapeau" src="../assets/img/drapeaux/gb.svg" alt="" width="20" height="15">EN</a><a class="lien-langue" href="../it/logement.html" lang="it" hreflang="it"><img class="drapeau" src="../assets/img/drapeaux/it.svg" alt="" width="20" height="15">IT</a><a class="lien-langue" href="../es/logement.html" lang="es" hreflang="es"><img class="drapeau" src="../assets/img/drapeaux/es.svg" alt="" width="20" height="15">ES</a></div>
+    <a class="lien-proprio" href="/connexion">فضاء المالك ←</a>
+  </div>
+
+  <main>
+    <div class="mosaique" id="photos" data-ecran="Photos">
+      <a class="btn" href="#galerie"></a>
+    </div>
+
+    <section class="galerie-bien" id="galerie" aria-label="كل الصور">
+      <h2>كل الصور</h2>
+      <div class="galerie-grille">
+      </div>
+    </section>
+
+    <div class="fiche" id="fiche" data-ecran="العقار">
+      <div>
+        <span class="eyebrow eyebrow--brique"></span>
+        <h1></h1>
+        <p class="specs"></p>
+
+        <div class="bloc">
+          <span class="eyebrow">العقار</span>
+          <p class="description"></p>
+          <ul class="equipements"></ul>
+        </div>
+
+        <div class="bloc" style="margin-top:70px">
+          <div class="dispo-tete">
+            <span class="eyebrow">التوفّر</span>
+            <div class="dispo-nav"><button type="button" data-cal-prec aria-label="الشهر السابق"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.6" d="M15 6l-6 6 6 6"/></svg></button><button type="button" data-cal-suiv aria-label="الشهر التالي"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.6" d="M9 6l6 6-6 6"/></svg></button></div>
+          </div>
+          <div class="calendriers" data-dispo data-indispo="" aria-live="polite"></div>
+          <p class="aide-dates">اختر تاريخ الوصول، ثم تاريخ المغادرة.</p>
+          <p class="legende"><span><i class="pris"></i>غير متاح</span><span><i class="libre"></i>متاح</span><span><i class="choisi"></i>تواريخك</span></p>
+        </div>
+      </div>
+
+      <form class="carte-resa" data-reserver data-lien="" data-bien="" data-prix="" novalidate>
+        <p class="apartir">ابتداءً من</p>
+        <p class="prix">[prix] <small>درهم / الليلة</small></p>
+        <p class="ligne"><span>الوصول</span><b data-arrivee>—</b></p>
+        <p class="ligne"><span>المغادرة</span><b data-depart>—</b></p>
+        <label><span>الضيوف</span><select name="voyageurs"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></label>
+        <p class="ligne"><span>الليالي</span><b data-nuits>—</b></p>
+        <p class="ligne" data-total-ligne hidden><span>المجموع التقديري</span><b data-total>—</b></p>
+        <label><span>الاسم</span><input name="nom" required maxlength="120" autocomplete="name"></label>
+        <label><span>البريد الإلكتروني</span><input name="email" type="email" required maxlength="200" autocomplete="email"></label>
+        <label><span>الهاتف (واتساب)</span><input name="telephone" type="tel" required maxlength="30" autocomplete="tel"></label>
+        <label class="piege" aria-hidden="true">Site<input name="site" tabindex="-1" autocomplete="off"></label>
+        <button class="btn btn--plein" type="submit">اطلب الحجز</button>
+        <p class="etat" role="status"></p>
+        <p class="note-resa">تؤكد لك بركة التوفّر عبر واتساب خلال 24 ساعة. لا دفع عبر الإنترنت.</p>
+      </form>
+    </div>
+  </main>
+
+  <footer class="pied-page" id="contact" data-ecran="اتصل بنا">
+    <div class="wrap">
+      <div class="pied-bas">
+        <a class="logo" href="index.html"><img src="../assets/img/logo-lyze.png" alt="Lyze Conciergerie" width="599" height="200"></a>
+        <nav aria-label="تذييل الصفحة">
+          <a href="index.html#services">خدماتنا</a>
+          <a href="index.html#biens">عقاراتنا</a>
+          <a href="histoire.html">قصتنا</a>
+          <a href="/connexion">فضاء المالك</a>
+          <a href="faq.html">الأسئلة الشائعة</a>
+          <a href="mentions.html">الإشعار القانوني</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

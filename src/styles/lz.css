@@ -366,3 +366,9 @@
   .haut-espace nav a { padding: 12px 10px 14px; letter-spacing: .08em; }
   .haut-espace nav a::after { left: 10px; right: 10px; }
 }
+
+/* Fiche du bien : case « Afficher ce bien sur le site » */
+.lz-coche-site { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border: 1px solid rgba(74, 52, 38, .2); border-radius: 10px; background: #fff; cursor: pointer; }
+.lz-coche-site input { width: 20px; height: 20px; margin-top: 2px; accent-color: #4f7a4a; flex: none; }
+.lz-coche-site span { display: grid; gap: 4px; }
+.lz-coche-site small { font-size: 13px; opacity: .8; }

@@ -96,6 +96,11 @@ model Property {
   arrival      String? // consignes d'arrivée (clés, accès, parking)
   notes        String?
 
+  // Vitrine : le propriétaire ou la gérante choisit d'afficher le bien sur le site (accueil + page logement.html?id=)
+  published   Boolean @default(false)
+  description String? // présentation pour les voyageurs
+  price       Int?    // « à partir de », MAD par nuit
+
   owner     User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   bookings  Booking[]
   photos    Photo[]

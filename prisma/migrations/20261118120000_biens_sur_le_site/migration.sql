@@ -1,0 +1,3 @@
+ALTER TABLE "Property" ADD COLUMN "published" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN "description" TEXT,
+ADD COLUMN "price" INTEGER;

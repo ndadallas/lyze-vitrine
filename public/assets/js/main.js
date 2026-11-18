@@ -349,8 +349,41 @@
     hero.addEventListener('focusout', relancer);
   }
 
+  /* Biens cochés « Afficher ce bien sur le site » dans l'espace ou l'admin (demande 2026-11-18) :
+     cartes ajoutées après la villa, AVANT le lancement du carrousel (qui duplique les cartes).
+     Textes saisis par les propriétaires : toujours en textContent, jamais en HTML. */
+  var vignette = function (url) { return '/_next/image?url=' + encodeURIComponent(url) + '&w=828&q=75'; };
+  var carteBien = function (b) {
+    var a = document.createElement('a');
+    a.className = 'carte-logement';
+    a.href = 'logement.html?id=' + encodeURIComponent(b.id);
+    var fig = document.createElement('figure');
+    if (b.photos.length) {
+      var im = document.createElement('img');
+      im.className = 'photo'; im.loading = 'lazy'; im.alt = b.name; im.src = vignette(b.photos[0]);
+      fig.appendChild(im);
+    }
+    var h = document.createElement('h3'); h.textContent = b.name;
+    var p = document.createElement('p'); p.className = 'lieu'; p.textContent = b.city + (b.kind ? ' — ' + b.kind : '');
+    a.append(fig, h, p);
+    return a;
+  };
+  var pisteBiens = document.querySelector('#biens .carrousel-piste');
+  var carrouselLance = false;
+  var biensCharges = !pisteBiens ? Promise.resolve() : Promise.race([
+    fetch('/api/biens').then(function (r) { return r.ok ? r.json() : []; }).then(function (liste) {
+      if (carrouselLance) return; // réponse arrivée après le délai : ignorée plutôt que de casser la piste
+      var apres = pisteBiens.querySelector('.carte-logement');
+      liste.forEach(function (b) {
+        var carte = carteBien(b);
+        if (apres) { apres.after(carte); apres = carte; } else pisteBiens.prepend(carte);
+      });
+    }),
+    new Promise(function (ok) { setTimeout(ok, 3000); }) // API lente : le carrousel démarre quand même
+  ]).catch(function () {});
+
   /* Carrousels horizontaux (nos biens) : flèches + défilement aimanté natif */
-  document.querySelectorAll('[data-carrousel]').forEach(function (c) {
+  biensCharges.then(function () { carrouselLance = true; document.querySelectorAll('[data-carrousel]').forEach(function (c) {
     var piste = c.querySelector('.carrousel-piste');
     var prec = c.querySelector('[data-prec]');
     var suiv = c.querySelector('[data-suiv]');
@@ -401,7 +434,7 @@
     piste.addEventListener('scroll', function () { requestAnimationFrame(maj); }, { passive: true });
     window.addEventListener('resize', maj);
     maj();
-  });
+  }); });
 
   /* Simulateur de revenus : prix − frais de la plateforme − commission Lyze, les deux sur le montant total (demande client 2026-11-11) */
   var calcul = document.querySelector('[data-calcul]');

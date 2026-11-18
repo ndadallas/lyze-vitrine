@@ -49,6 +49,9 @@ const FicheSchema = z.object({
   wifiPassword: texte(100),
   arrival: texte(2000),
   notes: texte(2000),
+  published: z.boolean(),
+  description: texte(2000),
+  price: entier(1_000_000, "Prix"),
 });
 
 export async function enregistrerFiche(_prev: EspaceState, formData: FormData): Promise<EspaceState> {
@@ -68,6 +71,9 @@ export async function enregistrerFiche(_prev: EspaceState, formData: FormData): 
     wifiPassword: formData.get("wifiPassword") ?? "",
     arrival: formData.get("arrival") ?? "",
     notes: formData.get("notes") ?? "",
+    published: formData.get("published") === "on",
+    description: formData.get("description") ?? "",
+    price: formData.get("price") ?? "",
   });
   if (!parsed.success) return { error: premier(parsed.error) };
 

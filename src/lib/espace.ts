@@ -72,6 +72,9 @@ export type FicheBien = {
   wifiPassword: string;
   arrival: string;
   notes: string;
+  published: boolean;
+  description: string;
+  price: number | null;
 };
 
 export const ficheDepuis = (p: {
@@ -87,6 +90,9 @@ export const ficheDepuis = (p: {
   wifiPassword: string | null;
   arrival: string | null;
   notes: string | null;
+  published: boolean;
+  description: string | null;
+  price: number | null;
 }): FicheBien => ({
   name: p.name,
   city: p.city,
@@ -100,6 +106,9 @@ export const ficheDepuis = (p: {
   wifiPassword: p.wifiPassword ?? "",
   arrival: p.arrival ?? "",
   notes: p.notes ?? "",
+  published: p.published,
+  description: p.description ?? "",
+  price: p.price,
 });
 
 export type DocumentItem = {
