@@ -34,6 +34,13 @@ export async function getManageableProperty(propertyId: string) {
   return property;
 }
 
+/** Écriture (bien, calendrier, fiche, photos, dépenses) : gérante uniquement, le propriétaire consulte (2026-11-18). */
+export async function getEditableProperty(propertyId: string) {
+  const user = await getSessionUser();
+  if (user?.role !== "ADMIN" || !propertyId) return null;
+  return db.property.findUnique({ where: { id: propertyId } });
+}
+
 export async function listPhotos(propertyId: string) {
   const photos = await db.photo.findMany({
     where: { propertyId },

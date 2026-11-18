@@ -15,7 +15,7 @@ enum Role {
 enum BookingKind {
   RESERVED
   BLOCKED
-  MANAGED // « Barka s'en charge » (bleu dans le calendrier)
+  MANAGED // ancien « Réservé par l’entreprise » : plus proposé, converti en RESERVED + LYZE
 }
 
 // Plateforme d'origine d'une réservation (logo affiché dans le calendrier).
@@ -23,8 +23,9 @@ enum Platform {
   DIRECT
   AIRBNB
   BOOKING
-  EXPEDIA
+  EXPEDIA // ancien : remplacé par LYZE (migration 20261118200000)
   OTHER
+  LYZE // réservation apportée par Lyze (remplace Expedia et « Réservé par l’entreprise »)
 }
 
 // Un compte = un propriétaire (client de Lyze) ou la gérante (ADMIN).
@@ -134,6 +135,7 @@ model Booking {
   propertyId String
   kind       BookingKind @default(RESERVED)
   platform   Platform    @default(DIRECT)
+  platformOther String? // nom de la plateforme quand platform = OTHER (« Autre » à préciser)
   startDate  DateTime
   endDate    DateTime
   guestName  String?

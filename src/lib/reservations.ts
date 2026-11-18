@@ -22,8 +22,9 @@ const jour = (message: string) =>
 export const BookingSchema = z
   .object({
     propertyId: z.string().min(1),
-    kind: z.enum(["RESERVED", "BLOCKED", "MANAGED"]),
+    kind: z.enum(["RESERVED", "BLOCKED"]), // « Réservé par l’entreprise » retiré le 2026-11-18 (→ plateforme Lyze)
     platform: z.enum(CODES_PLATEFORMES, { error: "Plateforme invalide." }),
+    platformOther: texteFacultatif, // « Autre » à préciser
     startDate: jour("Date d'arrivée invalide."),
     endDate: jour("Date de départ invalide."),
     guestName: texteFacultatif,
@@ -33,6 +34,9 @@ export const BookingSchema = z
       .min(0, { error: "Montant invalide." })
       .max(10_000_000),
     note: texteFacultatif,
+  })
+  .refine((b) => b.kind !== "RESERVED" || b.platform !== "OTHER" || !!b.platformOther, {
+    error: "Précisez la plateforme (champ « Laquelle ? »).",
   })
   .refine((b) => b.endDate > b.startDate, {
     error: "La date de départ doit être après la date d'arrivée.",
@@ -45,6 +49,7 @@ export function parseBooking(formData: FormData) {
     platform: formData.get("platform") ?? "AIRBNB",
     startDate: formData.get("startDate") ?? "",
     endDate: formData.get("endDate") ?? "",
+    platformOther: formData.get("platformOther") ?? "",
     guestName: formData.get("guestName") ?? "",
     amount: formData.get("amount") || 0,
     note: formData.get("note") ?? "",
@@ -63,5 +68,5 @@ export async function findClash(propertyId: string, start: Date, end: Date, exce
     orderBy: { startDate: "asc" },
   });
   if (!clash) return null;
-  return `Ces dates chevauchent ${clash.kind === "RESERVED" ? "une réservation" : clash.kind === "MANAGED" ? "une période « Réservé par l’entreprise »" : "un blocage"} existant (${formatShortDate(clash.startDate)} → ${formatShortDate(clash.endDate)}).`;
+  return `Ces dates chevauchent ${clash.kind === "BLOCKED" ? "un blocage" : "une réservation"} existant (${formatShortDate(clash.startDate)} → ${formatShortDate(clash.endDate)}).`;
 }

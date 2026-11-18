@@ -19,17 +19,17 @@ const Champs = z.object({
 });
 
 /**
- * Dépôt d'un document. La gérante choisit le client (ownerId) ; un propriétaire dépose pour lui-même.
+ * Dépôt d'un document par la gérante pour un client (ownerId) ; le propriétaire consulte seulement (2026-11-18).
  * Route handler plutôt que server action : les actions sont limitées à 1 Mo.
  */
 export async function POST(request: Request) {
   const user = await getSessionUser();
-  if (!user) return NextResponse.json({ error: "Connectez-vous." }, { status: 401 });
+  if (user?.role !== "ADMIN") return NextResponse.json({ error: "Réservé à Lyze." }, { status: 403 });
 
   const form = await request.formData().catch(() => null);
   if (!form) return NextResponse.json({ error: "Envoi invalide." }, { status: 400 });
 
-  const ownerId = user.role === "ADMIN" ? String(form.get("ownerId") ?? "") : user.id;
+  const ownerId = String(form.get("ownerId") ?? "");
   const owner = await db.user.findUnique({ where: { id: ownerId }, select: { id: true, role: true } });
   if (!owner || owner.role !== "OWNER") return NextResponse.json({ error: "Client introuvable." }, { status: 404 });
 
@@ -75,6 +75,6 @@ export async function POST(request: Request) {
   });
 
   revalidatePath("/espace", "layout");
-  revalidatePath(`/admin/clients/${ownerId}`);
+  revalidatePath(`/admin/clients/${ownerId}`, "layout");
   return NextResponse.json({ ok: true });
 }

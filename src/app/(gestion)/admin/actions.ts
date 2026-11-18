@@ -102,7 +102,7 @@ export async function resetOwnerPassword(_prev: ActionState, formData: FormData)
   await db.user.update({ where: { id }, data: { passwordHash: await hashPassword(password) } });
   await revokeUserSessions(id);
 
-  revalidatePath(`/admin/clients/${id}`);
+  revalidatePath(`/admin/clients/${id}`, "layout");
   return {
     credentials: {
       name: `${user.firstName} ${user.lastName}`,
@@ -153,7 +153,7 @@ export async function updateOwner(_prev: ActionState, formData: FormData): Promi
   await db.user.update({ where: { id }, data });
 
   revalidatePath("/admin");
-  revalidatePath(`/admin/clients/${id}`);
+  revalidatePath(`/admin/clients/${id}`, "layout");
   return {
     message:
       data.username !== user.username
@@ -191,7 +191,7 @@ export async function setOwnerActive(formData: FormData) {
   if (!active) await revokeUserSessions(id);
 
   revalidatePath("/admin");
-  revalidatePath(`/admin/clients/${id}`);
+  revalidatePath(`/admin/clients/${id}`, "layout");
 }
 
 /* ------------------------------------------------------------------ */
@@ -217,9 +217,9 @@ export async function addProperty(_prev: ActionState, formData: FormData): Promi
   if (!owner || owner.role !== "OWNER") return { error: "Client introuvable." };
 
   const property = await db.property.create({ data: parsed.data });
-  revalidatePath(`/admin/clients/${parsed.data.ownerId}`);
+  revalidatePath(`/admin/clients/${parsed.data.ownerId}`, "layout");
   // On ouvre directement le nouveau bien pour y ajouter photos et réservations.
-  redirect(`/admin/clients/${parsed.data.ownerId}?bien=${property.id}`);
+  redirect(`/admin/clients/${parsed.data.ownerId}`);
 }
 
 export async function updateProperty(_prev: ActionState, formData: FormData): Promise<ActionState> {
@@ -234,7 +234,7 @@ export async function updateProperty(_prev: ActionState, formData: FormData): Pr
   const property = await db.property.update({ where: { id }, data: parsed.data }).catch(() => null);
   if (!property) return { error: "Bien introuvable." };
 
-  revalidatePath(`/admin/clients/${property.ownerId}`);
+  revalidatePath(`/admin/clients/${property.ownerId}`, "layout");
   return { message: "Bien mis à jour.", done: Date.now() };
 }
 
@@ -243,7 +243,7 @@ export async function deleteProperty(formData: FormData) {
   const id = String(formData.get("propertyId") ?? "");
   const property = await db.property.delete({ where: { id } }).catch(() => null);
   if (!property) return;
-  revalidatePath(`/admin/clients/${property.ownerId}`);
+  revalidatePath(`/admin/clients/${property.ownerId}`, "layout");
 }
 
 /* ------------------------------------------------------------------ */
@@ -265,9 +265,9 @@ export async function addBooking(_prev: ActionState, formData: FormData): Promis
   await db.booking.create({
     data: { ...b, amount: b.kind === "RESERVED" ? b.amount : 0 },
   });
-  revalidatePath(`/admin/clients/${property.ownerId}`);
+  revalidatePath(`/admin/clients/${property.ownerId}`, "layout");
   return {
-    message: b.kind === "RESERVED" ? "Réservation ajoutée." : b.kind === "MANAGED" ? "Période « Réservé par l’entreprise » ajoutée." : "Blocage ajouté.",
+    message: b.kind === "RESERVED" ? "Réservation ajoutée." : "Blocage ajouté.",
     done: Date.now(),
   };
 }
@@ -302,7 +302,7 @@ export async function updateBooking(_prev: ActionState, formData: FormData): Pro
       note: b.note,
     },
   });
-  revalidatePath(`/admin/clients/${existing.property.ownerId}`);
+  revalidatePath(`/admin/clients/${existing.property.ownerId}`, "layout");
   return { message: "Modifications enregistrées.", done: Date.now() };
 }
 
@@ -312,5 +312,5 @@ export async function deleteBooking(formData: FormData) {
   const booking = await db.booking
     .delete({ where: { id }, include: { property: { select: { ownerId: true } } } })
     .catch(() => null);
-  if (booking) revalidatePath(`/admin/clients/${booking.property.ownerId}`);
+  if (booking) revalidatePath(`/admin/clients/${booking.property.ownerId}`, "layout");
 }

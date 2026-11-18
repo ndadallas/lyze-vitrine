@@ -188,7 +188,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                 </div>
                 <small className="lz-dem-meta">{lastLogin.format(r.createdAt)}</small>
                 <p className="lz-dem-message">{r.body}</p>
-                <Link href={`/admin/clients/${r.notice.owner.id}?onglet=messages`} className="btn btn-outline btn-sm">
+                <Link href={`/admin/clients/${r.notice.owner.id}/messages`} className="btn btn-outline btn-sm">
                   Lire et répondre
                 </Link>
               </li>
@@ -207,7 +207,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
               <DemandeAdmin
                 key={`${r.id}-${r.updatedAt.getTime()}`}
                 d={versDemandeItem(r)}
-                client={{ nom: `${r.owner.firstName} ${r.owner.lastName}`, lien: `/admin/clients/${r.owner.id}?onglet=demandes` }}
+                client={{ nom: `${r.owner.firstName} ${r.owner.lastName}`, lien: `/admin/clients/${r.owner.id}/demandes` }}
               />
             ))}
           </ul>
@@ -301,7 +301,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                       </span>
                     </td>
                     <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
-                      <Link href={`/admin/clients/${o.id}?onglet=messages`} className="btn btn-outline btn-sm" style={{ marginRight: 8 }}>
+                      <Link href={`/admin/clients/${o.id}/messages`} className="btn btn-outline btn-sm" style={{ marginRight: 8 }}>
                         Message
                       </Link>
                       <Link href={`/admin/clients/${o.id}`} className="btn btn-outline btn-sm">

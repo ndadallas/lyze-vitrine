@@ -995,3 +995,11 @@ img.logo-name { height: 44px; }
 }
 .vue-client .revenus { margin-top: 0; padding: 0; }
 .vue-client .panneau .titre-p { display: block; font-size: 12px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; color: var(--brass); }
+
+/* Barre latérale : menu déroulant des clients (2026-11-18) */
+.nav-clients { margin-top: 6px; color: rgba(246, 240, 228, .85); }
+.nav-clients summary { cursor: pointer; padding: 10px 12px; font-size: 14px; list-style-position: inside; }
+.nav-clients summary:focus-visible { outline: 2px solid var(--card); outline-offset: 2px; }
+.nav-clients ul { list-style: none; margin: 0; padding: 0 0 0 22px; display: grid; gap: 2px; max-height: 55vh; overflow-y: auto; }
+.nav-clients a { display: block; padding: 7px 10px; border-radius: 8px; font-size: 14px; color: rgba(246, 240, 228, .8); }
+.nav-clients a:hover, .nav-clients a:focus-visible { background: rgba(246, 240, 228, .1); color: var(--card); }

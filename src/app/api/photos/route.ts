@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { MAX_PHOTO_BYTES, MAX_PHOTOS_PER_PROPERTY, detectImage, getManageableProperty, listPhotos } from "@/lib/photos";
+import { MAX_PHOTO_BYTES, MAX_PHOTOS_PER_PROPERTY, detectImage, getEditableProperty, listPhotos } from "@/lib/photos";
 
 /**
  * Ajout de photos à un bien (glisser-déposer ou « parcourir »).
@@ -12,7 +12,7 @@ export async function POST(request: Request) {
   const form = await request.formData().catch(() => null);
   if (!form) return NextResponse.json({ error: "Envoi invalide." }, { status: 400 });
 
-  const property = await getManageableProperty(String(form.get("propertyId") ?? ""));
+  const property = await getEditableProperty(String(form.get("propertyId") ?? ""));
   if (!property) return NextResponse.json({ error: "Accès refusé." }, { status: 403 });
 
   const files = form.getAll("photos").filter((f): f is File => f instanceof File && f.size > 0);
@@ -51,6 +51,6 @@ export async function POST(request: Request) {
   if (files.length > room) refused.push(`${files.length - room} photo(s) au-delà de la limite de ${MAX_PHOTOS_PER_PROPERTY}`);
 
   revalidatePath("/espace", "layout");
-  revalidatePath(`/admin/clients/${property.ownerId}`);
+  revalidatePath(`/admin/clients/${property.ownerId}`, "layout");
   return NextResponse.json({ photos: await listPhotos(property.id), refused });
 }

@@ -20,7 +20,9 @@ export function Depenses({
   biens,
   aujourdhui,
   admin = false,
+  lectureSeule = false,
 }: {
+  lectureSeule?: boolean; // espace du propriétaire : consultation seulement
   depenses: DepenseItem[];
   biens: { id: string; nom: string }[];
   aujourdhui: string;
@@ -48,9 +50,11 @@ export function Depenses({
         ) : (
           <span />
         )}
-        <button type="button" className="lz-bouton" aria-expanded={ouvert} onClick={() => setOuvert((v) => !v)} disabled={!biens.length}>
-          {ouvert ? "Fermer" : "+ Ajouter une dépense"}
-        </button>
+        {!lectureSeule && (
+          <button type="button" className="lz-bouton" aria-expanded={ouvert} onClick={() => setOuvert((v) => !v)} disabled={!biens.length}>
+            {ouvert ? "Fermer" : "+ Ajouter une dépense"}
+          </button>
+        )}
       </div>
 
       {ouvert && (
@@ -121,7 +125,7 @@ export function Depenses({
                   <td data-label="Bien">{nomBien.get(d.bienId) ?? "—"}</td>
                   <td data-label="Montant">{formatMAD(d.montant)}</td>
                   <td className="lz-actions-cellule">
-                    {(admin || d.parProprio) && (
+                    {!lectureSeule && (admin || d.parProprio) && (
                       <form action={supprimerDepense}>
                         <input type="hidden" name="expenseId" value={d.id} />
                         <ConfirmButton message={`Supprimer « ${d.libelle} » ?`} className="lz-lien lz-danger">

@@ -7,7 +7,7 @@ import { requireAdmin, requireOwner } from "@/lib/auth";
 import { parseDay, today } from "@/lib/dates";
 import { CODES_DEPENSES, CODES_STATUTS, CODES_TYPES_DEMANDE, EQUIPEMENTS, TYPES_BIEN } from "@/lib/espace";
 import { findClash, parseBooking } from "@/lib/reservations";
-import { getManageableProperty } from "@/lib/photos";
+import { getEditableProperty } from "@/lib/photos";
 import { getSessionUser } from "@/lib/session";
 
 export type EspaceState = { error?: string; ok?: number } | undefined;
@@ -29,7 +29,7 @@ const entier = (max: number, nom: string) =>
 function rafraichir(ownerId: string) {
   revalidatePath("/espace", "layout");
   revalidatePath("/admin");
-  revalidatePath(`/admin/clients/${ownerId}`);
+  revalidatePath(`/admin/clients/${ownerId}`, "layout");
 }
 
 /* ------------------------------------------------------------------ */
@@ -49,13 +49,12 @@ const FicheSchema = z.object({
   wifiPassword: texte(100),
   arrival: texte(2000),
   notes: texte(2000),
-  published: z.boolean(),
   description: texte(2000),
   price: entier(1_000_000, "Prix"),
 });
 
 export async function enregistrerFiche(_prev: EspaceState, formData: FormData): Promise<EspaceState> {
-  const bien = await getManageableProperty(String(formData.get("propertyId") ?? ""));
+  const bien = await getEditableProperty(String(formData.get("propertyId") ?? ""));
   if (!bien) return { error: "Accès refusé." };
 
   const parsed = FicheSchema.safeParse({
@@ -71,7 +70,6 @@ export async function enregistrerFiche(_prev: EspaceState, formData: FormData): 
     wifiPassword: formData.get("wifiPassword") ?? "",
     arrival: formData.get("arrival") ?? "",
     notes: formData.get("notes") ?? "",
-    published: formData.get("published") === "on",
     description: formData.get("description") ?? "",
     price: formData.get("price") ?? "",
   });
@@ -86,7 +84,7 @@ export async function enregistrerFiche(_prev: EspaceState, formData: FormData): 
 /* Documents                                                           */
 /* ------------------------------------------------------------------ */
 
-/** La gérante supprime tout ; un propriétaire seulement les documents qu'il a lui-même déposés. */
+/** Gérante uniquement : le propriétaire consulte ses documents sans les modifier (2026-11-18). */
 export async function supprimerDocument(formData: FormData) {
   const user = await getSessionUser();
   if (!user) return;
@@ -95,8 +93,7 @@ export async function supprimerDocument(formData: FormData) {
     select: { id: true, ownerId: true, byAdmin: true },
   });
   if (!doc) return;
-  const permis = user.role === "ADMIN" || (doc.ownerId === user.id && !doc.byAdmin);
-  if (!permis) return;
+  if (user.role !== "ADMIN") return;
   await db.document.delete({ where: { id: doc.id } });
   rafraichir(doc.ownerId);
 }
@@ -229,8 +226,11 @@ const BienSchema = z.object({
   city: z.string().trim().min(1, { error: "Ville requise." }).max(80),
 });
 
+/** La gérante ajoute un bien à un client (vue client de l'admin) ; le propriétaire ne peut plus en créer. */
 export async function ajouterBien(_prev: EspaceState, formData: FormData): Promise<EspaceState> {
-  const user = await requireOwner();
+  await requireAdmin();
+  const user = await db.user.findFirst({ where: { id: String(formData.get("ownerId") ?? ""), role: "OWNER" }, select: { id: true } });
+  if (!user) return { error: "Client introuvable." };
   const parsed = BienSchema.safeParse({ name: formData.get("name") ?? "", city: formData.get("city") ?? "" });
   if (!parsed.success) return { error: premier(parsed.error) };
   if ((await db.property.count({ where: { ownerId: user.id } })) >= 50) return { error: "Maximum 50 biens par compte." };
@@ -240,7 +240,7 @@ export async function ajouterBien(_prev: EspaceState, formData: FormData): Promi
 }
 
 export async function supprimerBien(formData: FormData) {
-  const bien = await getManageableProperty(String(formData.get("propertyId") ?? ""));
+  const bien = await getEditableProperty(String(formData.get("propertyId") ?? ""));
   if (!bien) return;
   await db.property.delete({ where: { id: bien.id } });
   rafraichir(bien.ownerId);
@@ -248,7 +248,7 @@ export async function supprimerBien(formData: FormData) {
 
 /** Bouton « Afficher ce bien sur le site » / « Retirer du site » (même champ que la case de la fiche). */
 export async function basculerPublication(formData: FormData) {
-  const bien = await getManageableProperty(String(formData.get("propertyId") ?? ""));
+  const bien = await getEditableProperty(String(formData.get("propertyId") ?? ""));
   if (!bien) return;
   await db.property.update({ where: { id: bien.id }, data: { published: !bien.published } });
   rafraichir(bien.ownerId);
@@ -265,7 +265,7 @@ export async function enregistrerResa(_prev: EspaceState, formData: FormData): P
   if (bookingId && !existante) return { error: "Réservation introuvable." };
   if (existante) formData.set("propertyId", existante.propertyId);
 
-  const bien = await getManageableProperty(String(formData.get("propertyId") ?? ""));
+  const bien = await getEditableProperty(String(formData.get("propertyId") ?? ""));
   if (!bien) return { error: "Accès refusé." };
 
   const parsed = parseBooking(formData);
@@ -278,6 +278,7 @@ export async function enregistrerResa(_prev: EspaceState, formData: FormData): P
   const data = {
     kind: b.kind,
     platform: b.platform,
+    platformOther: b.platform === "OTHER" ? b.platformOther : null,
     startDate: b.startDate,
     endDate: b.endDate,
     // le propriétaire ne voit que l'initiale : champ vide = nom inchangé
@@ -295,7 +296,7 @@ export async function enregistrerResa(_prev: EspaceState, formData: FormData): P
 
 export async function supprimerResa(formData: FormData) {
   const resa = await db.booking.findUnique({ where: { id: String(formData.get("bookingId") ?? "") } });
-  if (!resa || !(await getManageableProperty(resa.propertyId))) return;
+  if (!resa || !(await getEditableProperty(resa.propertyId))) return;
   await db.booking.delete({ where: { id: resa.id } });
   const bien = await db.property.findUnique({ where: { id: resa.propertyId }, select: { ownerId: true } });
   if (bien) rafraichir(bien.ownerId);
@@ -322,7 +323,7 @@ const DepenseSchema = z.object({
 
 export async function ajouterDepense(_prev: EspaceState, formData: FormData): Promise<EspaceState> {
   const user = await getSessionUser();
-  const bien = await getManageableProperty(String(formData.get("propertyId") ?? ""));
+  const bien = await getEditableProperty(String(formData.get("propertyId") ?? ""));
   if (!user || !bien) return { error: "Accès refusé." };
   const parsed = DepenseSchema.safeParse({
     date: formData.get("date") ?? "",
@@ -338,7 +339,7 @@ export async function ajouterDepense(_prev: EspaceState, formData: FormData): Pr
 
 export async function supprimerDepense(formData: FormData) {
   const dep = await db.expense.findUnique({ where: { id: String(formData.get("expenseId") ?? "") } });
-  const bien = dep ? await getManageableProperty(dep.propertyId) : null;
+  const bien = dep ? await getEditableProperty(dep.propertyId) : null;
   if (!dep || !bien) return;
   await db.expense.delete({ where: { id: dep.id } });
   rafraichir(bien.ownerId);

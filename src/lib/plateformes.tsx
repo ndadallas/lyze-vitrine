@@ -5,14 +5,15 @@ export const PLATEFORMES = {
   EXPEDIA: { nom: "Expedia", logo: "/assets/img/plateformes/expedia.svg" },
   DIRECT: { nom: "Direct", logo: "/assets/img/plateformes/direct.svg" },
   OTHER: { nom: "Autre", logo: null },
+  LYZE: { nom: "Lyze", logo: "/assets/img/plateformes/lyze.svg" },
 } as const;
 
 export type Plateforme = keyof typeof PLATEFORMES;
 export const CODES_PLATEFORMES = Object.keys(PLATEFORMES) as [Plateforme, ...Plateforme[]];
 
-/** Petit logo + nom de la plateforme. */
-export function LogoPlateforme({ code, avecNom = true, taille = 16 }: { code: Plateforme; avecNom?: boolean; taille?: number }) {
-  const p = PLATEFORMES[code];
+/** Petit logo + nom de la plateforme ; `autre` = nom précisé quand code = OTHER. */
+export function LogoPlateforme({ code, avecNom = true, taille = 16, autre }: { code: Plateforme; avecNom?: boolean; taille?: number; autre?: string | null }) {
+  const p = code === "OTHER" && autre ? { ...PLATEFORMES.OTHER, nom: autre } : PLATEFORMES[code];
   return (
     <span className="plateforme" title={p.nom}>
       {p.logo && (
@@ -24,5 +25,5 @@ export function LogoPlateforme({ code, avecNom = true, taille = 16 }: { code: Pl
   );
 }
 
-// Lyze ne prend pas de réservation directe : DIRECT reste en base (anciennes données) mais n'est plus proposé.
-export const CHOIX_PLATEFORMES: Plateforme[] = CODES_PLATEFORMES.filter((c) => c !== "DIRECT");
+// Choix proposés (demande 2026-11-18) : Airbnb, Booking, Lyze, Autre (à préciser). DIRECT et EXPEDIA restent pour les anciennes données.
+export const CHOIX_PLATEFORMES: Plateforme[] = ["AIRBNB", "BOOKING", "LYZE", "OTHER"];

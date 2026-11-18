@@ -61,14 +61,9 @@ export function FicheBienForm({ propertyId, fiche }: { propertyId: string; fiche
 
       <fieldset className="lz-groupe">
         <legend>Sur le site de Lyze</legend>
+        <p className="lz-aide">Affichage sur l’accueil : bouton « Afficher ce bien sur le site » en haut de la page du bien.</p>
         <div className="lz-grille">
-          <label className="lz-coche-site lz-pleine">
-            <input type="checkbox" name="published" defaultChecked={fiche.published} />
-            <span>
-              <strong>Afficher ce bien sur le site</strong>
-              <small>Il apparaît dans « Nos biens en gestion » sur l’accueil, avec sa propre page. La 1re photo de l’onglet Photos sert de couverture.</small>
-            </span>
-          </label>
+
           <label className="lz-champ lz-pleine">
             <span>Présentation pour les voyageurs</span>
             <textarea name="description" rows={4} maxLength={2000} defaultValue={fiche.description} placeholder="3 à 4 phrases : l’ambiance, la vue, ce qu’on trouve à proximité…" />

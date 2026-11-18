@@ -359,3 +359,16 @@ aside.side { overflow-y: auto; overscroll-behavior: contain; }
 .lz-fil-form textarea { flex: 1 1 260px; min-height: 44px; padding: 10px 12px; border: 1px solid rgba(74, 52, 38, .25); border-radius: 8px; background: #fff; font: inherit; font-size: 15px; resize: vertical; }
 .lz-fil-form textarea:focus-visible { outline: 2px solid #9c6644; outline-offset: 1px; }
 .lz-fil-form .lz-msg { flex-basis: 100%; }
+
+/* Vue gérante d'un client + espace propriétaire en consultation (2026-11-18) */
+.side .lz-choix-client { display: grid; gap: 6px; margin: 18px 18px 0; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: rgba(246, 240, 228, .7); }
+.side .lz-choix-client select { height: 40px; padding: 0 10px; border: 1px solid rgba(246, 240, 228, .4); background: transparent; color: #f6f0e4; font: inherit; font-size: 14px; letter-spacing: 0; text-transform: none; cursor: pointer; }
+.side .lz-choix-client option { color: #4a3426; }
+.app .lz-bouton.lz-bouton-clair { background: transparent; color: #4a3426; border: 1px solid rgba(74, 52, 38, .35); }
+.lz-galerie-lecture { list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+.lz-galerie-lecture img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; }
+.lz-fiche-lecture { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px 28px; margin: 18px 0 0; }
+.lz-fiche-lecture div { border-top: 1px solid rgba(74, 52, 38, .15); padding-top: 10px; }
+.lz-fiche-lecture dt { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #7a6a5a; }
+.lz-fiche-lecture dd { margin: 4px 0 0; white-space: pre-line; overflow-wrap: anywhere; }
+.app .cal-jours div.jour:not(.vide) { background: #fff; color: #4a3426; border: 1px solid rgba(43, 29, 21, .12); }

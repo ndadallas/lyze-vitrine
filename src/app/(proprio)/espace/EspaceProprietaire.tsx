@@ -3,11 +3,12 @@
 import { useActionState, useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/actions/auth";
-import { ajouterBien, supprimerBien } from "@/app/actions/espace";
+import { ajouterBien, basculerPublication, supprimerBien } from "@/app/actions/espace";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { Depenses } from "@/components/Depenses";
-import { DemandesProprio } from "@/components/Demandes";
-import { MessagesProprio } from "@/components/Messages";
+import { DemandeAdmin, DemandesProprio } from "@/components/Demandes";
+import { MessagesAdmin, MessagesProprio } from "@/components/Messages";
+import { CompteClientAdmin, type CompteClient } from "@/components/CompteClientAdmin";
 import { marquerAvisLus } from "@/app/actions/espace";
 import { Documents } from "@/components/Documents";
 import { FicheBienForm } from "@/components/FicheBienForm";
@@ -30,6 +31,8 @@ export type ResaEspace = {
   initiale: string | null;
   montant: number;
   plateforme: Plateforme;
+  plateformeAutre: string | null; // « Autre » précisé
+  voyageur?: string | null; // nom complet : vue gérante seulement
   note: string | null;
   attente: boolean; // saisi par le propriétaire, pas encore validé par Lyze
 };
@@ -43,7 +46,12 @@ export type BienEspace = {
   resas: ResaEspace[];
 };
 
+/** Vue gérante de l'espace d'un client (demande 2026-11-18) : même affichage que le client, mais tout est modifiable. */
+export type AdminVue = { clientId: string; clients: { id: string; nom: string }[]; compte: CompteClient };
+
 type Props = {
+  /** absent = espace du propriétaire, en lecture seule (il consulte, Lyze modifie) */
+  admin?: AdminVue;
   nom: string;
   salutation: string; // « Mme Barka Exemple » : civilité + prénom + nom
   avis: AvisItem[];
@@ -70,7 +78,7 @@ function resaDuJour(bien: BienEspace, t: number) {
   let blocage: ResaEspace | null = null;
   for (const r of bien.resas) {
     if (jour(r.du).getTime() <= t && t < jour(r.au).getTime()) {
-      if (r.type === "RESERVED") return r;
+      if (r.type !== "BLOCKED") return r;
       blocage = r;
     }
   }
@@ -104,33 +112,35 @@ function IconeCoche(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, documents, demandes, depenses, compte, contact }: Props) {
+export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, biens, documents, demandes, depenses, compte, contact }: Props) {
   const listeBiens = biens.map((b) => ({ id: b.id, nom: b.nom }));
   const aTraiter = demandes.filter((d) => d.reponse && d.statut !== "NOUVELLE").length;
   // Une page par rubrique (URL /espace/<id>) ; changement de page par pushState : bien et mois choisis sont gardés
-  const onglet = usePathname().split("/")[2] || "biens";
+  const base = admin ? `/admin/clients/${admin.clientId}` : "/espace";
+  const lien = (id: string) => lienOnglet(id, base);
+  const onglet = usePathname().slice(base.length).split("/")[1] || "biens";
   // sans bien, seuls les onglets qui ne dépendent pas d'un bien sont proposés
   const onglets = biens.length ? ONGLETS : ONGLETS.filter(([id]) => ["biens", "documents", "demandes", "messages", "compte"].includes(id));
   // messages non lus à l'arrivée : gardés pour la pastille « Nouveau » le temps de la visite
-  const [nonLus] = useState(() => avis.filter((a) => !a.lu || a.reponses.some((r) => r.deLyze && !r.lu)).map((a) => a.id));
+  const [nonLus] = useState(() => avis.filter((a) => (admin ? a.reponses.some((r) => !r.deLyze && !r.lu) : !a.lu || a.reponses.some((r) => r.deLyze && !r.lu))).map((a) => a.id));
   // page Messages déjà ouverte pendant la visite (ou arrivée directe sur /espace/messages)
   const [vuMessages, setVuMessages] = useState(onglet === "messages");
   const lus = vuMessages || onglet === "messages";
   function aller(id: string) {
-    if (id !== onglet) window.history.pushState(null, "", lienOnglet(id));
+    if (id !== onglet) window.history.pushState(null, "", lien(id));
     if (id === "messages") setVuMessages(true);
     window.scrollTo({ top: 0 });
   }
   useEffect(() => {
     const libelle = ONGLETS.find(([id]) => id === onglet)?.[1];
-    if (libelle) document.title = `${libelle} — Espace propriétaire Lyze`;
+    if (libelle) document.title = admin ? `${libelle} — ${nom} — Lyze` : `${libelle} — Espace propriétaire Lyze`;
     // téléphone : la barre des rubriques défile, garder la rubrique ouverte visible
     document.querySelector(".side nav [aria-current]")?.scrollIntoView({ block: "nearest", inline: "center" });
-  }, [onglet]);
+  }, [onglet, admin, nom]);
   // page Messages ouverte (lien ou adresse directe) : messages marqués lus
   useEffect(() => {
-    if (lus && nonLus.length) marquerAvisLus();
-  }, [lus, nonLus.length]);
+    if (!admin && lus && nonLus.length) marquerAvisLus();
+  }, [admin, lus, nonLus.length]);
   const t0 = jour(aujourdhui);
   const [bienId, setBienId] = useState<string | undefined>(biens[0]?.id);
   const [mois, setMois] = useState(() => monthStart(t0.getUTCFullYear(), t0.getUTCMonth()));
@@ -159,9 +169,9 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
       setBrouillon(null);
     } else {
       setResaId(null);
-      setBrouillon({ du: jourIso, au: isoJour(d.getTime() + DAY_MS) });
+      setBrouillon(admin ? { du: jourIso, au: isoJour(d.getTime() + DAY_MS) } : null);
     }
-    if (onglet !== "biens") window.history.pushState(null, "", lienOnglet("biens"));
+    if (onglet !== "biens") window.history.pushState(null, "", lien("biens"));
     requestAnimationFrame(() => document.getElementById("calendrier")?.scrollIntoView({ behavior: "smooth", block: "start" }));
   }
 
@@ -175,13 +185,23 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
   return (
     <div className="app">
       <aside className="side">
-        <a className="logo" href="/"><img src="/assets/img/logo-lyze-creme.png" alt="Lyze Conciergerie" width={599} height={200} />{/* eslint-disable-line @next/next/no-img-element */}</a>
-        <span className="role">ESPACE PROPRIÉTAIRE</span>
+        <a className="logo" href={admin ? "/admin" : "/"}><img src="/assets/img/logo-lyze-creme.png" alt="Lyze Conciergerie" width={599} height={200} />{/* eslint-disable-line @next/next/no-img-element */}</a>
+        <span className="role">{admin ? "VUE GÉRANTE" : "ESPACE PROPRIÉTAIRE"}</span>
+        {admin && (
+          <label className="lz-choix-client">
+            <span>Client</span>
+            <select value={admin.clientId} onChange={(e) => (window.location.href = `/admin/clients/${e.target.value}`)}>
+              {admin.clients.map((c) => (
+                <option key={c.id} value={c.id}>{c.nom}</option>
+              ))}
+            </select>
+          </label>
+        )}
         <nav aria-label="Espace propriétaire">
           {onglets.map(([id, libelle]) => (
             <a
               key={id}
-              href={lienOnglet(id)}
+              href={lien(id)}
               aria-current={onglet === id ? "page" : undefined}
               onClick={(e) => {
                 if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; // nouvel onglet du navigateur
@@ -197,15 +217,21 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
           ))}
         </nav>
         <div className="bas">
+          {admin ? (
+            <a className="contacter" href="/admin">← Tous les clients</a>
+          ) : (
           <a className="contacter" href={contact} {...(contact.startsWith("https://") ? { target: "_blank", rel: "noopener" } : {})}>
             <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
               <path fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" d="M4 5h16v11H9l-5 4z" />
             </svg>
             Contacter Lyze
           </a>
-          <span>
-            Connecté·e : <strong>{nom}</strong>
-          </span>
+          )}
+          {!admin && (
+            <span>
+              Connecté·e : <strong>{nom}</strong>
+            </span>
+          )}
           <form action={logout}>
             <button type="submit">Se déconnecter</button>
           </form>
@@ -214,10 +240,14 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
 
       <main className="contenu" id="haut">
         <header className="entete-app" hidden={onglet !== "biens"}>
-          <span className="eyebrow eyebrow--brique">Espace propriétaire</span>
-          <h1>Bienvenue dans votre espace, {salutation}</h1>
-          <p className="lead">Vos réservations, vos photos et vos revenus, réunis au même endroit.</p>
-          {nonLus.length > 0 && !lus && (
+          <span className="eyebrow eyebrow--brique">{admin ? "Vue gérante : ce que voit le client" : "Espace propriétaire"}</span>
+          <h1>{admin ? salutation : `Bienvenue dans votre espace, ${salutation}`}</h1>
+          <p className="lead">
+            {admin
+              ? "Le même affichage que le client. Ici vous pouvez tout modifier ; lui ne fait que consulter."
+              : "Vos réservations, vos photos et vos revenus, réunis au même endroit."}
+          </p>
+          {!admin && nonLus.length > 0 && !lus && (
             <button type="button" className="lz-alerte-msg" onClick={() => aller("messages")}>
               {nonLus.length === 1 ? "Vous avez un nouveau message de Lyze" : `Vous avez ${nonLus.length} nouveaux messages de Lyze`} →
             </button>
@@ -227,8 +257,12 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
         {!bien ? (
           <section className="panneau vide-biens" hidden={onglet !== "biens"}>
             <span className="titre-p">Vos biens</span>
-            <p>Aucun bien n&apos;est encore rattaché à votre compte. Ajoutez votre premier bien : son calendrier, sa fiche et ses photos apparaîtront ici.</p>
-            <AjoutBien ouvertAuDepart />
+            <p>
+              {admin
+                ? "Aucun bien pour ce client. Ajoutez son premier bien : calendrier, fiche et photos apparaîtront ici."
+                : "Aucun bien n’est encore rattaché à votre compte : Lyze l’ajoute pour vous."}
+            </p>
+            {admin && <AjoutBien ouvertAuDepart ownerId={admin.clientId} />}
           </section>
         ) : (
           <>
@@ -250,9 +284,14 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
                 </svg>
               </label>
               <ChoixMois mois={mois} aujourdhui={aujourdhui} onMois={changerMois} />
-              <button type="button" className="lz-bouton lz-petit" onClick={() => ouvrirJour(bien, jourParDefaut(mois, aujourdhui))}>
-                + Ajouter au calendrier
-              </button>
+              {admin && (
+                <form action={basculerPublication}>
+                  <input type="hidden" name="propertyId" value={bien.id} />
+                  <button type="submit" className={`lz-bouton lz-petit${bien.fiche.published ? " lz-bouton-clair" : ""}`}>
+                    {bien.fiche.published ? "Retirer du site" : "Afficher ce bien sur le site"}
+                  </button>
+                </form>
+              )}
               <div className="legende-app">
                 <span>
                   <i className="l-vert" style={{ color: "var(--creme)" }}>
@@ -261,7 +300,6 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
                   Réservation sélectionnée
                 </span>
                 <span><i className="l-brique" />Réservé</span>
-                <span><i className="l-barka" />Réservé par l’entreprise</span>
                 <span><i className="l-bloque" />Bloqué par le propriétaire</span>
                 <span><i className="l-attente" />En attente de validation</span>
                 <span><i className="l-libre" />Libre</span>
@@ -291,7 +329,7 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
                     </li>
                   ))}
                 </ul>
-                <AjoutBien />
+                {admin && <AjoutBien ownerId={admin.clientId} />}
                 {stats && (
                   <div className="stats">
                     <span className="titre-p">{titreMois}</span>
@@ -306,7 +344,7 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
                 <div className="cal-entete">
                   {JOURS.map((j) => <span key={j}>{j}</span>)}
                 </div>
-                <Calendrier bien={bien} mois={mois} resaChoisie={resa} onJour={(j) => ouvrirJour(bien, j)} />
+                <Calendrier bien={bien} mois={mois} resaChoisie={resa} modifiable={!!admin} onJour={(j) => ouvrirJour(bien, j)} />
               </section>
 
               <EditeurResa
@@ -315,11 +353,18 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
                 resa={resa}
                 brouillon={brouillon}
                 onFini={() => setBrouillon(null)}
+                lectureSeule={!admin}
               />
             </div>
 
             <div hidden={onglet !== "planning"}>
             <Planning
+              titre={admin ? "Tous ses biens" : "Tous vos biens"}
+              aide={
+                admin
+                  ? "Le mois en un coup d’œil. Cliquez sur une case libre pour ajouter une réservation ou bloquer une date, ou sur une barre pour la modifier."
+                  : "Le mois en un coup d’œil. Cliquez sur une barre pour voir le détail de la réservation."
+              }
               biens={biens}
               mois={mois}
               aujourdhui={aujourdhui}
@@ -331,34 +376,38 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
             </div>
 
             <div hidden={onglet !== "revenus"}>
-              <Revenus biens={biens} aujourdhui={aujourdhui} depenses={depenses} />
+              <Revenus biens={biens} aujourdhui={aujourdhui} depenses={depenses} titre={admin ? "Ses revenus" : "Vos revenus"} />
             </div>
 
             <section className="panneau lz-section" id="depenses" hidden={onglet !== "depenses"}>
               <span className="eyebrow eyebrow--brique">Dépenses</span>
               <h2>Vos dépenses</h2>
               <p className="aide-p">
-                Ménage, réparations, charges, taxes : notez chaque dépense, elle est déduite de vos revenus dans le relevé.
+                {admin
+                  ? "Ménage, réparations, charges, taxes : notez chaque dépense, elle est déduite des revenus dans le relevé du client."
+                  : "Ménage, réparations, charges, taxes : les dépenses notées par Lyze, déduites de vos revenus dans le relevé."}
               </p>
-              <Depenses depenses={depenses} biens={listeBiens} aujourdhui={aujourdhui} />
+              <Depenses depenses={depenses} biens={listeBiens} aujourdhui={aujourdhui} admin={!!admin} lectureSeule={!admin} />
             </section>
 
             <section className="panneau photos" id="photos" hidden={onglet !== "photos"}>
               <span className="eyebrow eyebrow--brique">Photos</span>
               <h2>{bien.nom}</h2>
               <p className="aide-p">
-                Glissez vos photos dans le cadre pour les ajouter à l&apos;annonce. Faites-les glisser entre elles pour
-                changer l&apos;ordre : la première est la photo de couverture.
+                {admin
+                  ? "Glissez les photos dans le cadre pour les ajouter. Faites-les glisser entre elles pour changer l’ordre : la première est la photo de couverture."
+                  : "Les photos de votre logement, gérées par Lyze. La première est la photo de couverture."}
               </p>
-              <PhotoManager key={bien.id} propertyId={bien.id} initial={bien.photos} />
+              {admin ? <PhotoManager key={bien.id} propertyId={bien.id} initial={bien.photos} /> : <GaleriePhotos nom={bien.nom} photos={bien.photos} />}
             </section>
 
             <section className="panneau lz-section" id="fiche" hidden={onglet !== "fiche"}>
               <span className="eyebrow eyebrow--brique">Fiche du bien</span>
               <h2>{bien.nom}</h2>
               <p className="aide-p">
-                Les informations pratiques de votre logement. Lyze s’en sert pour préparer chaque arrivée : tenez-les à
-                jour.
+                {admin
+                  ? "Les informations pratiques du logement : Lyze s’en sert pour préparer chaque arrivée."
+                  : "Les informations pratiques de votre logement, tenues à jour par Lyze pour préparer chaque arrivée."}
               </p>
               {biens.length > 1 && (
                 <div className="lz-choix-bien" role="group" aria-label="Bien affiché">
@@ -369,7 +418,9 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
                   ))}
                 </div>
               )}
-              <FicheBienForm key={bien.id} propertyId={bien.id} fiche={bien.fiche} />
+              {!admin && <FicheLecture fiche={bien.fiche} />}
+              {admin && <FicheBienForm key={bien.id} propertyId={bien.id} fiche={bien.fiche} />}
+              {admin && (
               <form action={supprimerBien} className="lz-zone-suppr">
                 <input type="hidden" name="propertyId" value={bien.id} />
                 <ConfirmButton
@@ -379,6 +430,7 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
                   Supprimer ce bien
                 </ConfirmButton>
               </form>
+              )}
             </section>
           </>
         )}
@@ -387,10 +439,9 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
           <span className="eyebrow eyebrow--brique">Documents</span>
           <h2>Vos documents</h2>
           <p className="aide-p">
-            Contrat, relevés, factures, états des lieux : tout est classé par catégorie. Vous pouvez aussi déposer vos
-            propres pièces (assurance, titre de propriété).
+            Contrat, relevés, factures, états des lieux : tout est classé par catégorie.
           </p>
-          <Documents documents={documents} biens={listeBiens} />
+          <Documents documents={documents} biens={listeBiens} admin={!!admin} ownerId={admin?.clientId} lectureSeule={!admin} />
         </section>
 
         <section className="panneau lz-section" id="demandes" hidden={onglet !== "demandes"}>
@@ -401,7 +452,19 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
             répond ici.
             {aTraiter > 0 && ` ${aTraiter} réponse${aTraiter > 1 ? "s" : ""} de Lyze ci-dessous.`}
           </p>
-          <DemandesProprio demandes={demandes} biens={listeBiens} />
+          {admin ? (
+            demandes.length ? (
+              <ul className="lz-liste-dem">
+                {demandes.map((d) => (
+                  <DemandeAdmin key={`${d.id}-${d.statut}-${d.reponse ?? ""}`} d={d} />
+                ))}
+              </ul>
+            ) : (
+              <p className="lz-vide">Aucune demande de ce client.</p>
+            )
+          ) : (
+            <DemandesProprio demandes={demandes} biens={listeBiens} />
+          )}
         </section>
 
         <section className="panneau lz-section" id="messages" hidden={onglet !== "messages"}>
@@ -411,11 +474,15 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
             Interventions, pannes, informations sur vos biens : Lyze vous tient au courant ici. Répondez directement sous
             chaque message, comme à un mail.
           </p>
-          <MessagesProprio avis={avis} nonLus={nonLus} />
+          {admin ? (
+            <MessagesAdmin ownerId={admin.clientId} nomClient={nom} biens={listeBiens} avis={avis} />
+          ) : (
+            <MessagesProprio avis={avis} nonLus={nonLus} />
+          )}
         </section>
 
         <div hidden={onglet !== "compte"}>
-          <MonCompte compte={compte} />
+          {admin ? <CompteClientAdmin compte={admin.compte} /> : <MonCompte compte={compte} />}
         </div>
       </main>
     </div>
@@ -426,11 +493,13 @@ function Calendrier({
   bien,
   mois,
   resaChoisie,
+  modifiable,
   onJour,
 }: {
   bien: BienEspace;
   mois: Date;
   resaChoisie: ResaEspace | null;
+  modifiable: boolean;
   onJour: (jourIso: string) => void;
 }) {
   const an = mois.getUTCFullYear();
@@ -447,23 +516,25 @@ function Calendrier({
     const debutOuPremier = r && (d === 1 || t === jour(r.du).getTime());
     const choisie = !!r && r.id === resaChoisie?.id;
 
-    if (!r) {
+    if (!r && !modifiable) {
+      cases.push(<div key={d} className="jour">{d}</div>);
+    } else if (!r) {
       cases.push(
         <button key={d} type="button" className="jour" aria-label={`${d} ${MOIS[m]} : libre, ajouter`} onClick={() => onJour(leJour)}>
           {d}
         </button>,
       );
-    } else if (r.type !== "RESERVED") {
+    } else if (r.type === "BLOCKED") {
       cases.push(
         <button
           key={d}
           type="button"
-          className={`jour ${r.type === "MANAGED" ? "barka" : "bloque"}${choisie ? " choisi" : ""}${r.attente ? " attente" : ""}`}
-          aria-label={`${d} ${MOIS[m]} : ${r.type === "MANAGED" ? "Réservé par l’entreprise" : "bloqué"}`}
+          className={`jour bloque${choisie ? " choisi" : ""}${r.attente ? " attente" : ""}`}
+          aria-label={`${d} ${MOIS[m]} : bloqué`}
           onClick={() => onJour(leJour)}
         >
           {d}
-          {debutOuPremier && <span className="etiquette">{r.type === "MANAGED" ? "Entreprise" : "Bloqué"}</span>}
+          {debutOuPremier && <span className="etiquette">Bloqué</span>}
         </button>,
       );
     } else {
@@ -479,7 +550,7 @@ function Calendrier({
           {choisie && <IconeCoche className="coche" />}
           {debutOuPremier && (
             <span className="etiquette">
-              <LogoPlateforme code={r.plateforme} avecNom={false} taille={14} />
+              <LogoPlateforme code={r.plateforme} autre={r.plateformeAutre} avecNom={false} taille={14} />
               {choisie && `${r.initiale}.`}
             </span>
           )}
@@ -493,15 +564,54 @@ function Calendrier({
 
 const isoJour = (t: number) => new Date(t).toISOString().slice(0, 10);
 
-/** Jour proposé par « + Ajouter » : aujourd'hui si on regarde le mois en cours, sinon le 1er du mois affiché. */
-function jourParDefaut(mois: Date, aujourdhui: string) {
-  const debut = isoJour(mois.getTime());
-  const fin = isoJour(Date.UTC(mois.getUTCFullYear(), mois.getUTCMonth() + 1, 1));
-  return aujourdhui >= debut && aujourdhui < fin ? aujourdhui : debut;
+/** Espace du propriétaire : photos en consultation (seule Lyze les ajoute ou les range). */
+function GaleriePhotos({ nom, photos }: { nom: string; photos: PhotoItem[] }) {
+  if (!photos.length) return <p className="lz-vide">Lyze n’a pas encore ajouté de photo pour ce bien.</p>;
+  return (
+    <ul className="lz-galerie-lecture">
+      {photos.map((p, i) => (
+        <li key={p.id}>
+          <a href={p.url} target="_blank" rel="noopener">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={p.url} alt={`${nom}, photo ${i + 1}`} loading="lazy" />
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** Espace du propriétaire : fiche du bien en consultation. */
+function FicheLecture({ fiche }: { fiche: FicheBien }) {
+  const lignes = (
+    [
+      ["Catégorie", fiche.kind],
+      ["Adresse", fiche.address],
+      ["Chambres", fiche.bedrooms?.toString() ?? ""],
+      ["Voyageurs max.", fiche.capacity?.toString() ?? ""],
+      ["Surface", fiche.surface ? `${fiche.surface} m²` : ""],
+      ["Équipements", fiche.equipment.join(", ")],
+      ["Wifi", [fiche.wifiName, fiche.wifiPassword].filter(Boolean).join(" · mot de passe : ")],
+      ["Consignes d’arrivée", fiche.arrival],
+      ["Présentation sur le site", fiche.description],
+      ["Prix à partir de", fiche.price ? `${formatMAD(fiche.price)} / nuit` : ""],
+    ] as [string, string][]
+  ).filter(([, v]) => v);
+  if (!lignes.length) return <p className="lz-vide">Lyze n’a pas encore rempli la fiche de ce bien.</p>;
+  return (
+    <dl className="lz-fiche-lecture">
+      {lignes.map(([k, v]) => (
+        <div key={k}>
+          <dt>{k}</dt>
+          <dd>{v}</dd>
+        </div>
+      ))}
+    </dl>
+  );
 }
 
 /** Ajout d'un bien par le propriétaire (nom + ville), dépliable. */
-function AjoutBien({ ouvertAuDepart = false }: { ouvertAuDepart?: boolean }) {
+function AjoutBien({ ouvertAuDepart = false, ownerId }: { ouvertAuDepart?: boolean; ownerId: string }) {
   const [ouvert, setOuvert] = useState(ouvertAuDepart);
   const [etat, action, envoi] = useActionState(async (prev: Awaited<ReturnType<typeof ajouterBien>>, fd: FormData) => {
     const r = await ajouterBien(prev, fd);
@@ -518,6 +628,7 @@ function AjoutBien({ ouvertAuDepart = false }: { ouvertAuDepart?: boolean }) {
   }
   return (
     <form action={action} className="lz-form lz-form-bien">
+      <input type="hidden" name="ownerId" value={ownerId} />
       <label className="lz-champ">
         <span>Nom du bien</span>
         <input name="name" required maxLength={120} placeholder="Appartement Vue Mer" />

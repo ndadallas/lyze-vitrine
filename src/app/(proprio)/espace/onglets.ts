@@ -13,4 +13,5 @@ export const ONGLETS = [
   ["compte", "Mon compte"],
 ] as const;
 
-export const lienOnglet = (id: string) => (id === "biens" ? "/espace" : `/espace/${id}`);
+// base = "/espace" (propriétaire) ou "/admin/clients/<id>" (vue gérante du même espace)
+export const lienOnglet = (id: string, base = "/espace") => (id === "biens" ? base : `${base}/${id}`);

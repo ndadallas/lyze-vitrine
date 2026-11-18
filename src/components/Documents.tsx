@@ -44,7 +44,9 @@ export function Documents({
   biens,
   admin = false,
   ownerId,
+  lectureSeule = false,
 }: {
+  lectureSeule?: boolean; // espace du propriétaire : consultation seulement
   documents: DocumentItem[];
   biens: { id: string; nom: string }[];
   admin?: boolean;
@@ -104,9 +106,11 @@ export function Documents({
             </button>
           ))}
         </div>
-        <button type="button" className="lz-bouton" aria-expanded={ouvert} onClick={() => setOuvert((v) => !v)}>
-          {ouvert ? "Fermer" : "+ Ajouter un document"}
-        </button>
+        {!lectureSeule && (
+          <button type="button" className="lz-bouton" aria-expanded={ouvert} onClick={() => setOuvert((v) => !v)}>
+            {ouvert ? "Fermer" : "+ Ajouter un document"}
+          </button>
+        )}
       </div>
 
       {ouvert && (
@@ -168,7 +172,7 @@ export function Documents({
               </span>
               <span className="lz-doc-actions">
                 <a className="lz-lien" href={documentUrl(d.id)} target="_blank" rel="noopener">Ouvrir</a>
-                {(admin || !d.parLyze) && (
+                {!lectureSeule && (admin || !d.parLyze) && (
                   <form action={supprimerDocument}>
                     <input type="hidden" name="documentId" value={d.id} />
                     <ConfirmButton message={`Supprimer « ${d.titre} » ?`} className="lz-lien lz-danger">

@@ -82,7 +82,6 @@ export function Planning({
         <ChoixMois mois={mois} aujourdhui={aujourdhui} onMois={onMois} />
         <div className="legende-app">
           <span><i className="l-brique" />Réservé</span>
-          <span><i className="l-barka" />Réservé par l’entreprise</span>
           <span><i className="l-bloque" />Bloqué par le propriétaire</span>
         </div>
       </div>
@@ -124,16 +123,16 @@ export function Planning({
                   type="button"
                   className={`lz-pl-barre lz-pl-${r.type.toLowerCase()}${r.attente ? " lz-pl-attente" : ""}`}
                   style={{ gridRow: rangee, gridColumn: `${col + 1} / span ${span}` }}
-                  title={r.type === "RESERVED" ? `Voyageur ${r.initiale}.` : (r.note ?? undefined)}
+                  title={r.type !== "BLOCKED" ? (r.voyageur ?? `Voyageur ${r.initiale}.`) : (r.note ?? undefined)}
                   onClick={() => onResa(b, r)}
                 >
-                  {r.type === "RESERVED" ? (
+                  {r.type !== "BLOCKED" ? (
                     <>
-                      <LogoPlateforme code={r.plateforme} avecNom={false} taille={12} />
+                      <LogoPlateforme code={r.plateforme} autre={r.plateformeAutre} avecNom={false} taille={12} />
                       {span > 1 && <span>{r.initiale}.</span>}
                     </>
                   ) : (
-                    span > 2 && <span>{r.type === "MANAGED" ? "Entreprise" : r.note || "Bloqué"}</span>
+                    span > 2 && <span>{r.note || "Bloqué"}</span>
                   )}
                 </button>
               )),

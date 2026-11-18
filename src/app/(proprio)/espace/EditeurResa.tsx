@@ -16,7 +16,8 @@ const court = (iso: string) => {
   const d = jour(iso);
   return `${d.getUTCDate()} ${MOIS_COURT[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 };
-const TYPES = { RESERVED: "Réservation voyageur", BLOCKED: "Bloqué par le propriétaire (usage perso, travaux…)", MANAGED: "Réservé par l’entreprise" } as const;
+// « Réservé par l’entreprise » (MANAGED) retiré le 2026-11-18 : converti en réservation via Lyze
+const TYPES = { RESERVED: "Réservation voyageur", BLOCKED: "Bloqué par le propriétaire (usage perso, travaux…)" } as const;
 
 export type Brouillon = { du: string; au: string };
 
@@ -29,11 +30,14 @@ export function EditeurResa({
   resa,
   brouillon,
   onFini,
+  lectureSeule = false,
 }: {
   bien: BienEspace;
   resa: ResaEspace | null;
   brouillon: Brouillon | null;
   onFini: () => void;
+  /** Espace du propriétaire : consultation seulement (demande 2026-11-18), seule la gérante modifie. */
+  lectureSeule?: boolean;
 }) {
   const [modif, setModif] = useState(false);
   // succès : on referme le formulaire (dans l'action, pas dans un effet)
@@ -48,23 +52,25 @@ export function EditeurResa({
   const enEdition = brouillon !== null || modif;
   const base = modif && resa ? resa : null;
   const [type, setType] = useState<ResaEspace["type"]>("RESERVED");
+  const [plateforme, setPlateforme] = useState<string>("AIRBNB");
 
-  if (!enEdition) {
+  if (!enEdition || lectureSeule) {
     if (!resa) {
       return (
         <section className="panneau detail" aria-live="polite">
           <span className="titre-p">Calendrier</span>
           <p className="vide-msg">
-            Cliquez sur un jour libre pour ajouter une réservation ou bloquer des dates, ou sur un jour occupé pour le
-            modifier.
+            {lectureSeule
+              ? "Cliquez sur un jour réservé ou bloqué pour voir le détail."
+              : "Cliquez sur un jour libre pour ajouter une réservation ou bloquer des dates, ou sur un jour occupé pour le modifier."}
           </p>
         </section>
       );
     }
     return (
       <section className="panneau detail" aria-live="polite">
-        <span className="titre-p">{resa.type === "RESERVED" ? "Réservation sélectionnée" : TYPES[resa.type]}</span>
-        <h2>{resa.type === "RESERVED" ? `Voyageur ${resa.initiale}.` : resa.note || TYPES[resa.type]}</h2>
+        <span className="titre-p">{resa.type === "BLOCKED" ? TYPES.BLOCKED : "Réservation sélectionnée"}</span>
+        <h2>{resa.type === "BLOCKED" ? resa.note || TYPES.BLOCKED : resa.voyageur || `Voyageur ${resa.initiale}.`}</h2>
         {resa.attente && <p className="lz-attente">En attente de validation par Lyze</p>}
         <dl>
           <div>
@@ -73,32 +79,35 @@ export function EditeurResa({
               {court(resa.du)} → {court(resa.au)} ({nights({ startDate: jour(resa.du), endDate: jour(resa.au) })} nuits)
             </dd>
           </div>
-          {resa.type === "RESERVED" && (
+          {resa.type !== "BLOCKED" && (
             <>
-              <div><dt>Plateforme</dt><dd><LogoPlateforme code={resa.plateforme} taille={18} /></dd></div>
+              <div><dt>Plateforme</dt><dd><LogoPlateforme code={resa.plateforme} autre={resa.plateformeAutre} taille={18} /></dd></div>
               <div><dt>Montant net</dt><dd>{resa.montant > 0 ? formatMAD(resa.montant) : "—"}</dd></div>
               {resa.note && <div><dt>Note</dt><dd>{resa.note}</dd></div>}
             </>
           )}
         </dl>
-        <div className="lz-actions-resa">
-          <button
-            type="button"
-            className="lz-bouton lz-petit"
-            onClick={() => {
-              setType(resa.type);
-              setModif(true);
-            }}
-          >
-            Modifier
-          </button>
-          <form action={supprimerResa}>
-            <input type="hidden" name="bookingId" value={resa.id} />
-            <ConfirmButton message="Supprimer cette ligne du calendrier ?" className="lz-lien lz-danger">
-              Supprimer
-            </ConfirmButton>
-          </form>
-        </div>
+        {!lectureSeule && (
+          <div className="lz-actions-resa">
+            <button
+              type="button"
+              className="lz-bouton lz-petit"
+              onClick={() => {
+                setType(resa.type === "BLOCKED" ? "BLOCKED" : "RESERVED");
+                setPlateforme(resa.plateforme);
+                setModif(true);
+              }}
+            >
+              Modifier
+            </button>
+            <form action={supprimerResa}>
+              <input type="hidden" name="bookingId" value={resa.id} />
+              <ConfirmButton message="Supprimer cette ligne du calendrier ?" className="lz-lien lz-danger">
+                Supprimer
+              </ConfirmButton>
+            </form>
+          </div>
+        )}
       </section>
     );
   }
@@ -134,12 +143,18 @@ export function EditeurResa({
           <>
             <label className="lz-champ">
               <span>Plateforme</span>
-              <select name="platform" defaultValue={base?.plateforme && base.plateforme !== "DIRECT" ? base.plateforme : "AIRBNB"}>
+              <select name="platform" value={plateforme} onChange={(e) => setPlateforme(e.target.value)}>
                 {CHOIX_PLATEFORMES.map((c) => (
                   <option key={c} value={c}>{PLATEFORMES[c].nom}</option>
                 ))}
               </select>
             </label>
+            {plateforme === "OTHER" && (
+              <label className="lz-champ">
+                <span>Laquelle ?</span>
+                <input name="platformOther" required maxLength={60} defaultValue={base?.plateformeAutre ?? ""} placeholder="Ex. Abritel, Vrbo, bouche-à-oreille" />
+              </label>
+            )}
             <label className="lz-champ">
               <span>{base ? "Nom du voyageur (vide = inchangé)" : "Nom du voyageur"}</span>
               <input name="guestName" maxLength={200} autoComplete="off" />
