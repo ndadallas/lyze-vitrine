@@ -1,6 +1,6 @@
 // Nouveau mot de passe pour un compte existant (gérante ou client), débloque les tentatives ratées
 // et vérifie le résultat contre la base avant de l'afficher.
-// Usage : npm run reset-password -- identifiant
+// Usage : npm run reset-password -- identifiant [mot-de-passe choisi]
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
@@ -20,7 +20,7 @@ async function main() {
     process.exit(1);
   }
 
-  const password = generatePassword();
+  const password = process.argv[3]?.trim() || generatePassword();
   await db.$transaction([
     db.user.update({ where: { id: user.id }, data: { passwordHash: await hashPassword(password), active: true } }),
     db.loginAttempt.deleteMany({ where: { username } }),
