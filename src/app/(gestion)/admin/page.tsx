@@ -267,7 +267,10 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                         {o.active ? "Actif" : "Désactivé"}
                       </span>
                     </td>
-                    <td style={{ textAlign: "right" }}>
+                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
+                      <Link href={`/admin/clients/${o.id}#messages-title`} className="btn btn-outline btn-sm" style={{ marginRight: 8 }}>
+                        Message
+                      </Link>
                       <Link href={`/admin/clients/${o.id}`} className="btn btn-outline btn-sm">
                         Modifier
                       </Link>
