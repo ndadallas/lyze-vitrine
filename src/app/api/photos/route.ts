@@ -50,7 +50,7 @@ export async function POST(request: Request) {
   }
   if (files.length > room) refused.push(`${files.length - room} photo(s) au-delà de la limite de ${MAX_PHOTOS_PER_PROPERTY}`);
 
-  revalidatePath("/espace");
+  revalidatePath("/espace", "layout");
   revalidatePath(`/admin/clients/${property.ownerId}`);
   return NextResponse.json({ photos: await listPhotos(property.id), refused });
 }

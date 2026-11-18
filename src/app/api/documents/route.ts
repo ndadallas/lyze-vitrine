@@ -74,7 +74,7 @@ export async function POST(request: Request) {
     select: { id: true },
   });
 
-  revalidatePath("/espace");
+  revalidatePath("/espace", "layout");
   revalidatePath(`/admin/clients/${ownerId}`);
   return NextResponse.json({ ok: true });
 }

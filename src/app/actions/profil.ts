@@ -64,7 +64,7 @@ export async function modifierProfil(_prev: ProfilState, formData: FormData): Pr
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Formulaire invalide." };
 
   await db.user.update({ where: { id: user.id }, data: versBase(parsed.data) });
-  revalidatePath("/espace");
+  revalidatePath("/espace", "layout");
   return { ok: Date.now() };
 }
 

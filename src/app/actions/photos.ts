@@ -21,7 +21,7 @@ export async function reorderPhotos(propertyId: string, orderedIds: string[]): P
   await db.$transaction(
     orderedIds.map((id, position) => db.photo.update({ where: { id }, data: { position } })),
   );
-  revalidatePath("/espace");
+  revalidatePath("/espace", "layout");
   revalidatePath(`/admin/clients/${property.ownerId}`);
   return { photos: await listPhotos(propertyId) };
 }
@@ -34,7 +34,7 @@ export async function deletePhoto(photoId: string): Promise<Result> {
 
   await db.photo.delete({ where: { id: photoId }, select: { id: true } });
 
-  revalidatePath("/espace");
+  revalidatePath("/espace", "layout");
   revalidatePath(`/admin/clients/${property.ownerId}`);
   return { photos: await listPhotos(photo.propertyId) };
 }

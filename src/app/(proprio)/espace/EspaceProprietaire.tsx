@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
 import { logout } from "@/app/actions/auth";
 import { ajouterBien, supprimerBien } from "@/app/actions/espace";
 import { ConfirmButton } from "@/components/ConfirmButton";
@@ -19,6 +20,7 @@ import { EditeurResa, type Brouillon } from "./EditeurResa";
 import { MonCompte, type CompteEspace } from "./MonCompte";
 import { ChoixMois, Planning } from "./Planning";
 import { Revenus } from "./Revenus";
+import { ONGLETS, lienOnglet } from "./onglets";
 
 export type ResaEspace = {
   id: string;
@@ -102,37 +104,33 @@ function IconeCoche(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-// Une section par onglet (demande cliente 2026-11-16) ; « Mes biens » = liste + calendrier + détail.
-const ONGLETS = [
-  ["biens", "Mes biens"],
-  ["planning", "Planning"],
-  ["releve", "Revenus"],
-  ["depenses", "Dépenses"],
-  ["photos", "Photos"],
-  ["fiche", "Fiche du bien"],
-  ["documents", "Documents"],
-  ["demandes", "Demandes"],
-  ["messages", "Messages"],
-  ["compte", "Mon compte"],
-] as const;
-
 export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, documents, demandes, depenses, compte, contact }: Props) {
   const listeBiens = biens.map((b) => ({ id: b.id, nom: b.nom }));
   const aTraiter = demandes.filter((d) => d.reponse && d.statut !== "NOUVELLE").length;
-  const [onglet, setOnglet] = useState<string>("biens");
+  // Une page par rubrique (URL /espace/<id>) ; changement de page par pushState : bien et mois choisis sont gardés
+  const onglet = usePathname().split("/")[2] || "biens";
   // sans bien, seuls les onglets qui ne dépendent pas d'un bien sont proposés
   const onglets = biens.length ? ONGLETS : ONGLETS.filter(([id]) => ["biens", "documents", "demandes", "messages", "compte"].includes(id));
   // messages non lus à l'arrivée : gardés pour la pastille « Nouveau » le temps de la visite
   const [nonLus] = useState(() => avis.filter((a) => !a.lu).map((a) => a.id));
   const [lus, setLus] = useState(false);
   function aller(id: string) {
-    setOnglet(id);
-    if (id === "messages" && nonLus.length && !lus) {
+    if (id !== onglet) window.history.pushState(null, "", lienOnglet(id));
+    window.scrollTo({ top: 0 });
+  }
+  useEffect(() => {
+    const libelle = ONGLETS.find(([id]) => id === onglet)?.[1];
+    if (libelle) document.title = `${libelle} — Espace propriétaire Lyze`;
+    // téléphone : la barre des rubriques défile, garder la rubrique ouverte visible
+    document.querySelector(".haut-espace nav [aria-current]")?.scrollIntoView({ block: "nearest", inline: "center" });
+  }, [onglet]);
+  // page Messages ouverte (lien ou adresse directe) : messages marqués lus
+  useEffect(() => {
+    if (onglet === "messages" && nonLus.length && !lus) {
       setLus(true);
       marquerAvisLus();
     }
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
+  }, [onglet, nonLus.length, lus]);
   const t0 = jour(aujourdhui);
   const [bienId, setBienId] = useState<string | undefined>(biens[0]?.id);
   const [mois, setMois] = useState(() => monthStart(t0.getUTCFullYear(), t0.getUTCMonth()));
@@ -163,7 +161,7 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
       setResaId(null);
       setBrouillon({ du: jourIso, au: isoJour(d.getTime() + DAY_MS) });
     }
-    setOnglet("biens");
+    if (onglet !== "biens") window.history.pushState(null, "", lienOnglet("biens"));
     requestAnimationFrame(() => document.getElementById("calendrier")?.scrollIntoView({ behavior: "smooth", block: "start" }));
   }
 
@@ -175,17 +173,34 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
   const titreMois = `${capital(MOIS[mois.getUTCMonth()])} ${mois.getUTCFullYear()}`;
 
   return (
-    <div className="app">
-      <aside className="side">
-        <a className="logo" href="/"><img src="/assets/img/logo-lyze-creme.png" alt="Lyze Conciergerie" width={599} height={200} />{/* eslint-disable-line @next/next/no-img-element */}</a>
-        <span className="role">ESPACE PROPRIÉTAIRE</span>
+    <div className="app app-haut">
+      <header className="haut-espace">
+        <div className="haut-ligne">
+          <a className="logo" href="/"><img src="/assets/img/logo-lyze-creme.png" alt="Lyze Conciergerie" width={599} height={200} />{/* eslint-disable-line @next/next/no-img-element */}</a>
+          <span className="role">ESPACE PROPRIÉTAIRE</span>
+          <div className="bas">
+            <a className="contacter" href={contact} {...(contact.startsWith("https://") ? { target: "_blank", rel: "noopener" } : {})}>
+              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" d="M4 5h16v11H9l-5 4z" />
+              </svg>
+              Contacter Lyze
+            </a>
+            <span className="qui">
+              <strong>{nom}</strong>
+            </span>
+            <form action={logout}>
+              <button type="submit">Se déconnecter</button>
+            </form>
+          </div>
+        </div>
         <nav aria-label="Espace propriétaire">
           {onglets.map(([id, libelle]) => (
             <a
               key={id}
-              href={`#${id}`}
+              href={lienOnglet(id)}
               aria-current={onglet === id ? "page" : undefined}
               onClick={(e) => {
+                if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; // nouvel onglet du navigateur
                 e.preventDefault();
                 aller(id);
               }}
@@ -197,21 +212,7 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
             </a>
           ))}
         </nav>
-        <div className="bas">
-          <a className="contacter" href={contact} {...(contact.startsWith("https://") ? { target: "_blank", rel: "noopener" } : {})}>
-            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" d="M4 5h16v11H9l-5 4z" />
-            </svg>
-            Contacter Lyze
-          </a>
-          <span>
-            Connecté·e : <strong>{nom}</strong>
-          </span>
-          <form action={logout}>
-            <button type="submit">Se déconnecter</button>
-          </form>
-        </div>
-      </aside>
+      </header>
 
       <main className="contenu" id="haut">
         <header className="entete-app" hidden={onglet !== "biens"}>
@@ -331,7 +332,7 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
 
             </div>
 
-            <div hidden={onglet !== "releve"}>
+            <div hidden={onglet !== "revenus"}>
               <Revenus biens={biens} aujourdhui={aujourdhui} depenses={depenses} />
             </div>
 

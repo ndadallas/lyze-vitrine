@@ -27,7 +27,7 @@ const entier = (max: number, nom: string) =>
     .pipe(z.number({ error: `${nom} : nombre invalide.` }).int().min(0).max(max).nullable());
 
 function rafraichir(ownerId: string) {
-  revalidatePath("/espace");
+  revalidatePath("/espace", "layout");
   revalidatePath("/admin");
   revalidatePath(`/admin/clients/${ownerId}`);
 }

@@ -326,7 +326,7 @@
 
 /* Message d'accueil + messages de Lyze */
 .app .entete-app .lz-alerte-msg { margin-top: 16px; display: inline-flex; gap: 10px; align-items: center; padding: 10px 16px; border-radius: 10px; background: #fbeee2; color: #4a3426; font-size: 15px; border: 1px solid rgba(156, 102, 68, .35); cursor: pointer; font-family: inherit; }
-.app .side nav .lz-badge { display: inline-grid; place-items: center; min-width: 20px; height: 20px; margin-left: 8px; padding: 0 6px; border-radius: 10px; background: #f6f0e4; color: #4a3426; font-size: 12px; font-weight: 700; }
+.app .side nav .lz-badge, .haut-espace nav .lz-badge { display: inline-grid; place-items: center; min-width: 20px; height: 20px; margin-left: 8px; padding: 0 6px; border-radius: 10px; background: #f6f0e4; color: #4a3426; font-size: 12px; font-weight: 700; }
 .lz-avis-nouveau { border-left: 3px solid var(--lz-accent, #9c6644); padding-left: 14px; }
 .lz-avis-date { margin-top: 8px; font-weight: 600; color: #7e4f33; }
 .lz-avis-texte { white-space: pre-line; }
@@ -336,5 +336,33 @@
 .app .mois-nav select:hover { background: var(--sable, #e9dcc7); }
 .app .contenu .entete-app h1 { font-size: clamp(32px, 3.4vw, 52px); }
 
-/* Barre latérale de l'espace : défile si l'écran du PC est moins haut que son contenu (retour 18/11) */
-aside.side { overflow-y: auto; overscroll-behavior: contain; }
+
+/* Espace propriétaire : en-tête en haut au lieu de la barre latérale, une page par rubrique (demande 2026-11-18) */
+.app.app-haut { display: block; }
+.haut-espace { position: sticky; top: 0; z-index: 20; background: var(--noir, #4a3426); color: var(--creme, #f6f0e4); padding: 12px clamp(16px, 4vw, 56px) 0; }
+.haut-espace .haut-ligne { display: flex; align-items: center; gap: 12px 20px; flex-wrap: wrap; }
+.haut-espace .logo img { display: block; height: 44px; width: auto; }
+.haut-espace .role { font-size: 12px; font-weight: 500; letter-spacing: .3em; color: var(--sable2, #e2d3ba); }
+.haut-espace .bas { margin-left: auto; display: flex; align-items: center; gap: 8px 18px; font-size: 13px; color: rgba(246, 240, 228, .75); }
+.haut-espace .bas strong { color: var(--creme, #f6f0e4); font-weight: 500; }
+.haut-espace .bas form { margin: 0; }
+.haut-espace .bas button { border: 0; background: none; padding: 8px 0; font: inherit; color: inherit; cursor: pointer; }
+.haut-espace .bas button:hover, .haut-espace .bas a:hover { color: var(--creme, #f6f0e4); }
+.haut-espace .contacter { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border: 1px solid rgba(246, 240, 228, .45); color: var(--creme, #f6f0e4); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+.haut-espace .contacter:hover { background: rgba(246, 240, 228, .1); }
+.haut-espace nav { display: flex; gap: 4px; margin-top: 10px; overflow-x: auto; scrollbar-width: none; }
+.haut-espace nav::-webkit-scrollbar { display: none; }
+.haut-espace nav a { position: relative; white-space: nowrap; padding: 12px 14px 14px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: rgba(246, 240, 228, .7); }
+.haut-espace nav a::after { content: ""; position: absolute; left: 14px; right: 14px; bottom: 0; height: 3px; background: var(--creme, #f6f0e4); transform: scaleX(0); transform-origin: left; transition: transform .25s; }
+.haut-espace nav a:hover { color: var(--creme, #f6f0e4); }
+.haut-espace nav a:hover::after, .haut-espace nav a[aria-current="page"]::after { transform: scaleX(1); }
+.haut-espace nav a[aria-current="page"] { color: var(--creme, #f6f0e4); font-weight: 600; }
+.haut-espace a:focus-visible, .haut-espace button:focus-visible { outline: 2px solid var(--creme, #f6f0e4); outline-offset: 2px; }
+@media (max-width: 900px) {
+  .haut-espace { position: static; }
+  .haut-espace .logo img { height: 34px; }
+  .haut-espace .role, .haut-espace .qui { display: none; }
+  .haut-espace .contacter { padding: 6px 10px; font-size: 11px; }
+  .haut-espace nav a { padding: 12px 10px 14px; letter-spacing: .08em; }
+  .haut-espace nav a::after { left: 10px; right: 10px; }
+}

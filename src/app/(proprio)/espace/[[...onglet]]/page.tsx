@@ -1,15 +1,22 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireOwner } from "@/lib/auth";
 import { addMonths, monthStart, toDayString, today } from "@/lib/dates";
 import { photoUrl } from "@/lib/photos";
 import { SELECT_DOCUMENT, ficheDepuis, versAvisItem, versDemandeItem, versDepenseItem, versDocumentItem } from "@/lib/espace";
-import { EspaceProprietaire, type BienEspace } from "./EspaceProprietaire";
+import { EspaceProprietaire, type BienEspace } from "../EspaceProprietaire";
+import { ONGLETS } from "../onglets";
 
-export const metadata: Metadata = { title: "Mes biens" };
+const libelle = (onglet?: string[]) => ONGLETS.find(([id]) => id === (onglet?.[0] ?? "biens"))?.[1];
 
-export default async function EspacePage() {
+export async function generateMetadata({ params }: PageProps<"/espace/[[...onglet]]">): Promise<Metadata> {
+  return { title: libelle((await params).onglet) ?? "Mes biens" };
+}
+
+export default async function EspacePage({ params }: PageProps<"/espace/[[...onglet]]">) {
+  const { onglet } = await params;
+  if ((onglet?.length ?? 0) > 1 || onglet?.[0] === "biens" || !libelle(onglet)) notFound();
   const user = await requireOwner();
   if (!user.onboardedAt) redirect("/espace/bienvenue"); // fiche de première connexion
   const now = today();
