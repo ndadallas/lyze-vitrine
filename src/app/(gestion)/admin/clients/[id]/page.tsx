@@ -11,6 +11,7 @@ import { ActionForm } from "@/components/ActionForm";
 import { BookingRow } from "@/components/BookingRow";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { EnteteBien } from "@/components/EnteteBien";
+import { basculerPublication } from "@/app/actions/espace";
 import { PhotoManager } from "@/components/PhotoManager";
 import { DemandeAdmin } from "@/components/Demandes";
 import { MessagesAdmin } from "@/components/Messages";
@@ -269,6 +270,14 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
                         </div>
                       </>
                     </ActionForm>
+                  }
+                  publication={
+                    <form action={basculerPublication}>
+                      <input type="hidden" name="propertyId" value={bien.id} />
+                      <button type="submit" className={bien.published ? "btn btn-outline btn-sm" : "btn btn-primary btn-sm"} title={bien.published ? "Le bien est visible sur l’accueil du site" : undefined}>
+                        {bien.published ? "Retirer du site" : "Afficher ce bien sur le site"}
+                      </button>
+                    </form>
                   }
                   suppression={
                     <form action={deleteProperty}>

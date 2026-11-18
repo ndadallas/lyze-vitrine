@@ -246,6 +246,14 @@ export async function supprimerBien(formData: FormData) {
   rafraichir(bien.ownerId);
 }
 
+/** Bouton « Afficher ce bien sur le site » / « Retirer du site » (même champ que la case de la fiche). */
+export async function basculerPublication(formData: FormData) {
+  const bien = await getManageableProperty(String(formData.get("propertyId") ?? ""));
+  if (!bien) return;
+  await db.property.update({ where: { id: bien.id }, data: { published: !bien.published } });
+  rafraichir(bien.ownerId);
+}
+
 /* ------------------------------------------------------------------ */
 /* Calendrier : réservations et blocages saisis depuis l'espace        */
 /* ------------------------------------------------------------------ */

@@ -13,6 +13,7 @@ export function EnteteBien({
   details,
   formulaire,
   suppression,
+  publication,
 }: {
   nom: string;
   ville: string;
@@ -20,6 +21,7 @@ export function EnteteBien({
   details: string;
   formulaire: ReactNode;
   suppression: ReactNode;
+  publication?: ReactNode;
 }) {
   const [edition, setEdition] = useState(false);
 
@@ -41,6 +43,7 @@ export function EnteteBien({
           <button type="button" className="btn btn-outline btn-sm" aria-expanded={edition} onClick={() => setEdition((v) => !v)}>
             {edition ? "Fermer" : "Modifier le bien"}
           </button>
+          {publication}
           {suppression}
         </div>
       </header>
