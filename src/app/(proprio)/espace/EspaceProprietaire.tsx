@@ -125,7 +125,7 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
     const libelle = ONGLETS.find(([id]) => id === onglet)?.[1];
     if (libelle) document.title = `${libelle} — Espace propriétaire Lyze`;
     // téléphone : la barre des rubriques défile, garder la rubrique ouverte visible
-    document.querySelector(".haut-espace nav [aria-current]")?.scrollIntoView({ block: "nearest", inline: "center" });
+    document.querySelector(".side nav [aria-current]")?.scrollIntoView({ block: "nearest", inline: "center" });
   }, [onglet]);
   // page Messages ouverte (lien ou adresse directe) : messages marqués lus
   useEffect(() => {
@@ -173,26 +173,10 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
   const titreMois = `${capital(MOIS[mois.getUTCMonth()])} ${mois.getUTCFullYear()}`;
 
   return (
-    <div className="app app-haut">
-      <header className="haut-espace">
-        <div className="haut-ligne">
-          <a className="logo" href="/"><img src="/assets/img/logo-lyze-creme.png" alt="Lyze Conciergerie" width={599} height={200} />{/* eslint-disable-line @next/next/no-img-element */}</a>
-          <span className="role">ESPACE PROPRIÉTAIRE</span>
-          <div className="bas">
-            <a className="contacter" href={contact} {...(contact.startsWith("https://") ? { target: "_blank", rel: "noopener" } : {})}>
-              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-                <path fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" d="M4 5h16v11H9l-5 4z" />
-              </svg>
-              Contacter Lyze
-            </a>
-            <span className="qui">
-              <strong>{nom}</strong>
-            </span>
-            <form action={logout}>
-              <button type="submit">Se déconnecter</button>
-            </form>
-          </div>
-        </div>
+    <div className="app">
+      <aside className="side">
+        <a className="logo" href="/"><img src="/assets/img/logo-lyze-creme.png" alt="Lyze Conciergerie" width={599} height={200} />{/* eslint-disable-line @next/next/no-img-element */}</a>
+        <span className="role">ESPACE PROPRIÉTAIRE</span>
         <nav aria-label="Espace propriétaire">
           {onglets.map(([id, libelle]) => (
             <a
@@ -212,7 +196,21 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
             </a>
           ))}
         </nav>
-      </header>
+        <div className="bas">
+          <a className="contacter" href={contact} {...(contact.startsWith("https://") ? { target: "_blank", rel: "noopener" } : {})}>
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" d="M4 5h16v11H9l-5 4z" />
+            </svg>
+            Contacter Lyze
+          </a>
+          <span>
+            Connecté·e : <strong>{nom}</strong>
+          </span>
+          <form action={logout}>
+            <button type="submit">Se déconnecter</button>
+          </form>
+        </div>
+      </aside>
 
       <main className="contenu" id="haut">
         <header className="entete-app" hidden={onglet !== "biens"}>
