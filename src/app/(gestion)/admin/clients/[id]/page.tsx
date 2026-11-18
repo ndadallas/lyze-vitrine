@@ -21,7 +21,7 @@ import { MessagesAdmin } from "@/components/Messages";
 import { Depenses } from "@/components/Depenses";
 import { Documents } from "@/components/Documents";
 import { FicheBienForm } from "@/components/FicheBienForm";
-import { SELECT_DOCUMENT, ficheDepuis, versAvisItem, versDemandeItem, versDepenseItem, versDocumentItem } from "@/lib/espace";
+import { INCLURE_AVIS, SELECT_DOCUMENT, ficheDepuis, versAvisItem, versDemandeItem, versDepenseItem, versDocumentItem } from "@/lib/espace";
 import { Repli } from "@/components/Repli";
 import {
   addBooking,
@@ -81,7 +81,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
       },
       documents: { orderBy: { createdAt: "desc" }, select: SELECT_DOCUMENT },
       requests: { orderBy: { createdAt: "desc" }, take: 50, include: { property: { select: { name: true } } } },
-      notices: { orderBy: { createdAt: "desc" }, take: 50, include: { property: { select: { name: true } } } },
+      notices: { orderBy: { createdAt: "desc" }, take: 50, include: INCLURE_AVIS },
     },
   });
   if (!owner || owner.role !== "OWNER") notFound();
@@ -147,6 +147,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
           <Link key={o} href={bien ? lien(bien.id, historique, o) : `${base}?onglet=${o}`} aria-current={onglet === o ? "page" : undefined}>
             {libelle}
             {o === "demandes" && owner.requests.some((r) => r.status === "NOUVELLE") && <span className="onglet-point" aria-label="nouvelles demandes" />}
+            {o === "messages" && owner.notices.some((n) => n.replies.some((r) => !r.fromAdmin && !r.readAt)) && <span className="onglet-point" aria-label="nouvelles réponses" />}
           </Link>
         ))}
       </nav>
@@ -530,6 +531,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/a
         </h2>
         <MessagesAdmin
           ownerId={owner.id}
+          nomClient={`${owner.firstName} ${owner.lastName}`}
           biens={owner.properties.map((p) => ({ id: p.id, nom: p.name }))}
           avis={owner.notices.map(versAvisItem)}
         />

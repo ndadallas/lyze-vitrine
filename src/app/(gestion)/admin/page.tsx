@@ -63,6 +63,14 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
     },
   });
 
+  // Réponses des propriétaires aux messages de Lyze, pas encore lues
+  const reponses = await db.noticeReply.findMany({
+    where: { fromAdmin: false, readAt: null },
+    orderBy: { createdAt: "desc" },
+    take: 30,
+    include: { notice: { select: { title: true, owner: { select: { id: true, firstName: true, lastName: true } } } } },
+  });
+
   const messages = await db.siteMessage.findMany({
     orderBy: [{ handled: "asc" }, { createdAt: "desc" }],
     take: 40,
@@ -158,6 +166,31 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                   <input type="hidden" name="messageId" value={m.id} />
                   <button type="submit" className="lz-lien">{m.handled ? "Remettre à traiter" : "Marquer comme traité"}</button>
                 </form>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {reponses.length > 0 && (
+        <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="reponses-title">
+          <h2 id="reponses-title" style={{ fontSize: 20 }}>
+            Réponses des propriétaires <span className="muted" style={{ fontSize: 15 }}>({reponses.length} à lire)</span>
+          </h2>
+          <ul className="lz-liste-dem">
+            {reponses.map((r) => (
+              <li key={r.id}>
+                <div className="lz-dem-tete">
+                  <strong>
+                    {r.notice.owner.firstName} {r.notice.owner.lastName} · Re : {r.notice.title}
+                  </strong>
+                  <span className="lz-statut lz-statut-nouvelle">Nouveau</span>
+                </div>
+                <small className="lz-dem-meta">{lastLogin.format(r.createdAt)}</small>
+                <p className="lz-dem-message">{r.body}</p>
+                <Link href={`/admin/clients/${r.notice.owner.id}?onglet=messages`} className="btn btn-outline btn-sm">
+                  Lire et répondre
+                </Link>
               </li>
             ))}
           </ul>

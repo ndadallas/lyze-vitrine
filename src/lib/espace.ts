@@ -136,6 +136,8 @@ export type DemandeItem = {
 
 /* Conversion des lignes de la base vers les formes envoyées au navigateur (espace et admin). */
 const jourIso = (d: Date) => d.toISOString().slice(0, 10);
+// formatée côté serveur seulement : le fuseau du Maroc diffère parfois entre Node et le navigateur (erreur d’hydratation)
+const quandReponse = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Africa/Casablanca" });
 
 export function versDocumentItem(d: {
   id: string;
@@ -245,6 +247,14 @@ export type AvisItem = {
   intervention: string | null; // "2026-11-20"
   date: string;
   lu: string | null;
+  /** Fil de réponses, du plus ancien au plus récent (date déjà formatée : « 18 nov., 21:29 ») */
+  reponses: { id: string; deLyze: boolean; texte: string; date: string; lu: boolean }[];
+};
+
+/** Requête Prisma : un message avec son bien et ses réponses dans l'ordre. */
+export const INCLURE_AVIS = {
+  property: { select: { name: true } },
+  replies: { orderBy: { createdAt: "asc" as const } },
 };
 
 export function versAvisItem(a: {
@@ -255,6 +265,7 @@ export function versAvisItem(a: {
   eventDate: Date | null;
   readAt: Date | null;
   createdAt: Date;
+  replies?: { id: string; fromAdmin: boolean; body: string; createdAt: Date; readAt: Date | null }[];
 }): AvisItem {
   return {
     id: a.id,
@@ -264,5 +275,12 @@ export function versAvisItem(a: {
     intervention: a.eventDate ? jourIso(a.eventDate) : null,
     date: jourIso(a.createdAt),
     lu: a.readAt ? jourIso(a.readAt) : null,
+    reponses: (a.replies ?? []).map((r) => ({
+      id: r.id,
+      deLyze: r.fromAdmin,
+      texte: r.body,
+      date: quandReponse.format(r.createdAt),
+      lu: !!r.readAt,
+    })),
   };
 }

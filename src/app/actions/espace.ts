@@ -420,9 +420,44 @@ export async function supprimerAvis(formData: FormData) {
   rafraichir(avis.ownerId);
 }
 
-/** Le propriétaire ouvre l'onglet Messages : tout devient lu (la gérante voit « Lu le … »). */
+/** Le propriétaire ouvre l'onglet Messages : tout devient lu (la gérante voit « Lu le … »), réponses de Lyze comprises. */
 export async function marquerAvisLus() {
   const user = await requireOwner();
-  const { count } = await db.ownerNotice.updateMany({ where: { ownerId: user.id, readAt: null }, data: { readAt: new Date() } });
-  if (count) rafraichir(user.id);
+  const maintenant = new Date();
+  const [avis, reponses] = await db.$transaction([
+    db.ownerNotice.updateMany({ where: { ownerId: user.id, readAt: null }, data: { readAt: maintenant } }),
+    db.noticeReply.updateMany({ where: { fromAdmin: true, readAt: null, notice: { ownerId: user.id } }, data: { readAt: maintenant } }),
+  ]);
+  if (avis.count || reponses.count) rafraichir(user.id);
+}
+
+/** La gérante ouvre les messages d'un client : ses réponses deviennent lues. */
+export async function marquerReponsesLues(ownerId: string) {
+  await requireAdmin();
+  const { count } = await db.noticeReply.updateMany({
+    where: { fromAdmin: false, readAt: null, notice: { ownerId } },
+    data: { readAt: new Date() },
+  });
+  if (count) rafraichir(ownerId);
+}
+
+const ReponseSchema = z.object({
+  noticeId: z.string().min(1),
+  body: z.string().trim().min(1, { error: "Écrivez votre réponse." }).max(3000, { error: "Réponse trop longue (3000 caractères maximum)." }),
+});
+
+/** Répondre dans le fil d'un message, comme à un mail : la gérante ou le propriétaire concerné. */
+export async function repondreAvis(_prev: EspaceState, formData: FormData): Promise<EspaceState> {
+  const user = await getSessionUser();
+  if (!user) return { error: "Session expirée, reconnectez-vous." };
+  const parsed = ReponseSchema.safeParse({ noticeId: String(formData.get("noticeId") ?? ""), body: String(formData.get("body") ?? "") });
+  if (!parsed.success) return { error: premier(parsed.error) };
+
+  const avis = await db.ownerNotice.findUnique({ where: { id: parsed.data.noticeId }, select: { id: true, ownerId: true } });
+  // un propriétaire ne répond qu'à ses propres messages
+  if (!avis || (user.role !== "ADMIN" && avis.ownerId !== user.id)) return { error: "Message introuvable." };
+
+  await db.noticeReply.create({ data: { noticeId: avis.id, fromAdmin: user.role === "ADMIN", body: parsed.data.body } });
+  rafraichir(avis.ownerId);
+  return { ok: Date.now() };
 }

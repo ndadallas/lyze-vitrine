@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { requireOwner } from "@/lib/auth";
 import { addMonths, monthStart, toDayString, today } from "@/lib/dates";
 import { photoUrl } from "@/lib/photos";
-import { SELECT_DOCUMENT, ficheDepuis, versAvisItem, versDemandeItem, versDepenseItem, versDocumentItem } from "@/lib/espace";
+import { INCLURE_AVIS, SELECT_DOCUMENT, ficheDepuis, versAvisItem, versDemandeItem, versDepenseItem, versDocumentItem } from "@/lib/espace";
 import { EspaceProprietaire, type BienEspace } from "../EspaceProprietaire";
 import { ONGLETS } from "../onglets";
 
@@ -52,7 +52,7 @@ export default async function EspacePage({ params }: PageProps<"/espace/[[...ong
       where: { ownerId: user.id },
       orderBy: { createdAt: "desc" },
       take: 50,
-      include: { property: { select: { name: true } } },
+      include: INCLURE_AVIS,
     }),
   ]);
 

@@ -112,7 +112,7 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
   // sans bien, seuls les onglets qui ne dépendent pas d'un bien sont proposés
   const onglets = biens.length ? ONGLETS : ONGLETS.filter(([id]) => ["biens", "documents", "demandes", "messages", "compte"].includes(id));
   // messages non lus à l'arrivée : gardés pour la pastille « Nouveau » le temps de la visite
-  const [nonLus] = useState(() => avis.filter((a) => !a.lu).map((a) => a.id));
+  const [nonLus] = useState(() => avis.filter((a) => !a.lu || a.reponses.some((r) => r.deLyze && !r.lu)).map((a) => a.id));
   // page Messages déjà ouverte pendant la visite (ou arrivée directe sur /espace/messages)
   const [vuMessages, setVuMessages] = useState(onglet === "messages");
   const lus = vuMessages || onglet === "messages";
@@ -408,8 +408,8 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
           <span className="eyebrow eyebrow--brique">Messages</span>
           <h2>Messages de Lyze</h2>
           <p className="aide-p">
-            Interventions, pannes, informations sur vos biens : Lyze vous tient au courant ici. Pour répondre, passez par
-            l’onglet Demandes.
+            Interventions, pannes, informations sur vos biens : Lyze vous tient au courant ici. Répondez directement sous
+            chaque message, comme à un mail.
           </p>
           <MessagesProprio avis={avis} nonLus={nonLus} />
         </section>

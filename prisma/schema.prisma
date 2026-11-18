@@ -179,6 +179,20 @@ model Document {
   @@index([ownerId, createdAt])
 }
 
+// Réponses dans le fil d’un message (comme un échange de mails), de Lyze ou du propriétaire
+model NoticeReply {
+  id        String    @id @default(cuid())
+  noticeId  String
+  fromAdmin Boolean // true = Lyze, false = le propriétaire
+  body      String
+  readAt    DateTime? // lu par l’autre côté
+  createdAt DateTime  @default(now())
+
+  notice OwnerNotice @relation(fields: [noticeId], references: [id], onDelete: Cascade)
+
+  @@index([noticeId, createdAt])
+}
+
 enum RequestType {
   USAGE_PERSO // le propriétaire veut ses dates
   MENAGE
@@ -271,6 +285,7 @@ model OwnerNotice {
 
   owner    User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   property Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  replies  NoticeReply[]
 
   @@index([ownerId, createdAt])
 }
