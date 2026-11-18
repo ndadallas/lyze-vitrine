@@ -113,9 +113,12 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
   const onglets = biens.length ? ONGLETS : ONGLETS.filter(([id]) => ["biens", "documents", "demandes", "messages", "compte"].includes(id));
   // messages non lus à l'arrivée : gardés pour la pastille « Nouveau » le temps de la visite
   const [nonLus] = useState(() => avis.filter((a) => !a.lu).map((a) => a.id));
-  const [lus, setLus] = useState(false);
+  // page Messages déjà ouverte pendant la visite (ou arrivée directe sur /espace/messages)
+  const [vuMessages, setVuMessages] = useState(onglet === "messages");
+  const lus = vuMessages || onglet === "messages";
   function aller(id: string) {
     if (id !== onglet) window.history.pushState(null, "", lienOnglet(id));
+    if (id === "messages") setVuMessages(true);
     window.scrollTo({ top: 0 });
   }
   useEffect(() => {
@@ -126,11 +129,8 @@ export function EspaceProprietaire({ nom, salutation, avis, aujourdhui, biens, d
   }, [onglet]);
   // page Messages ouverte (lien ou adresse directe) : messages marqués lus
   useEffect(() => {
-    if (onglet === "messages" && nonLus.length && !lus) {
-      setLus(true);
-      marquerAvisLus();
-    }
-  }, [onglet, nonLus.length, lus]);
+    if (lus && nonLus.length) marquerAvisLus();
+  }, [lus, nonLus.length]);
   const t0 = jour(aujourdhui);
   const [bienId, setBienId] = useState<string | undefined>(biens[0]?.id);
   const [mois, setMois] = useState(() => monthStart(t0.getUTCFullYear(), t0.getUTCMonth()));
