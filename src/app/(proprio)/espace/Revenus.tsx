@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { addMonths, daysInMonth, formatMAD, parseDay } from "@/lib/dates";
 import { nights, overlapNights } from "@/lib/stats";
-import { LogoPlateforme } from "@/lib/plateformes";
+import { LogoPlateforme, type Plateforme } from "@/lib/plateformes";
 import type { DepenseItem } from "@/lib/espace";
 import type { BienEspace } from "./EspaceProprietaire";
 
@@ -36,7 +36,7 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
       if (!n) continue;
       nuits += n;
       montant += (r.montant * n) / (nights(r) || 1); // réservation à cheval : au prorata des nuits
-      commissions += (r.frais * n) / (nights(r) || 1);
+      commissions += ((r.frais + r.commission) * n) / (nights(r) || 1);
     }
     const dispo = daysInMonth(debut) * choisis.length;
     const ids = new Set(choisis.map((b) => b.id));
@@ -62,6 +62,26 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
     { nuits: 0, montant: 0, commissions: 0, frais: 0 },
   );
 
+  // Détail par plateforme sur la même période (au prorata des nuits) + séjours du propriétaire à 0
+  const debutPeriode = addMonths(moisCourant, -(lignes.length - 1));
+  const finPeriode = addMonths(moisCourant, 1);
+  const parPlateforme = new Map<Plateforme, { resas: number; nuits: number; ca: number; frais: number; commission: number }>();
+  for (const r of resas) {
+    const n = overlapNights(r, debutPeriode, finPeriode);
+    if (!n) continue;
+    const part = n / (nights(r) || 1);
+    const p = parPlateforme.get(r.plateforme) ?? { resas: 0, nuits: 0, ca: 0, frais: 0, commission: 0 };
+    p.resas += 1;
+    p.nuits += n;
+    p.ca += r.montant * part;
+    p.frais += r.frais * part;
+    p.commission += r.commission * part;
+    parPlateforme.set(r.plateforme, p);
+  }
+  const sejoursProprio = choisis.flatMap((b) => b.resas.filter((r) => r.type === "BLOCKED"))
+    .map((r) => overlapNights({ startDate: jour(r.du), endDate: jour(r.au) }, debutPeriode, finPeriode))
+    .filter((n) => n > 0);
+
   const prochaines = resas
     .filter((r) => r.startDate.getTime() >= t0.getTime())
     .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
@@ -71,7 +91,7 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
     <section className="panneau revenus" id="releve">
       <span className="eyebrow eyebrow--brique">Revenus</span>
       <h2>{titre}</h2>
-      <p className="aide-p">Net = chiffre d’affaires − frais (commission Lyze Conciergerie et plateforme) − dépenses.</p>
+      <p className="aide-p">Net = chiffre d’affaires − frais de plateforme (Airbnb, Booking…) − commission Lyze Conciergerie − dépenses.</p>
 
       {biens.length > 1 && (
         <label className="champ-app select revenus-filtre">
@@ -116,6 +136,42 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
             <tfoot>
               <tr><th scope="row">Total</th><td data-label="Nuits">{total.nuits}</td><td className="lz-vide-mobile" /><td data-label="Chiffre d’affaires">{formatMAD(total.montant)}</td><td data-label="Frais">{total.commissions ? `− ${formatMAD(total.commissions)}` : "—"}</td><td data-label="Dépenses">{total.frais ? `− ${formatMAD(total.frais)}` : "—"}</td><td data-label="Net">{formatMAD(total.montant - total.commissions - total.frais)}</td></tr>
             </tfoot>
+          </table>
+        </div>
+
+        <div className="revenus-plateformes">
+          <span className="titre-p">Détail par plateforme</span>
+          <table className="releve lz-fiches-mobile">
+            <thead>
+              <tr><th scope="col">Plateforme</th><th scope="col">Séjours</th><th scope="col">Nuits</th><th scope="col">Chiffre d’affaires</th><th scope="col">Frais plateforme</th><th scope="col">Commission Lyze</th><th scope="col">Net</th></tr>
+            </thead>
+            <tbody>
+              {[...parPlateforme].map(([code, p]) => (
+                <tr key={code}>
+                  <th scope="row"><LogoPlateforme code={code} taille={16} /></th>
+                  <td data-label="Séjours">{p.resas}</td>
+                  <td data-label="Nuits">{p.nuits}</td>
+                  <td data-label="Chiffre d’affaires">{formatMAD(p.ca)}</td>
+                  <td data-label="Frais plateforme">{p.frais ? `− ${formatMAD(p.frais)}` : "—"}</td>
+                  <td data-label="Commission Lyze">{p.commission ? `− ${formatMAD(p.commission)}` : "—"}</td>
+                  <td data-label="Net">{formatMAD(p.ca - p.frais - p.commission)}</td>
+                </tr>
+              ))}
+              {sejoursProprio.length > 0 && (
+                <tr>
+                  <th scope="row">Séjours du propriétaire</th>
+                  <td data-label="Séjours">{sejoursProprio.length}</td>
+                  <td data-label="Nuits">{sejoursProprio.reduce((a, n) => a + n, 0)}</td>
+                  <td data-label="Chiffre d’affaires">{formatMAD(0)}</td>
+                  <td data-label="Frais plateforme">—</td>
+                  <td data-label="Commission Lyze">—</td>
+                  <td data-label="Net">{formatMAD(0)}</td>
+                </tr>
+              )}
+              {parPlateforme.size === 0 && sejoursProprio.length === 0 && (
+                <tr><td colSpan={7} className="vide-msg">Aucun séjour sur la période.</td></tr>
+              )}
+            </tbody>
           </table>
         </div>
 

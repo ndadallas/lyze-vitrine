@@ -22,6 +22,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   ]);
   const compte = (n: number) => (n > 0 ? ` (${n})` : "");
   const ONGLETS = [
+    ["ca", "Chiffre d’affaires"],
     ["valider", `À valider${compte(aValider)}`],
     ["demandes", `Demandes${compte(demandes)}`],
     ["messages", `Messages du site${compte(messages)}`],

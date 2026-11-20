@@ -33,15 +33,28 @@ export const BookingSchema = z
       .int({ error: "Montant en MAD, sans centimes." })
       .min(0, { error: "Montant invalide." })
       .max(10_000_000),
+    nightPrice: z.coerce
+      .number({ error: "Prix de la nuit invalide." })
+      .int({ error: "Montant en MAD, sans centimes." })
+      .min(0, { error: "Prix de la nuit invalide." })
+      .max(10_000_000),
     fees: z.coerce
       .number({ error: "Frais invalides." })
-      .int({ error: "Frais en MAD, sans centimes." })
+      .int({ error: "Montant en MAD, sans centimes." })
       .min(0, { error: "Frais invalides." })
+      .max(10_000_000),
+    commission: z.coerce
+      .number({ error: "Commission invalide." })
+      .int({ error: "Montant en MAD, sans centimes." })
+      .min(0, { error: "Commission invalide." })
       .max(10_000_000),
     note: texteFacultatif,
   })
   .refine((b) => b.kind !== "RESERVED" || b.platform !== "OTHER" || !!b.platformOther, {
     error: "Précisez la plateforme (champ « Laquelle ? »).",
+  })
+  .refine((b) => b.fees + b.commission <= b.amount, {
+    error: "Les frais et la commission dépassent le chiffre d'affaires.",
   })
   .refine((b) => b.endDate > b.startDate, {
     error: "La date de départ doit être après la date d'arrivée.",
@@ -57,7 +70,9 @@ export function parseBooking(formData: FormData) {
     platformOther: formData.get("platformOther") ?? "",
     guestName: formData.get("guestName") ?? "",
     amount: formData.get("amount") || 0,
+    nightPrice: formData.get("nightPrice") || 0,
     fees: formData.get("fees") || 0,
+    commission: formData.get("commission") || 0,
     note: formData.get("note") ?? "",
   });
 }

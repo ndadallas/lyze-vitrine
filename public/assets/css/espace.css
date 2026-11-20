@@ -313,3 +313,7 @@ button.jour { cursor: pointer; }
 .mdp-oeil { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; display: grid; place-items: center; background: none; border: 0; padding: 0; color: var(--gris, #7a6a5a); cursor: pointer; }
 .mdp-oeil:hover, .mdp-oeil[aria-pressed="true"] { color: var(--brique, #9c6644); }
 .mdp-oeil:focus-visible { outline: 2px solid var(--brique, #9c6644); outline-offset: -4px; }
+
+/* Détail par plateforme : pleine largeur sous le relevé et les arrivées */
+.revenus-plateformes { grid-column: 1 / -1; order: 1; }
+.revenus-plateformes .plateforme { display: inline-flex; align-items: center; gap: 6px; }

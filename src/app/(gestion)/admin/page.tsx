@@ -9,6 +9,9 @@ import { basculerMessage, refuserResa, validerResa } from "@/app/actions/espace"
 const jourCourt = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 import { versDemandeItem } from "@/lib/espace";
 import { createOwner } from "./actions";
+import { addMonths, formatMAD, today } from "@/lib/dates";
+import { nights, overlapNights } from "@/lib/stats";
+import { LogoPlateforme, type Plateforme } from "@/lib/plateformes";
 
 export const metadata: Metadata = { title: "Clients" };
 
@@ -75,6 +78,36 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
     include: { notice: { select: { title: true, owner: { select: { id: true, firstName: true, lastName: true } } } } },
   });
 
+  // Chiffre d'affaires global (toutes réservations voyageurs, au prorata des nuits) : mois en cours et 12 derniers mois
+  const t = today();
+  const debutMois = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), 1));
+  const finMois = addMonths(debutMois, 1);
+  const debut12 = addMonths(debutMois, -11);
+  const ventes = await db.booking.findMany({
+    where: { kind: "RESERVED", startDate: { lt: finMois }, endDate: { gt: debut12 } },
+    select: { startDate: true, endDate: true, amount: true, fees: true, commission: true, platform: true },
+  });
+  const somme = (de: Date, a: Date) => {
+    const r = { ca: 0, frais: 0, lyze: 0, nuits: 0, parPlateforme: new Map<Plateforme, { ca: number; lyze: number; nuits: number }>() };
+    for (const v of ventes) {
+      const n = overlapNights(v, de, a);
+      if (!n) continue;
+      const part = n / (nights(v) || 1);
+      r.ca += v.amount * part;
+      r.frais += v.fees * part;
+      r.lyze += v.commission * part;
+      r.nuits += n;
+      const p = r.parPlateforme.get(v.platform) ?? { ca: 0, lyze: 0, nuits: 0 };
+      p.ca += v.amount * part;
+      p.lyze += v.commission * part;
+      p.nuits += n;
+      r.parPlateforme.set(v.platform, p);
+    }
+    return r;
+  };
+  const caMois = somme(debutMois, finMois);
+  const ca12 = somme(debut12, finMois);
+
   const messages = await db.siteMessage.findMany({
     orderBy: [{ handled: "asc" }, { createdAt: "desc" }],
     take: 40,
@@ -89,6 +122,51 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
           <h1>Bonjour, {admin.firstName}</h1>
         </div>
       </div>
+
+      {voir("ca") && (
+        <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="ca-title">
+          <h2 id="ca-title" style={{ fontSize: 20 }}>Chiffre d’affaires</h2>
+          <div className="lz-table-defile">
+            <table className="releve lz-fiches-mobile">
+              <thead>
+                <tr><th scope="col">Période</th><th scope="col">Nuits</th><th scope="col">Chiffre d’affaires</th><th scope="col">Frais plateformes</th><th scope="col">CA Lyze (commissions)</th><th scope="col">Net propriétaires</th></tr>
+              </thead>
+              <tbody>
+                {([["Mois en cours", caMois], ["12 derniers mois", ca12]] as const).map(([nom, r]) => (
+                  <tr key={nom}>
+                    <th scope="row">{nom}</th>
+                    <td data-label="Nuits">{r.nuits}</td>
+                    <td data-label="Chiffre d’affaires">{formatMAD(r.ca)}</td>
+                    <td data-label="Frais plateformes">{formatMAD(r.frais)}</td>
+                    <td data-label="CA Lyze"><strong>{formatMAD(r.lyze)}</strong></td>
+                    <td data-label="Net propriétaires">{formatMAD(r.ca - r.frais - r.lyze)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {ca12.parPlateforme.size > 0 && (
+            <div className="lz-table-defile">
+              <table className="releve lz-fiches-mobile">
+                <thead>
+                  <tr><th scope="col">Plateforme (12 mois)</th><th scope="col">Nuits</th><th scope="col">Chiffre d’affaires</th><th scope="col">CA Lyze</th></tr>
+                </thead>
+                <tbody>
+                  {[...ca12.parPlateforme].map(([code, p]) => (
+                    <tr key={code}>
+                      <th scope="row"><LogoPlateforme code={code} taille={16} /></th>
+                      <td data-label="Nuits">{p.nuits}</td>
+                      <td data-label="Chiffre d’affaires">{formatMAD(p.ca)}</td>
+                      <td data-label="CA Lyze">{formatMAD(p.lyze)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          <p className="muted" style={{ fontSize: 13 }}>Réservations voyageurs de tous les clients, réparties au prorata des nuits. Les réservations saisies avant le 20/11/2026 n’ont ni frais ni commission renseignés.</p>
+        </section>
+      )}
 
       {voir("valider", aValider.length) && (
         <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="valider-title">

@@ -285,7 +285,7 @@ export async function enregistrerResa(_prev: EspaceState, formData: FormData): P
     // le propriétaire ne voit que l'initiale : champ vide = nom inchangé
     guestName: b.guestName ?? existante?.guestName ?? null,
     amount: b.kind === "RESERVED" ? b.amount : 0,
-    fees: b.kind === "RESERVED" ? b.fees : 0,
+    ...{ nightPrice: b.kind === "RESERVED" ? b.nightPrice : 0, fees: b.kind === "RESERVED" ? b.fees : 0, commission: b.kind === "RESERVED" ? b.commission : 0 },
     note: b.note,
     // saisi par le propriétaire = à valider par la gérante ; saisi par la gérante = validé
     pending: (await getSessionUser())?.role !== "ADMIN",
@@ -335,6 +335,23 @@ export async function ajouterDepense(_prev: EspaceState, formData: FormData): Pr
   });
   if (!parsed.success) return { error: premier(parsed.error) };
   await db.expense.create({ data: { ...parsed.data, propertyId: bien.id, byOwner: user.role === "OWNER" } });
+  rafraichir(bien.ownerId);
+  return { ok: Date.now() };
+}
+
+/** Modifie une dépense (mêmes droits que la suppression ; le bien ne change pas). */
+export async function modifierDepense(_prev: EspaceState, formData: FormData): Promise<EspaceState> {
+  const dep = await db.expense.findUnique({ where: { id: String(formData.get("expenseId") ?? "") } });
+  const bien = dep ? await getEditableProperty(dep.propertyId) : null;
+  if (!dep || !bien) return { error: "Accès refusé." };
+  const parsed = DepenseSchema.safeParse({
+    date: formData.get("date") ?? "",
+    category: formData.get("category") ?? "",
+    label: formData.get("label") ?? "",
+    amount: formData.get("amount") ?? "",
+  });
+  if (!parsed.success) return { error: premier(parsed.error) };
+  await db.expense.update({ where: { id: dep.id }, data: parsed.data });
   rafraichir(bien.ownerId);
   return { ok: Date.now() };
 }

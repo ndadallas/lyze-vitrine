@@ -140,7 +140,10 @@ model Booking {
   endDate    DateTime
   guestName  String?
   amount     Int         @default(0) // MAD, chiffre d'affaires (payé par le voyageur)
-  fees       Int         @default(0) // MAD, frais : commission Lyze + plateforme (net = amount - fees)
+  nightPrice Int         @default(0) // MAD, prix de vente d'une nuit
+  fees       Int         @default(0) // MAD, frais de la plateforme (Airbnb, Booking…)
+  commission Int         @default(0) // MAD, commission Lyze = chiffre d'affaires de Lyze
+  // net propriétaire = amount - fees - commission
   note       String?
   // Ajouté ou modifié par le propriétaire : en attente de validation par la gérante
   pending    Boolean     @default(false)

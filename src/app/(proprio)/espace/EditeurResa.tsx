@@ -8,6 +8,8 @@ import { ConfirmButton } from "@/components/ConfirmButton";
 import { formatMAD, parseDay } from "@/lib/dates";
 import { CHOIX_PLATEFORMES, LogoPlateforme, PLATEFORMES } from "@/lib/plateformes";
 import { nights } from "@/lib/stats";
+import { COMMISSION_LYZE, repartition, TAUX_PLATEFORME } from "@/lib/tarifs";
+import type { Plateforme } from "@/lib/plateformes";
 import type { BienEspace, ResaEspace } from "./EspaceProprietaire";
 
 const MOIS_COURT = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
@@ -52,7 +54,23 @@ export function EditeurResa({
   const enEdition = brouillon !== null || modif;
   const base = modif && resa ? resa : null;
   const [type, setType] = useState<ResaEspace["type"]>("RESERVED");
-  const [plateforme, setPlateforme] = useState<string>("AIRBNB");
+  const [plateforme, setPlateforme] = useState<Plateforme>("AIRBNB");
+  // dates + montants contrôlés : prix de la nuit × nuits = CA, puis frais plateforme et commission Lyze calculés (modifiables)
+  const [du, setDu] = useState(brouillon?.du ?? "");
+  const [au, setAu] = useState(brouillon?.au ?? "");
+  const [m, setM] = useState({ prixNuit: "", montant: "", frais: "", commission: "" });
+  const nbNuits = (d: string, a: string) => {
+    const x = parseDay(d), y = parseDay(a);
+    return x && y ? nights({ startDate: x, endDate: y }) : 0;
+  };
+  const depuisCA = (ca: number, plat: Plateforme, prixNuit: string) => {
+    const r = repartition(ca, plat);
+    return { prixNuit, montant: String(ca), frais: String(r.frais), commission: String(r.commission) };
+  };
+  const recalculer = (prixNuit: string, d: string, a: string, plat: Plateforme) => {
+    const p = Number(prixNuit);
+    setM(p > 0 ? depuisCA(p * nbNuits(d, a), plat, prixNuit) : { ...m, prixNuit });
+  };
 
   if (!enEdition || lectureSeule) {
     if (!resa) {
@@ -82,9 +100,11 @@ export function EditeurResa({
           {resa.type !== "BLOCKED" && (
             <>
               <div><dt>Plateforme</dt><dd><LogoPlateforme code={resa.plateforme} autre={resa.plateformeAutre} taille={18} /></dd></div>
+              {resa.prixNuit > 0 && <div><dt>Prix de la nuit</dt><dd>{formatMAD(resa.prixNuit)}</dd></div>}
               <div><dt>Chiffre d’affaires</dt><dd>{resa.montant > 0 ? formatMAD(resa.montant) : "—"}</dd></div>
-              <div><dt>Frais</dt><dd>{resa.frais > 0 ? `− ${formatMAD(resa.frais)}` : "—"}</dd></div>
-              <div><dt>Net</dt><dd>{resa.montant > 0 ? formatMAD(resa.montant - resa.frais) : "—"}</dd></div>
+              <div><dt>Frais {PLATEFORMES[resa.plateforme].nom}</dt><dd>{resa.frais > 0 ? `− ${formatMAD(resa.frais)}` : "—"}</dd></div>
+              <div><dt>Commission Lyze</dt><dd>{resa.commission > 0 ? `− ${formatMAD(resa.commission)}` : "—"}</dd></div>
+              <div><dt>Net propriétaire</dt><dd>{resa.montant > 0 ? formatMAD(resa.montant - resa.frais - resa.commission) : "—"}</dd></div>
               {resa.note && <div><dt>Note</dt><dd>{resa.note}</dd></div>}
             </>
           )}
@@ -97,6 +117,14 @@ export function EditeurResa({
               onClick={() => {
                 setType(resa.type === "BLOCKED" ? "BLOCKED" : "RESERVED");
                 setPlateforme(resa.plateforme);
+                setDu(resa.du);
+                setAu(resa.au);
+                setM({
+                  prixNuit: resa.prixNuit ? String(resa.prixNuit) : "",
+                  montant: resa.montant ? String(resa.montant) : "",
+                  frais: resa.frais ? String(resa.frais) : "",
+                  commission: resa.commission ? String(resa.commission) : "",
+                });
                 setModif(true);
               }}
             >
@@ -114,13 +142,13 @@ export function EditeurResa({
     );
   }
 
-  const du = base?.du ?? brouillon?.du ?? "";
-  const au = base?.au ?? brouillon?.au ?? "";
+  const ca = Number(m.montant) || 0;
+  const net = ca - (Number(m.frais) || 0) - (Number(m.commission) || 0);
   return (
     <section className="panneau detail" aria-live="polite">
       <span className="titre-p">{base ? "Modifier" : "Ajouter au calendrier"}</span>
       <h2 className="lz-h-petit">{bien.nom}</h2>
-      <form action={action} className="lz-form lz-form-resa" key={`${base?.id ?? "nouveau"}-${du}`}>
+      <form action={action} className="lz-form lz-form-resa" key={base?.id ?? "nouveau"}>
         <input type="hidden" name="propertyId" value={bien.id} />
         {base && <input type="hidden" name="bookingId" value={base.id} />}
         <label className="lz-champ">
@@ -134,18 +162,18 @@ export function EditeurResa({
         <div className="lz-deux">
           <label className="lz-champ">
             <span>Arrivée</span>
-            <input type="date" name="startDate" defaultValue={du} required />
+            <input type="date" name="startDate" value={du} required onChange={(e) => { setDu(e.target.value); recalculer(m.prixNuit, e.target.value, au, plateforme); }} />
           </label>
           <label className="lz-champ">
             <span>Départ</span>
-            <input type="date" name="endDate" defaultValue={au} required />
+            <input type="date" name="endDate" value={au} required onChange={(e) => { setAu(e.target.value); recalculer(m.prixNuit, du, e.target.value, plateforme); }} />
           </label>
         </div>
         {type === "RESERVED" ? (
           <>
             <label className="lz-champ">
               <span>Plateforme</span>
-              <select name="platform" value={plateforme} onChange={(e) => setPlateforme(e.target.value)}>
+              <select name="platform" value={plateforme} onChange={(e) => { const p = e.target.value as Plateforme; setPlateforme(p); if (ca > 0) setM(depuisCA(ca, p, m.prixNuit)); }}>
                 {CHOIX_PLATEFORMES.map((c) => (
                   <option key={c} value={c}>{PLATEFORMES[c].nom}</option>
                 ))}
@@ -161,14 +189,31 @@ export function EditeurResa({
               <span>{base ? "Nom du voyageur (vide = inchangé)" : "Nom du voyageur"}</span>
               <input name="guestName" maxLength={200} autoComplete="off" />
             </label>
-            <label className="lz-champ">
-              <span>Chiffre d’affaires (MAD)</span>
-              <input name="amount" type="number" min={0} step={1} inputMode="numeric" defaultValue={base?.montant || ""} />
-            </label>
-            <label className="lz-champ">
-              <span>Frais : commission + plateforme (MAD)</span>
-              <input name="fees" type="number" min={0} step={1} inputMode="numeric" defaultValue={base?.frais || ""} />
-            </label>
+            <div className="lz-deux">
+              <label className="lz-champ">
+                <span>Prix de la nuit (MAD)</span>
+                <input name="nightPrice" type="number" min={0} step={1} inputMode="numeric" value={m.prixNuit} onChange={(e) => recalculer(e.target.value, du, au, plateforme)} />
+              </label>
+              <label className="lz-champ">
+                <span>Prix de vente total ({nbNuits(du, au)} nuits)</span>
+                <input name="amount" type="number" min={0} step={1} inputMode="numeric" value={m.montant} onChange={(e) => setM(depuisCA(Number(e.target.value) || 0, plateforme, m.prixNuit))} />
+              </label>
+            </div>
+            <div className="lz-deux">
+              <label className="lz-champ">
+                <span>Frais {PLATEFORMES[plateforme].nom} ({TAUX_PLATEFORME[plateforme]} %)</span>
+                <input name="fees" type="number" min={0} step={1} inputMode="numeric" value={m.frais} onChange={(e) => setM({ ...m, frais: e.target.value })} />
+              </label>
+              <label className="lz-champ">
+                <span>Commission Lyze ({COMMISSION_LYZE} %)</span>
+                <input name="commission" type="number" min={0} step={1} inputMode="numeric" value={m.commission} onChange={(e) => setM({ ...m, commission: e.target.value })} />
+              </label>
+            </div>
+            {ca > 0 && (
+              <p className="lz-aide">
+                Propriétaire : <strong>{formatMAD(net)}</strong> · Lyze : <strong>{formatMAD(Number(m.commission) || 0)}</strong>
+              </p>
+            )}
           </>
         ) : (
           <input type="hidden" name="platform" value="AIRBNB" />

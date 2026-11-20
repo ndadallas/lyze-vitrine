@@ -3,7 +3,7 @@
 import "@/styles/lz.css";
 
 import { useActionState, useState } from "react";
-import { ajouterDepense, supprimerDepense } from "@/app/actions/espace";
+import { ajouterDepense, modifierDepense, supprimerDepense } from "@/app/actions/espace";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { formatMAD } from "@/lib/dates";
 import { CATEGORIES_DEPENSE, CODES_DEPENSES, type DepenseItem } from "@/lib/espace";
@@ -31,6 +31,7 @@ export function Depenses({
   const [etat, action, envoi] = useActionState(ajouterDepense, undefined);
   const [filtre, setFiltre] = useState("tous");
   const [ouvert, setOuvert] = useState(false);
+  const [edition, setEdition] = useState<string | null>(null);
   const nomBien = new Map(biens.map((b) => [b.id, b.nom]));
   const visibles = filtre === "tous" ? depenses : depenses.filter((d) => d.bienId === filtre);
   const total = visibles.reduce((s, d) => s + d.montant, 0);
@@ -97,6 +98,10 @@ export function Depenses({
         </form>
       )}
 
+      {edition && depenses.some((d) => d.id === edition) && (
+        <ModifierDepense key={edition} d={depenses.find((d) => d.id === edition)!} onFini={() => setEdition(null)} />
+      )}
+
       {visibles.length === 0 ? (
         <p className="lz-vide">Aucune dépense enregistrée.</p>
       ) : (
@@ -126,12 +131,17 @@ export function Depenses({
                   <td data-label="Montant">{formatMAD(d.montant)}</td>
                   <td className="lz-actions-cellule">
                     {!lectureSeule && (admin || d.parProprio) && (
+                      <>
+                      <button type="button" className="lz-lien" onClick={() => setEdition(edition === d.id ? null : d.id)}>
+                        {edition === d.id ? "Fermer" : "Modifier"}
+                      </button>
                       <form action={supprimerDepense}>
                         <input type="hidden" name="expenseId" value={d.id} />
                         <ConfirmButton message={`Supprimer « ${d.libelle} » ?`} className="lz-lien lz-danger">
                           Supprimer
                         </ConfirmButton>
                       </form>
+                      </>
                     )}
                   </td>
                 </tr>
@@ -150,5 +160,48 @@ export function Depenses({
         </div>
       )}
     </div>
+  );
+}
+
+/** Formulaire de modification d'une dépense (date, catégorie, libellé, montant). */
+function ModifierDepense({ d, onFini }: { d: DepenseItem; onFini: () => void }) {
+  const [etat, action, envoi] = useActionState(async (prev: Awaited<ReturnType<typeof modifierDepense>>, fd: FormData) => {
+    const r = await modifierDepense(prev, fd);
+    if (r?.ok) onFini();
+    return r;
+  }, undefined);
+  return (
+    <form action={action} className="lz-form lz-depot">
+      <input type="hidden" name="expenseId" value={d.id} />
+      <div className="lz-grille">
+        <label className="lz-champ">
+          <span>Date</span>
+          <input type="date" name="date" defaultValue={d.date} required />
+        </label>
+        <label className="lz-champ">
+          <span>Catégorie</span>
+          <select name="category" defaultValue={d.categorie}>
+            {CODES_DEPENSES.map((c) => (
+              <option key={c} value={c}>{CATEGORIES_DEPENSE[c]}</option>
+            ))}
+          </select>
+        </label>
+        <label className="lz-champ lz-large">
+          <span>Libellé</span>
+          <input name="label" required maxLength={120} defaultValue={d.libelle} />
+        </label>
+        <label className="lz-champ">
+          <span>Montant (MAD)</span>
+          <input name="amount" type="number" min={1} step={1} inputMode="numeric" required defaultValue={d.montant} />
+        </label>
+      </div>
+      {etat?.error && <p className="lz-msg lz-erreur" role="alert">{etat.error}</p>}
+      <div className="lz-actions-resa">
+        <button type="submit" className="lz-bouton" disabled={envoi}>
+          {envoi ? "Enregistrement…" : "Enregistrer la dépense"}
+        </button>
+        <button type="button" className="lz-lien" onClick={onFini}>Annuler</button>
+      </div>
+    </form>
   );
 }

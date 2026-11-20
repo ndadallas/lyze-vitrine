@@ -4,10 +4,10 @@ import { useState } from "react";
 import { formatMAD } from "@/lib/dates";
 import { PLATEFORMES } from "@/lib/plateformes";
 
-// shortcut: mêmes taux et commission que le simulateur de la vitrine (public/index.html), à confirmer par Lyze
-const COMMISSION = 20;
-const TAUX = { AIRBNB: 18, BOOKING: 20 } as const;
-const TAUX_AUTRE = 15; // « Autre » : taux fixe, non modifiable (demande 2026-11-16)
+import { COMMISSION_LYZE as COMMISSION, TAUX_PLATEFORME } from "@/lib/tarifs";
+
+const TAUX = { AIRBNB: TAUX_PLATEFORME.AIRBNB, BOOKING: TAUX_PLATEFORME.BOOKING } as const;
+const TAUX_AUTRE = TAUX_PLATEFORME.OTHER; // « Autre » : taux fixe, non modifiable (demande 2026-11-16)
 type Code = keyof typeof TAUX | "AUTRE";
 const CODES = Object.keys(TAUX) as (keyof typeof TAUX)[];
 const pct = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
