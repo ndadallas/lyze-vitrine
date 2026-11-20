@@ -1681,5 +1681,3 @@ html[lang="ar"] .histoire-signe span { letter-spacing: 0; font-size: 14px; }
 
 /* Bien retiré du site ou adresse invalide (logement.html, 2026-11-18) */
 .logement-absent { min-height: calc(50 * var(--vh)); display: grid; place-content: center; justify-items: center; gap: 24px; padding: 120px 16px 60px; text-align: center; font-size: 18px; }
-/* Photo de Barka en bas de l'accueil : visage dans le cadre (haut sur PC, bandeau large sur mobile) */
-.contact-photo img { object-position: 48% 38%; }
