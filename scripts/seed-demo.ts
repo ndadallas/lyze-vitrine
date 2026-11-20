@@ -5,7 +5,7 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
-import { generatePassword, hashPassword } from "../src/lib/passwords";
+import { hashPassword, passwordPourScript } from "../src/lib/passwords";
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -46,7 +46,7 @@ async function photo(id: string) {
 async function main() {
   const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }) });
   const username = "demo.proprietaire";
-  const password = generatePassword();
+  const password = passwordPourScript();
 
   await db.user.deleteMany({ where: { username } });
   const owner = await db.user.create({

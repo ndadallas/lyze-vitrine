@@ -41,3 +41,11 @@ export function slugUsername(firstName: string, lastName: string) {
       .replace(/^-+|-+$/g, "");
   return [clean(firstName), clean(lastName)].filter(Boolean).join(".");
 }
+
+// Aperçu local uniquement : mot de passe fixe (MDP_APERCU, fichier .env.apercu non versionné)
+// pour que les comptes de test ne changent pas à chaque relance. Jamais sur une base distante.
+export function passwordPourScript(): string {
+  const fixe = process.env.MDP_APERCU;
+  const locale = /@(127\.0\.0\.1|localhost)[:/]/.test(process.env.DATABASE_URL ?? "");
+  return fixe && locale ? fixe : generatePassword();
+}
