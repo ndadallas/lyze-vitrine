@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { login } from "@/app/actions/auth";
+import { MotDePasse } from "@/components/MotDePasse";
 
 export function LoginForm() {
   const [state, action, pending] = useActionState(login, undefined);
@@ -28,7 +29,7 @@ export function LoginForm() {
       </label>
       <label className="champ">
         <span>Mot de passe</span>
-        <input type="password" name="password" placeholder="xxxx-xxxx-xxxx" autoComplete="current-password" required />
+        <MotDePasse name="password" placeholder="xxxx-xxxx-xxxx" autoComplete="current-password" required />
       </label>
 
       <label className="souvenir">

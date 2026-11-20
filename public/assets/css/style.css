@@ -1626,12 +1626,14 @@ html[lang="ar"] .histoire-signe span { letter-spacing: 0; font-size: 14px; }
 .plat-autre .saisie input::-webkit-outer-spin-button, .plat-autre .saisie input::-webkit-inner-spin-button { -webkit-appearance: auto; }
 @media (max-width: 560px) { .plat-autre { grid-template-columns: minmax(0, 1fr); } .plat-autre .saisie input { flex: 1; } }
 
-/* Calendrier de disponibilité (2026-11-16) : BLANC = disponible, ROUGE = réservé */
+/* Calendrier de disponibilité (2026-11-20, façon Airbnb) : BLANC = disponible, gris barré = réservé, sans couleur */
 .mois .jours button:not(.pris):not(.choisi) { background: #fff; border-color: rgba(43, 29, 21, .1); }
-.mois .jours button.pris { background: #c0392b; color: #fff; }
-.mois .jours .pris { background: #c0392b; color: #fff; }
+.mois .jours .pris, .mois .jours button.pris { background: transparent; border-color: transparent; color: #b0a89f; text-decoration: line-through; }
 .mois .jours .pris::after { content: none; }
-.legende .pris { background: #c0392b; }
+.legende .pris { background: transparent; border: 1px solid rgba(43, 29, 21, .15); position: relative; }
+.legende .pris::after { content: ""; position: absolute; left: 2px; right: 2px; top: 50%; height: 1px; background: #b0a89f; }
+/* jour pris choisi comme départ : reste visible comme fin de séjour */
+.mois .jours .pris.fin { background: var(--brique); color: var(--creme); text-decoration: none; }
 .legende .libre { background: #fff; border: 1px solid rgba(43, 29, 21, .3); }
 
 /* ===== Retours cliente 2026-11-16 ===== */

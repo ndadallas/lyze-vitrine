@@ -186,8 +186,9 @@ export async function traiterDemande(_prev: EspaceState, formData: FormData): Pr
   if (!parsed.success) return { error: premier(parsed.error) };
   const t = parsed.data;
 
-  // « Accepter et bloquer » : les dates demandées deviennent un blocage dans le calendrier.
-  if (t.bloquer && demande.type === "USAGE_PERSO" && demande.propertyId && demande.startDate && demande.endDate) {
+  // Accepter (case cochée OU statut « Traitée ») : les dates demandées deviennent un blocage, une seule fois.
+  const accepte = (t.bloquer || t.status === "TRAITEE") && demande.status !== "TRAITEE";
+  if (accepte && demande.type === "USAGE_PERSO" && demande.propertyId && demande.startDate && demande.endDate) {
     const conflit = await db.booking.findFirst({
       where: {
         propertyId: demande.propertyId,
@@ -211,7 +212,7 @@ export async function traiterDemande(_prev: EspaceState, formData: FormData): Pr
 
   await db.ownerRequest.update({
     where: { id: demande.id },
-    data: { status: t.bloquer ? "TRAITEE" : t.status, reply: t.reply },
+    data: { status: accepte ? "TRAITEE" : t.status, reply: t.reply },
   });
   rafraichir(demande.ownerId);
   return { ok: Date.now() };

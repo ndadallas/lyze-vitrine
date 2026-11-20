@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { changerMotDePasse, modifierProfil } from "@/app/actions/profil";
 import { ChampTelephone } from "@/components/ChampTelephone";
+import { MotDePasse } from "@/components/MotDePasse";
 
 export type CompteEspace = {
   identifiant: string;
@@ -76,15 +77,15 @@ export function MonCompte({ compte }: { compte: CompteEspace }) {
           <span className="titre-p">Mot de passe</span>
           <label className="champ">
             <span>Mot de passe actuel</span>
-            <input type="password" name="actuel" autoComplete="current-password" required />
+            <MotDePasse name="actuel" autoComplete="current-password" required />
           </label>
           <label className="champ">
             <span>Nouveau mot de passe</span>
-            <input type="password" name="nouveau" autoComplete="new-password" minLength={8} required />
+            <MotDePasse name="nouveau" autoComplete="new-password" minLength={8} required />
           </label>
           <label className="champ">
             <span>Confirmer le nouveau</span>
-            <input type="password" name="confirmation" autoComplete="new-password" minLength={8} required />
+            <MotDePasse name="confirmation" autoComplete="new-password" minLength={8} required />
           </label>
           <p className="aide-p">Au moins 8 caractères. Vos autres appareils seront déconnectés.</p>
           <Message state={mdp} ok="Mot de passe modifié." />
