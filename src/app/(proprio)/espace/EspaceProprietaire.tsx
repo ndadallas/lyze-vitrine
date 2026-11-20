@@ -14,6 +14,7 @@ import { Documents } from "@/components/Documents";
 import { FicheBienForm } from "@/components/FicheBienForm";
 import { PhotoManager, type PhotoItem } from "@/components/PhotoManager";
 import type { AvisItem, DemandeItem, DepenseItem, DocumentItem, FicheBien } from "@/lib/espace";
+import { ELECTROMENAGER } from "@/lib/espace";
 import { DAY_MS, daysInMonth, formatMAD, monthStart, parseDay } from "@/lib/dates";
 import { monthStats, nights } from "@/lib/stats";
 import { LogoPlateforme, PLATEFORMES, type Plateforme } from "@/lib/plateformes";
@@ -591,7 +592,8 @@ function FicheLecture({ fiche }: { fiche: FicheBien }) {
       ["Chambres", fiche.bedrooms?.toString() ?? ""],
       ["Voyageurs max.", fiche.capacity?.toString() ?? ""],
       ["Surface", fiche.surface ? `${fiche.surface} m²` : ""],
-      ["Équipements", fiche.equipment.join(", ")],
+      ["Équipements", fiche.equipment.filter((e) => !(ELECTROMENAGER as readonly string[]).includes(e)).join(", ")],
+      ["Électroménager", fiche.equipment.filter((e) => (ELECTROMENAGER as readonly string[]).includes(e)).join(", ")],
       ["Wifi", [fiche.wifiName, fiche.wifiPassword].filter(Boolean).join(" · mot de passe : ")],
       ["Consignes d’arrivée", fiche.arrival],
       ["Présentation sur le site", fiche.description],

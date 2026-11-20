@@ -4,7 +4,7 @@ import "@/styles/lz.css";
 
 import { useActionState } from "react";
 import { enregistrerFiche } from "@/app/actions/espace";
-import { EQUIPEMENTS, TYPES_BIEN, type FicheBien } from "@/lib/espace";
+import { ELECTROMENAGER, EQUIPEMENTS, TYPES_BIEN, type FicheBien } from "@/lib/espace";
 
 /** Fiche descriptive d'un bien : même formulaire dans l'espace propriétaire et dans l'admin. */
 export function FicheBienForm({ propertyId, fiche }: { propertyId: string; fiche: FicheBien }) {
@@ -79,6 +79,18 @@ export function FicheBienForm({ propertyId, fiche }: { propertyId: string; fiche
         <legend>Équipements</legend>
         <div className="lz-coches">
           {EQUIPEMENTS.map((e) => (
+            <label key={e}>
+              <input type="checkbox" name="equipment" value={e} defaultChecked={fiche.equipment.includes(e)} />
+              {e}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset className="lz-groupe">
+        <legend>Électroménager</legend>
+        <div className="lz-coches">
+          {ELECTROMENAGER.map((e) => (
             <label key={e}>
               <input type="checkbox" name="equipment" value={e} defaultChecked={fiche.equipment.includes(e)} />
               {e}

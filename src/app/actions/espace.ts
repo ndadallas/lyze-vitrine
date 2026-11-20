@@ -5,7 +5,7 @@ import * as z from "zod";
 import { db } from "@/lib/db";
 import { requireAdmin, requireOwner } from "@/lib/auth";
 import { parseDay, today } from "@/lib/dates";
-import { CODES_DEPENSES, CODES_STATUTS, CODES_TYPES_DEMANDE, EQUIPEMENTS, TYPES_BIEN } from "@/lib/espace";
+import { CODES_DEPENSES, CODES_STATUTS, CODES_TYPES_DEMANDE, ELECTROMENAGER, EQUIPEMENTS, TYPES_BIEN } from "@/lib/espace";
 import { findClash, parseBooking } from "@/lib/reservations";
 import { getEditableProperty } from "@/lib/photos";
 import { getSessionUser } from "@/lib/session";
@@ -44,7 +44,7 @@ const FicheSchema = z.object({
   bedrooms: entier(50, "Chambres"),
   capacity: entier(100, "Voyageurs"),
   surface: entier(10000, "Surface"),
-  equipment: z.array(z.enum(EQUIPEMENTS)),
+  equipment: z.array(z.enum([...EQUIPEMENTS, ...ELECTROMENAGER])),
   wifiName: texte(100),
   wifiPassword: texte(100),
   arrival: texte(2000),

@@ -17,6 +17,23 @@ export const EQUIPEMENTS = [
   "Barbecue",
 ] as const;
 
+// Rangé dans le même champ `equipment` (texte) que EQUIPEMENTS : pas de migration.
+export const ELECTROMENAGER = [
+  "Lave-vaisselle",
+  "Micro-ondes",
+  "Cafetière",
+  "Four",
+  "Plaques de cuisson",
+  "Réfrigérateur",
+  "Congélateur",
+  "Bouilloire",
+  "Grille-pain",
+  "Sèche-linge",
+  "Fer à repasser",
+  "Sèche-cheveux",
+  "Aspirateur",
+] as const;
+
 export const CATEGORIES_DOC = {
   CONTRAT: "Contrat de gestion",
   RELEVE: "Relevé de revenus",
