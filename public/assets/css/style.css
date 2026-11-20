@@ -1685,3 +1685,7 @@ dialog.visionneuse .v-compte { position: absolute; bottom: 18px; left: 0; right:
 .logement-absent { min-height: calc(50 * var(--vh)); display: grid; place-content: center; justify-items: center; gap: 24px; padding: 120px 16px 60px; text-align: center; font-size: 18px; }
 /* Bouton « Espace propriétaire » sous les 5 étapes (accueil) */
 .etapes-espace { margin-top: 28px; }
+
+/* 2026-11-20 : fonds inversés, « Zones d’intervention » = bande crème, contact sur le fond sable */
+.zones { background: var(--creme); }
+.questions-contact { background: var(--sable); }

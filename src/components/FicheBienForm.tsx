@@ -24,12 +24,7 @@ export function FicheBienForm({ propertyId, fiche }: { propertyId: string; fiche
           </label>
           <label className="lz-champ">
             <span>Ville</span>
-            <input name="city" defaultValue={fiche.city} required maxLength={80} list="lz-villes" />
-            <datalist id="lz-villes">
-              <option value="El Jadida" />
-              <option value="Casablanca" />
-              <option value="Marrakech" />
-            </datalist>
+            <input name="city" defaultValue={fiche.city} required maxLength={80} />
           </label>
           <label className="lz-champ">
             <span>Catégorie</span>

@@ -641,12 +641,7 @@ function AjoutBien({ ouvertAuDepart = false, ownerId }: { ouvertAuDepart?: boole
       </label>
       <label className="lz-champ">
         <span>Ville</span>
-        <input name="city" required maxLength={80} list="lz-villes-ajout" placeholder="El Jadida" />
-        <datalist id="lz-villes-ajout">
-          <option value="El Jadida" />
-          <option value="Casablanca" />
-          <option value="Marrakech" />
-        </datalist>
+        <input name="city" required maxLength={80} placeholder="El Jadida" />
       </label>
       {etat?.error && <p className="lz-msg lz-erreur" role="alert">{etat.error}</p>}
       <div className="lz-actions-resa">
