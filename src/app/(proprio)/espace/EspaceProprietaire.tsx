@@ -217,6 +217,7 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
           ))}
         </nav>
         <div className="bas">
+          <a className="contacter" href="/">← Retour au site</a>
           {admin ? (
             <a className="contacter" href="/admin">← Tous les clients</a>
           ) : (

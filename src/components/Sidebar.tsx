@@ -18,6 +18,9 @@ export function Sidebar({ home, children }: { home: string; children: ReactNode 
 
       <div className="sidebar-bottom">
         <hr className="hr-light" />
+        <a href="/" className="sidebar-link">
+          <span className="label">← Retour au site</span>
+        </a>
         <form action={logout}>
           <button type="submit" className="sidebar-link">
             <IconLogout />
