@@ -307,6 +307,22 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
             </div>
 
             <div className="grille-app" hidden={onglet !== "biens"}>
+              <section className="panneau cal" aria-label="Calendrier du mois">
+                <div className="cal-entete">
+                  {JOURS.map((j) => <span key={j}>{j}</span>)}
+                </div>
+                <Calendrier bien={bien} mois={mois} resaChoisie={resa} modifiable={!!admin} onJour={(j) => ouvrirJour(bien, j)} />
+              </section>
+
+              <EditeurResa
+                key={`${bien.id}-${resa?.id ?? ""}-${brouillon?.du ?? ""}`}
+                bien={bien}
+                resa={resa}
+                brouillon={brouillon}
+                onFini={() => setBrouillon(null)}
+                lectureSeule={!admin}
+              />
+
               <section className="panneau liste" aria-labelledby="titre-liste">
                 <span className="titre-p" id="titre-liste">Vos biens</span>
                 <p className="aide-p">Cliquez sur un bien pour voir son calendrier</p>
@@ -339,22 +355,6 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
                   </div>
                 )}
               </section>
-
-              <section className="panneau cal" aria-label="Calendrier du mois">
-                <div className="cal-entete">
-                  {JOURS.map((j) => <span key={j}>{j}</span>)}
-                </div>
-                <Calendrier bien={bien} mois={mois} resaChoisie={resa} modifiable={!!admin} onJour={(j) => ouvrirJour(bien, j)} />
-              </section>
-
-              <EditeurResa
-                key={`${bien.id}-${resa?.id ?? ""}-${brouillon?.du ?? ""}`}
-                bien={bien}
-                resa={resa}
-                brouillon={brouillon}
-                onFini={() => setBrouillon(null)}
-                lectureSeule={!admin}
-              />
             </div>
 
             <div hidden={onglet !== "planning"}>
