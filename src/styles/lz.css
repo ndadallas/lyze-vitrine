@@ -12,8 +12,8 @@
   --lz-titre: var(--f-titre, var(--font-serif, Georgia, serif));
 }
 
-.lz-section { margin-top: 56px; padding: clamp(24px, 3vw, 44px); }
-.lz-section h2 { font-family: var(--lz-titre); font-weight: 400; font-size: clamp(30px, 3.4vw, 48px); line-height: 1.05; margin-top: 12px; }
+.lz-section { margin-top: 56px; padding: clamp(24px, calc(3 * var(--vw)), 44px); }
+.lz-section h2 { font-family: var(--lz-titre); font-weight: 400; font-size: clamp(30px, calc(3.4 * var(--vw)), 48px); line-height: 1.05; margin-top: 12px; }
 .lz-section > .aide-p { font-size: 14px; margin-top: 10px; max-width: 640px; }
 
 /* Formulaires */
@@ -84,7 +84,7 @@
 .lz-doc-actions form { margin: 0; }
 
 /* Demandes */
-.lz-demandes { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(28px, 4vw, 56px); margin-top: 28px; }
+.lz-demandes { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(28px, calc(4 * var(--vw)), 56px); margin-top: 28px; }
 .lz-demandes .lz-form { margin-top: 0; align-content: start; }
 .lz-demandes .lz-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .lz-demandes .lz-types { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -235,7 +235,7 @@
 .app .liste button strong { overflow-wrap: anywhere; }
 
 /* écrans moyens : biens en haut sur toute la largeur, calendrier + détail côte à côte */
-@media (max-width: 1499px) {
+@media all {
   .app .grille-app { grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); }
   .app .grille-app > .liste { grid-column: 1 / -1; }
   .app .grille-app > .detail { grid-column: auto; }
@@ -246,12 +246,12 @@
   .app .lz-demandes { grid-template-columns: minmax(0, 1fr); }
 }
 /* barre latérale plus étroite entre 900 et 1100 px */
-@media (min-width: 901px) and (max-width: 1100px) {
+@media (min-width: 901px) and (max-width: 999px) {
   .app { grid-template-columns: 210px minmax(0, 1fr); }
   .app .side nav a { padding-inline: 14px; }
 }
 /* petits écrans : tout en une colonne */
-@media (max-width: 1100px) {
+@media (max-width: 999px) {
   .app .grille-app { grid-template-columns: minmax(0, 1fr); }
   .app .lz-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .app .lz-large { grid-column: 1 / -1; }
@@ -268,7 +268,7 @@
 .app .lz-table-defile { overflow: visible; }
 .app .lz-table-dep td, .app .lz-table-dep th { white-space: normal; }
 .app .lz-table-dep td:nth-child(4) { white-space: nowrap; }
-@media (max-width: 1499px) { .app .liste .stats > .titre-p { grid-column: 1 / -1; padding-inline: 0; } }
+@media all { .app .liste .stats > .titre-p { grid-column: 1 / -1; padding-inline: 0; } }
 /* petits téléphones : dates d'arrivée, noms longs et libellés du simulateur ne débordent plus */
 @media (max-width: 520px) {
   .app .arrivees li { grid-template-columns: 66px minmax(0, 1fr) auto auto; }
@@ -278,7 +278,7 @@
   .app .calcul .ligne-prix > span:first-child { flex: 1 1 100%; }
 }
 /* cartes de biens : assez larges pour ne jamais couper un mot */
-@media (max-width: 1499px) { .app .liste ul { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); } }
+@media all { .app .liste ul { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); } }
 .app .liste button strong, .app .arrivees strong { overflow-wrap: break-word; hyphens: manual; }
 
 /* Dates bloquées par le propriétaire : JAUNE (demande 2026-11-16) */
@@ -311,7 +311,7 @@
 .app .legende-app .l-attente { background: #4f7a4a repeating-linear-gradient(135deg, rgba(255, 255, 255, .35) 0 3px, transparent 3px 6px); }
 
 /* Retours 2026-11-17 : « Vos biens » en bannière au-dessus du calendrier à toutes les tailles (avant : colonne de gauche ≥ 1500 px) */
-@media (min-width: 1101px) {
+@media (min-width: 1000px) {
   .app .grille-app { grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); }
   .app .grille-app > .liste { grid-column: 1 / -1; }
   .app .grille-app > .detail { grid-column: auto; }
@@ -334,7 +334,7 @@
 .app .mois-nav > span { display: flex; align-items: center; white-space: nowrap; }
 .app .mois-nav select { height: 100%; }
 .app .mois-nav select:hover { background: var(--sable, #e9dcc7); }
-.app .contenu .entete-app h1 { font-size: clamp(32px, 3.4vw, 52px); }
+.app .contenu .entete-app h1 { font-size: clamp(32px, calc(3.4 * var(--vw)), 52px); }
 
 
 

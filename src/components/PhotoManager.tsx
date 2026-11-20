@@ -35,8 +35,11 @@ export function PhotoManager({ propertyId, initial }: { propertyId: string; init
   const [envoi, setEnvoi] = useState(0); // nombre de fichiers en cours d'envoi
   const [message, setMessage] = useState<{ type: "ok" | "erreur"; texte: string } | null>(null);
   const [, startTransition] = useTransition();
-  const enDeplacement = useRef<number | null>(null);
-  const [cible, setCible] = useState<number | null>(null);
+  const glisse = useRef<{ id: string; x: number; y: number; actif: boolean; avant: PhotoItem[] } | null>(null);
+  const sansClic = useRef(false);
+  const ordreRef = useRef(photos);
+  useEffect(() => { ordreRef.current = photos; }, [photos]); // ordre à jour pour le relâché
+  const [glisseId, setGlisseId] = useState<string | null>(null);
   const [zoom, setZoom] = useState<number | null>(null); // photo ouverte en grand
 
   async function envoyer(fichiers: FileList | null) {
@@ -76,11 +79,55 @@ export function PhotoManager({ propertyId, initial }: { propertyId: string; init
 
   function deplacer(de: number, vers: number) {
     if (de === vers) return;
-    const avant = photos;
     const copie = [...photos];
     const [p] = copie.splice(de, 1);
     copie.splice(vers, 0, p);
     setPhotos(copie); // affichage immédiat, puis enregistrement
+    enregistrer(copie, photos);
+  }
+
+  // Glissé à la souris : les vignettes se réordonnent en direct, enregistrement au relâché.
+  // Au doigt, on garde les flèches (sinon impossible de faire défiler la page sur les photos).
+  function glisserDebut(e: React.PointerEvent<HTMLLIElement>, id: string) {
+    if (e.pointerType === "touch" || e.button !== 0 || (e.target as Element).closest(".vignette-actions")) return;
+    glisse.current = { id, x: e.clientX, y: e.clientY, actif: false, avant: photos };
+  }
+
+  function glisserBouge(e: React.PointerEvent<HTMLLIElement>) {
+    const g = glisse.current;
+    if (!g) return;
+    if (!g.actif) {
+      if (Math.hypot(e.clientX - g.x, e.clientY - g.y) < 6) return;
+      g.actif = true;
+      setGlisseId(g.id);
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
+    const sous = document.elementFromPoint(e.clientX, e.clientY)?.closest<HTMLElement>("li.vignette[data-id]");
+    const vers = sous?.dataset.id;
+    if (!vers || vers === g.id) return;
+    setPhotos((ps) => {
+      const de = ps.findIndex((p) => p.id === g.id);
+      const a = ps.findIndex((p) => p.id === vers);
+      if (de < 0 || a < 0) return ps;
+      const copie = [...ps];
+      copie.splice(a, 0, copie.splice(de, 1)[0]);
+      return copie;
+    });
+  }
+
+  function glisserFin(annule: boolean) {
+    const g = glisse.current;
+    glisse.current = null;
+    if (!g?.actif) return;
+    setGlisseId(null);
+    sansClic.current = true; // le relâché ne doit pas ouvrir la photo en grand
+    setTimeout(() => { sansClic.current = false; }, 0);
+    if (annule) { setPhotos(g.avant); return; }
+    const ordre = ordreRef.current;
+    if (ordre.some((p, i) => p.id !== g.avant[i]?.id)) enregistrer(ordre, g.avant);
+  }
+
+  function enregistrer(copie: PhotoItem[], avant: PhotoItem[]) {
     startTransition(async () => {
       const r = await reorderPhotos(propertyId, copie.map((x) => x.id));
       if (r.error) {
@@ -108,7 +155,7 @@ export function PhotoManager({ propertyId, initial }: { propertyId: string; init
     });
   }
 
-  const fichierExterne = (e: React.DragEvent) => enDeplacement.current === null && e.dataTransfer.types.includes("Files");
+  const fichierExterne = (e: React.DragEvent) => e.dataTransfer.types.includes("Files");
 
   return (
     <div className="photos-gestion">
@@ -120,7 +167,6 @@ export function PhotoManager({ propertyId, initial }: { propertyId: string; init
           onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setSurvol(false); }}
           onDrop={(e) => {
             setSurvol(false);
-            if (enDeplacement.current !== null) return;
             e.preventDefault();
             envoyer(e.dataTransfer.files);
           }}
@@ -150,32 +196,14 @@ export function PhotoManager({ propertyId, initial }: { propertyId: string; init
             {photos.map((photo, i) => (
               <li
                 key={photo.id}
-                className={`vignette${cible === i ? " cible" : ""}`}
-                draggable
-                onDragStart={(e) => {
-                  enDeplacement.current = i;
-                  e.currentTarget.classList.add("deplace");
-                  e.dataTransfer.effectAllowed = "move";
-                  e.dataTransfer.setData("text/plain", photo.id);
-                }}
-                onDragEnd={(e) => {
-                  e.currentTarget.classList.remove("deplace");
-                  enDeplacement.current = null;
-                  setCible(null);
-                }}
-                onDragOver={(e) => {
-                  if (enDeplacement.current === null) return;
-                  e.preventDefault();
-                  if (cible !== i) setCible(i);
-                }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  const de = enDeplacement.current;
-                  setCible(null);
-                  if (de !== null) deplacer(de, i);
-                }}
+                data-id={photo.id}
+                className={`vignette${glisseId === photo.id ? " deplace" : ""}`}
+                onPointerDown={(e) => glisserDebut(e, photo.id)}
+                onPointerMove={glisserBouge}
+                onPointerUp={() => glisserFin(false)}
+                onPointerCancel={() => glisserFin(true)}
               >
-                <button type="button" className="vignette-voir" onClick={() => setZoom(i)} aria-label={`Voir la photo ${i + 1} en grand`}>
+                <button type="button" className="vignette-voir" onClick={() => { if (!sansClic.current) setZoom(i); }} aria-label={`Voir la photo ${i + 1} en grand`}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={photo.url} alt="" loading="lazy" draggable={false} />
                 </button>

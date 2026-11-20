@@ -1,3 +1,4 @@
+:root { --vw: 1vw; --vh: 1vh; --svh: 1svh; --dvh: 1dvh; } /* remplacées par src/lib/echelle.ts sur PC */
 /* DA Lyze (site vitrine + espace propriétaire) : sable, brun, brique, Gloock + Instrument Sans.
    Les anciens noms de variables sont gardés pour ne pas toucher aux écrans. */
 :root {
@@ -303,7 +304,7 @@ ul {
 
 /* ---------- Écran de connexion ---------- */
 .auth {
-  min-height: 100vh;
+  min-height: calc(100 * var(--vh));
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
 }
@@ -348,7 +349,7 @@ ul {
 
 /* ---------- Coque espace (sidebar + contenu) ---------- */
 .shell {
-  min-height: 100vh;
+  min-height: calc(100 * var(--vh));
   display: flex;
 }
 .sidebar {
@@ -362,7 +363,7 @@ ul {
   gap: 32px;
   position: sticky;
   top: 0;
-  height: 100vh;
+  height: calc(100 * var(--vh));
 }
 .sidebar-top {
   display: flex;
@@ -689,7 +690,7 @@ ul {
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 1100px) {
+@media (max-width: 999px) {
   .kpis {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -821,10 +822,9 @@ form.stack > .btn { align-self: flex-start; }
 .depot strong { font-size: 15px; font-weight: 500; margin-top: 12px; }
 .depot small { font-size: 12px; color: var(--muted); margin-top: 4px; }
 .vignettes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; align-content: start; }
-.vignette { position: relative; aspect-ratio: 4 / 3; overflow: hidden; cursor: grab; border: 2px solid transparent; transition: border-color 0.15s, opacity 0.15s; }
+.vignette { position: relative; aspect-ratio: 4 / 3; overflow: hidden; cursor: grab; user-select: none; border: 2px solid transparent; transition: border-color 0.15s, opacity 0.15s; }
 .vignette img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; display: block; }
-.vignette.deplace { opacity: 0.4; }
-.vignette.cible { border-color: var(--brass); }
+.vignette.deplace { opacity: 0.5; border-color: var(--brass); cursor: grabbing; }
 .vignette .badge { position: absolute; top: 6px; left: 6px; background: var(--ink); color: var(--card); font-size: 10px; font-weight: 600; padding: 3px 8px; }
 .vignette-actions { position: absolute; right: 6px; bottom: 6px; display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s; }
 .vignette:hover .vignette-actions, .vignette:focus-within .vignette-actions { opacity: 1; }
@@ -843,7 +843,7 @@ form.stack > .btn { align-self: flex-start; }
 .vignette-voir:focus-visible { outline: 2px solid #9C6644; outline-offset: -2px; }
 .visionneuse { position: fixed; inset: 0; z-index: 100; background: rgba(21, 17, 14, .88); display: grid; place-items: center; padding: 24px; }
 .visionneuse-cadre { max-width: min(1200px, 100%); display: flex; flex-direction: column; gap: 12px; }
-.visionneuse-cadre img { max-width: 100%; max-height: calc(100vh - 140px); object-fit: contain; display: block; margin: 0 auto; }
+.visionneuse-cadre img { max-width: 100%; max-height: calc(calc(100 * var(--vh)) - 140px); object-fit: contain; display: block; margin: 0 auto; }
 .visionneuse-barre { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: #F6F0E4; font-size: 14px; }
 .visionneuse-boutons { display: flex; gap: 8px; flex-wrap: wrap; }
 .visionneuse-boutons button { border: 1px solid rgba(246, 240, 228, .35); background: none; color: #F6F0E4; padding: 9px 14px; font: inherit; font-size: 13px; cursor: pointer; }
@@ -883,7 +883,7 @@ form.stack > .btn { align-self: flex-start; }
 .bien-detail .vignettes { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
 .zone-danger { border-color: rgba(156, 102, 68, 0.3); }
 
-@media (max-width: 1100px) {
+@media (max-width: 999px) {
   .biens-admin { grid-template-columns: minmax(0, 1fr); }
   .biens-liste { position: static; flex-direction: row; overflow-x: auto; padding-bottom: 4px; }
   .bien-onglet { min-width: 220px; }
@@ -901,7 +901,7 @@ form.stack > .btn { align-self: flex-start; }
 .resa-actions { justify-content: flex-end; gap: 6px; }
 .table td:last-child { width: 1%; }
 .repli .btn { white-space: normal; text-align: left; }
-@media (max-width: 1280px) { .resa-actions { flex-direction: column; align-items: stretch; } }
+@media (max-width: 999px) { .resa-actions { flex-direction: column; align-items: stretch; } }
 @media (max-width: 700px) {
   .bien-detail .vignettes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .bien-partie-tete.row-between { flex-direction: column; align-items: flex-start; }
@@ -950,7 +950,7 @@ img.logo-name { height: 44px; }
 /* Planning et revenus du client dans l'admin : composants de l'espace, sans espace.css */
 .vue-client .panneau { background: none; border: 0; padding: 0; margin: 0; }
 .vue-client .eyebrow { display: block; font-size: 12px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; color: var(--brass); }
-.vue-client h2 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(28px, 3vw, 40px); margin-top: 8px; }
+.vue-client h2 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(28px, calc(3 * var(--vw)), 40px); margin-top: 8px; }
 .vue-client .aide-p { font-size: 14px; color: var(--muted); margin-top: 8px; max-width: 640px; }
 .vue-client .champ-app { height: 44px; border: 1px solid var(--line-strong); background: var(--card); display: flex; align-items: center; font-size: 14px; }
 .vue-client .champ-app select { height: 100%; border: 0; background: none; padding: 0 12px; appearance: none; cursor: pointer; font: inherit; color: inherit; }
@@ -962,15 +962,15 @@ img.logo-name { height: 44px; }
 .vue-client .legende-app i { width: 18px; height: 18px; display: inline-block; }
 
 /* Revenus du client dans l'admin (règles d'espace.css, préfixées) */
-.vue-client .revenus { margin-top: 56px; padding: clamp(24px, 3vw, 44px); }
-.vue-client .revenus h2 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(30px, 3.4vw, 48px); line-height: 1.05; margin-top: 12px; }
+.vue-client .revenus { margin-top: 56px; padding: clamp(24px, calc(3 * var(--vw)), 44px); }
+.vue-client .revenus h2 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(30px, calc(3.4 * var(--vw)), 48px); line-height: 1.05; margin-top: 12px; }
 .vue-client .revenus > .aide-p { font-size: 14px; margin-top: 10px; max-width: 620px; }
 .vue-client .revenus-filtre { margin-top: 24px; width: max-content; max-width: 100%; }
 .vue-client .revenus-chiffres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 28px; }
 .vue-client .revenus-chiffres div { border-top: 1px solid rgba(74, 52, 38, .vue-client .18); padding-top: 14px; }
 .vue-client .revenus-chiffres span { display: block; font-size: 13px; color: var(--muted); }
-.vue-client .revenus-chiffres strong { font-family: var(--font-serif); font-weight: 400; font-size: clamp(24px, 2.6vw, 36px); }
-.vue-client .revenus-grille { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: clamp(28px, 4vw, 56px); margin-top: 40px; }
+.vue-client .revenus-chiffres strong { font-family: var(--font-serif); font-weight: 400; font-size: clamp(24px, calc(2.6 * var(--vw)), 36px); }
+.vue-client .revenus-grille { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: clamp(28px, calc(4 * var(--vw)), 56px); margin-top: 40px; }
 .vue-client .releve { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
 .vue-client .releve th, .vue-client .releve td { padding: 10px 8px; text-align: right; border-bottom: 1px solid rgba(74, 52, 38, .vue-client .12); font-weight: 400; white-space: nowrap; }
 .vue-client .releve th:first-child { text-align: left; padding-left: 0; }
@@ -1000,6 +1000,6 @@ img.logo-name { height: 44px; }
 .nav-clients { margin-top: 6px; color: rgba(246, 240, 228, .85); }
 .nav-clients summary { cursor: pointer; padding: 10px 12px; font-size: 14px; list-style-position: inside; }
 .nav-clients summary:focus-visible { outline: 2px solid var(--card); outline-offset: 2px; }
-.nav-clients ul { list-style: none; margin: 0; padding: 0 0 0 22px; display: grid; gap: 2px; max-height: 55vh; overflow-y: auto; }
+.nav-clients ul { list-style: none; margin: 0; padding: 0 0 0 22px; display: grid; gap: 2px; max-height: calc(55 * var(--vh)); overflow-y: auto; }
 .nav-clients a { display: block; padding: 7px 10px; border-radius: 8px; font-size: 14px; color: rgba(246, 240, 228, .8); }
 .nav-clients a:hover, .nav-clients a:focus-visible { background: rgba(246, 240, 228, .1); color: var(--card); }

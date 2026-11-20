@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Gloock, Instrument_Sans, Pinyon_Script } from "next/font/google";
 import "./globals.css";
+import { SCRIPT_ECHELLE } from "@/lib/echelle";
 
 // Mêmes polices que le site vitrine et l'espace propriétaire.
 const gloock = Gloock({ variable: "--font-gloock", subsets: ["latin"], weight: "400" });
@@ -17,7 +18,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="fr" className={`${gloock.variable} ${instrument.variable} ${pinyon.variable}`}>
+    <html lang="fr" className={`${gloock.variable} ${instrument.variable} ${pinyon.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: SCRIPT_ECHELLE }} />
+      </head>
       <body>{children}</body>
     </html>
   );
