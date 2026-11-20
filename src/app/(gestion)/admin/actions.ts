@@ -263,7 +263,7 @@ export async function addBooking(_prev: ActionState, formData: FormData): Promis
   if (clash) return { error: clash };
 
   await db.booking.create({
-    data: { ...b, amount: b.kind === "RESERVED" ? b.amount : 0 },
+    data: { ...b, amount: b.kind === "RESERVED" ? b.amount : 0, fees: b.kind === "RESERVED" ? b.fees : 0 },
   });
   revalidatePath(`/admin/clients/${property.ownerId}`, "layout");
   return {
@@ -299,6 +299,7 @@ export async function updateBooking(_prev: ActionState, formData: FormData): Pro
       endDate: b.endDate,
       guestName: b.guestName,
       amount: b.kind === "RESERVED" ? b.amount : 0,
+      fees: b.kind === "RESERVED" ? b.fees : 0,
       note: b.note,
     },
   });

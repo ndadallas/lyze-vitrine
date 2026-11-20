@@ -14,12 +14,33 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     select: { id: true, firstName: true, lastName: true },
   });
 
+  const [aValider, demandes, messages, reponses] = await Promise.all([
+    db.booking.count({ where: { pending: true } }),
+    db.ownerRequest.count({ where: { status: { in: ["NOUVELLE", "EN_COURS"] } } }),
+    db.siteMessage.count({ where: { handled: false } }),
+    db.noticeReply.count({ where: { fromAdmin: false, readAt: null } }),
+  ]);
+  const compte = (n: number) => (n > 0 ? ` (${n})` : "");
+  const ONGLETS = [
+    ["valider", `À valider${compte(aValider)}`],
+    ["demandes", `Demandes${compte(demandes)}`],
+    ["messages", `Messages du site${compte(messages)}`],
+    ["reponses", `Réponses des propriétaires${compte(reponses)}`],
+    ["nouveau", "Nouveau client"],
+    ["clients", "Liste des clients"],
+  ] as const;
+
   return (
     <div className="shell">
       <Sidebar home="/admin">
-        <NavLink href="/admin" icon={<IconUsers />}>
+        <NavLink href="/admin" exact icon={<IconUsers />}>
           Tableau de bord
         </NavLink>
+        {ONGLETS.map(([cle, libelle]) => (
+          <NavLink key={cle} href={`/admin?vue=${cle}`} icon={null}>
+            {libelle}
+          </NavLink>
+        ))}
         <details className="nav-clients" open>
           <summary>Clients ({clients.length})</summary>
           <ul>

@@ -52,6 +52,7 @@ export async function chargerEspace(user: User, gerante: boolean) {
       initiale: b.kind !== "BLOCKED" ? (b.guestName?.trim().charAt(0) || "V").toUpperCase() : null,
       ...(gerante ? { voyageur: b.guestName } : {}),
       montant: b.kind !== "BLOCKED" ? b.amount : 0,
+      frais: b.kind !== "BLOCKED" ? b.fees : 0,
       plateforme: b.platform,
       plateformeAutre: b.platformOther,
       note: b.note,

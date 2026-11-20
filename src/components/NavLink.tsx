@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import type { ReactNode } from "react";
 
 export function NavLink({
@@ -16,7 +16,15 @@ export function NavLink({
   children: ReactNode;
 }) {
   const pathname = usePathname();
-  const active = exact ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
+  const vue = useSearchParams().get("vue");
+  // lien « /admin?vue=x » : actif seulement sur cet onglet ; « /admin » exact : actif sans onglet
+  const [chemin, requete] = href.split("?");
+  const cible = requete ? new URLSearchParams(requete).get("vue") : null;
+  const active = requete
+    ? pathname === chemin && vue === cible
+    : exact
+      ? pathname === href && !vue
+      : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <Link

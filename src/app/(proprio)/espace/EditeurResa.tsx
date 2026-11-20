@@ -82,7 +82,9 @@ export function EditeurResa({
           {resa.type !== "BLOCKED" && (
             <>
               <div><dt>Plateforme</dt><dd><LogoPlateforme code={resa.plateforme} autre={resa.plateformeAutre} taille={18} /></dd></div>
-              <div><dt>Montant net</dt><dd>{resa.montant > 0 ? formatMAD(resa.montant) : "—"}</dd></div>
+              <div><dt>Chiffre d’affaires</dt><dd>{resa.montant > 0 ? formatMAD(resa.montant) : "—"}</dd></div>
+              <div><dt>Frais</dt><dd>{resa.frais > 0 ? `− ${formatMAD(resa.frais)}` : "—"}</dd></div>
+              <div><dt>Net</dt><dd>{resa.montant > 0 ? formatMAD(resa.montant - resa.frais) : "—"}</dd></div>
               {resa.note && <div><dt>Note</dt><dd>{resa.note}</dd></div>}
             </>
           )}
@@ -160,8 +162,12 @@ export function EditeurResa({
               <input name="guestName" maxLength={200} autoComplete="off" />
             </label>
             <label className="lz-champ">
-              <span>Montant net pour vous (MAD)</span>
+              <span>Chiffre d’affaires (MAD)</span>
               <input name="amount" type="number" min={0} step={1} inputMode="numeric" defaultValue={base?.montant || ""} />
+            </label>
+            <label className="lz-champ">
+              <span>Frais : commission + plateforme (MAD)</span>
+              <input name="fees" type="number" min={0} step={1} inputMode="numeric" defaultValue={base?.frais || ""} />
             </label>
           </>
         ) : (

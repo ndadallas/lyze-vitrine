@@ -33,6 +33,11 @@ export const BookingSchema = z
       .int({ error: "Montant en MAD, sans centimes." })
       .min(0, { error: "Montant invalide." })
       .max(10_000_000),
+    fees: z.coerce
+      .number({ error: "Frais invalides." })
+      .int({ error: "Frais en MAD, sans centimes." })
+      .min(0, { error: "Frais invalides." })
+      .max(10_000_000),
     note: texteFacultatif,
   })
   .refine((b) => b.kind !== "RESERVED" || b.platform !== "OTHER" || !!b.platformOther, {
@@ -52,6 +57,7 @@ export function parseBooking(formData: FormData) {
     platformOther: formData.get("platformOther") ?? "",
     guestName: formData.get("guestName") ?? "",
     amount: formData.get("amount") || 0,
+    fees: formData.get("fees") || 0,
     note: formData.get("note") ?? "",
   });
 }

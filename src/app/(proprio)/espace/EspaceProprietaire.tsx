@@ -30,7 +30,8 @@ export type ResaEspace = {
   du: string; // arrivée, "2026-11-12"
   au: string; // départ (exclu), "2026-11-16"
   initiale: string | null;
-  montant: number;
+  montant: number; // chiffre d'affaires
+  frais: number; // commission Lyze + plateforme
   plateforme: Plateforme;
   plateformeAutre: string | null; // « Autre » précisé
   voyageur?: string | null; // nom complet : vue gérante seulement
@@ -72,7 +73,7 @@ const JOURS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 const jour = (iso: string) => parseDay(iso)!;
 const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const court = (d: Date) => `${d.getUTCDate()} ${MOIS_COURT[d.getUTCMonth()]}`;
-const versStats = (r: ResaEspace) => ({ kind: r.type, startDate: jour(r.du), endDate: jour(r.au), amount: r.montant });
+const versStats = (r: ResaEspace) => ({ kind: r.type, startDate: jour(r.du), endDate: jour(r.au), amount: r.montant - r.frais });
 
 /** Réservation (ou blocage) qui occupe la nuit du jour t ; une réservation l'emporte sur un blocage. */
 function resaDuJour(bien: BienEspace, t: number) {

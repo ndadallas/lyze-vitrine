@@ -22,7 +22,11 @@ const lastLogin = new Intl.DateTimeFormat("fr-FR", {
 export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
   const admin = await requireAdmin();
   // Recherche de clients (nom, identifiant, téléphone, e-mail, nom d'un bien) ; vide = tous les clients
-  const q = String((await searchParams).q ?? "").trim().slice(0, 80);
+  const sp = await searchParams;
+  const q = String(sp.q ?? "").trim().slice(0, 80);
+  // Onglet choisi dans la barre latérale (?vue=…) ; aucun = tout le tableau de bord
+  const vue = String(sp.vue ?? "");
+  const voir = (k: string, n = 1) => (vue ? vue === k : n > 0);
   const contient = { contains: q, mode: "insensitive" as const };
 
   const owners = await db.user.findMany({
@@ -86,7 +90,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
         </div>
       </div>
 
-      {aValider.length > 0 && (
+      {voir("valider", aValider.length) && (
         <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="valider-title">
           <h2 id="valider-title" style={{ fontSize: 20 }}>
             À valider <span className="muted" style={{ fontSize: 15 }}>({aValider.length})</span>
@@ -131,7 +135,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
         </section>
       )}
 
-      {messages.length > 0 && (
+      {voir("messages", messages.length) && (
         <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="messages-title">
           <h2 id="messages-title" style={{ fontSize: 20 }}>
             Messages du site <span className="muted" style={{ fontSize: 15 }}>({nonTraites} à traiter)</span>
@@ -172,7 +176,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
         </section>
       )}
 
-      {reponses.length > 0 && (
+      {voir("reponses", reponses.length) && (
         <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="reponses-title">
           <h2 id="reponses-title" style={{ fontSize: 20 }}>
             Réponses des propriétaires <span className="muted" style={{ fontSize: 15 }}>({reponses.length} à lire)</span>
@@ -197,7 +201,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
         </section>
       )}
 
-      {demandes.length > 0 && (
+      {voir("demandes", demandes.length) && (
         <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="demandes-title">
           <h2 id="demandes-title" style={{ fontSize: 20 }}>
             Demandes à traiter <span className="muted" style={{ fontSize: 15 }}>({demandes.length})</span>
@@ -214,6 +218,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
         </section>
       )}
 
+      {voir("nouveau") && (
       <section className="card card-pad stack" style={{ gap: 20 }} aria-labelledby="new-client">
         <div>
           <h2 id="new-client" style={{ fontSize: 20 }}>Nouveau client</h2>
@@ -249,7 +254,9 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
           </div>
         </ActionForm>
       </section>
+      )}
 
+      {voir("clients") && (
       <section className="stack" aria-labelledby="clients-title">
         <h2 id="clients-title" style={{ fontSize: 20 }}>
           Clients{" "}
@@ -258,6 +265,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
           </span>
         </h2>
         <form className="lz-recherche" role="search" action="/admin">
+          {vue && <input type="hidden" name="vue" value={vue} />}
           <input
             type="search"
             name="q"
@@ -315,6 +323,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
           </div>
         )}
       </section>
+      )}
     </>
   );
 }

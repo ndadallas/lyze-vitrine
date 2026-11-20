@@ -285,6 +285,7 @@ export async function enregistrerResa(_prev: EspaceState, formData: FormData): P
     // le propriétaire ne voit que l'initiale : champ vide = nom inchangé
     guestName: b.guestName ?? existante?.guestName ?? null,
     amount: b.kind === "RESERVED" ? b.amount : 0,
+    fees: b.kind === "RESERVED" ? b.fees : 0,
     note: b.note,
     // saisi par le propriétaire = à valider par la gérante ; saisi par la gérante = validé
     pending: (await getSessionUser())?.role !== "ADMIN",

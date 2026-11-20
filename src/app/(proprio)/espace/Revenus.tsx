@@ -30,11 +30,13 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
     const fin = addMonths(debut, 1);
     let nuits = 0;
     let montant = 0;
+    let commissions = 0;
     for (const r of resas) {
       const n = overlapNights(r, debut, fin);
       if (!n) continue;
       nuits += n;
       montant += (r.montant * n) / (nights(r) || 1); // réservation à cheval : au prorata des nuits
+      commissions += (r.frais * n) / (nights(r) || 1);
     }
     const dispo = daysInMonth(debut) * choisis.length;
     const ids = new Set(choisis.map((b) => b.id));
@@ -48,15 +50,16 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
       nuits,
       occupation: dispo ? Math.round((nuits / dispo) * 100) : 0,
       montant: Math.round(montant),
+      commissions: Math.round(commissions),
       frais,
     };
   });
   // pas de mois vides avant la première réservation (au moins 3 lignes)
-  const derniere = lignes.findLastIndex((l) => l.nuits > 0 || l.frais > 0);
+  const derniere = lignes.findLastIndex((l) => l.nuits > 0 || l.frais > 0 || l.commissions > 0);
   lignes.splice(Math.max(derniere + 1, 3));
   const total = lignes.reduce(
-    (s, l) => ({ nuits: s.nuits + l.nuits, montant: s.montant + l.montant, frais: s.frais + l.frais }),
-    { nuits: 0, montant: 0, frais: 0 },
+    (s, l) => ({ nuits: s.nuits + l.nuits, montant: s.montant + l.montant, commissions: s.commissions + l.commissions, frais: s.frais + l.frais }),
+    { nuits: 0, montant: 0, commissions: 0, frais: 0 },
   );
 
   const prochaines = resas
@@ -68,7 +71,7 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
     <section className="panneau revenus" id="releve">
       <span className="eyebrow eyebrow--brique">Revenus</span>
       <h2>{titre}</h2>
-      <p className="aide-p">Montants nets qui vous reviennent, après frais de plateforme et commission Lyze Conciergerie.</p>
+      <p className="aide-p">Net = chiffre d’affaires − frais (commission Lyze Conciergerie et plateforme) − dépenses.</p>
 
       {biens.length > 1 && (
         <label className="champ-app select revenus-filtre">
@@ -85,9 +88,9 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
       )}
 
       <div className="revenus-chiffres">
-        <div><span>{lignes.length === 12 ? "Sur 12 mois" : `Depuis ${lignes[lignes.length - 1].libelle.toLowerCase()}`}</span><strong>{formatMAD(total.montant)}</strong></div>
-        <div><span>Dépenses</span><strong>{formatMAD(total.frais)}</strong></div>
-        <div><span>Net après dépenses</span><strong>{formatMAD(total.montant - total.frais)}</strong></div>
+        <div><span>Chiffre d’affaires {lignes.length === 12 ? "sur 12 mois" : `depuis ${lignes[lignes.length - 1].libelle.toLowerCase()}`}</span><strong>{formatMAD(total.montant)}</strong></div>
+        <div><span>Frais et dépenses</span><strong>{formatMAD(total.commissions + total.frais)}</strong></div>
+        <div><span>Net</span><strong>{formatMAD(total.montant - total.commissions - total.frais)}</strong></div>
       </div>
 
       <div className="revenus-grille">
@@ -95,7 +98,7 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
           <span className="titre-p">Relevé mois par mois</span>
           <table className="releve lz-fiches-mobile">
             <thead>
-              <tr><th scope="col">Mois</th><th scope="col">Nuits</th><th scope="col">Occupation</th><th scope="col">Revenus</th><th scope="col">Dépenses</th><th scope="col">Net</th></tr>
+              <tr><th scope="col">Mois</th><th scope="col">Nuits</th><th scope="col">Occupation</th><th scope="col">Chiffre d’affaires</th><th scope="col">Frais</th><th scope="col">Dépenses</th><th scope="col">Net</th></tr>
             </thead>
             <tbody>
               {lignes.map((l) => (
@@ -103,14 +106,15 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
                   <th scope="row">{l.libelle}{l.enCours && <small> en cours</small>}</th>
                   <td data-label="Nuits">{l.nuits}</td>
                   <td data-label="Occupation">{l.occupation} %</td>
-                  <td data-label="Revenus">{l.montant ? formatMAD(l.montant) : "—"}</td>
+                  <td data-label="Chiffre d’affaires">{l.montant ? formatMAD(l.montant) : "—"}</td>
+                  <td data-label="Frais">{l.commissions ? `− ${formatMAD(l.commissions)}` : "—"}</td>
                   <td data-label="Dépenses">{l.frais ? `− ${formatMAD(l.frais)}` : "—"}</td>
-                  <td data-label="Net">{l.montant || l.frais ? formatMAD(l.montant - l.frais) : "—"}</td>
+                  <td data-label="Net">{l.montant || l.frais || l.commissions ? formatMAD(l.montant - l.commissions - l.frais) : "—"}</td>
                 </tr>
               ))}
             </tbody>
             <tfoot>
-              <tr><th scope="row">Total</th><td data-label="Nuits">{total.nuits}</td><td className="lz-vide-mobile" /><td data-label="Revenus">{formatMAD(total.montant)}</td><td data-label="Dépenses">{total.frais ? `− ${formatMAD(total.frais)}` : "—"}</td><td data-label="Net">{formatMAD(total.montant - total.frais)}</td></tr>
+              <tr><th scope="row">Total</th><td data-label="Nuits">{total.nuits}</td><td className="lz-vide-mobile" /><td data-label="Chiffre d’affaires">{formatMAD(total.montant)}</td><td data-label="Frais">{total.commissions ? `− ${formatMAD(total.commissions)}` : "—"}</td><td data-label="Dépenses">{total.frais ? `− ${formatMAD(total.frais)}` : "—"}</td><td data-label="Net">{formatMAD(total.montant - total.commissions - total.frais)}</td></tr>
             </tfoot>
           </table>
         </div>
