@@ -2,7 +2,7 @@
 
 import { useT } from "@/components/Langue";
 import { useState } from "react";
-import { addMonths, daysInMonth, formatMAD, parseDay } from "@/lib/dates";
+import { addMonths, daysInMonth, parseDay } from "@/lib/dates";
 import { nights, overlapNights } from "@/lib/stats";
 import { LogoPlateforme, type Plateforme } from "@/lib/plateformes";
 import type { DepenseItem } from "@/lib/espace";
@@ -16,7 +16,7 @@ const court = (d: Date, locale = "fr-FR") => new Intl.DateTimeFormat(locale, { d
 
 /** Relevé mois par mois (12 derniers mois, mois en cours compris) + prochaines arrivées, tous biens ou un seul. */
 export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: { biens: BienEspace[]; aujourdhui: string; depenses: DepenseItem[]; titre?: string }) {
-  const { t, locale, mois: nomMois } = useT();
+  const { t, locale, mois: nomMois, montant } = useT();
   const [filtre, setFiltre] = useState("tous");
   const choisis = filtre === "tous" ? biens : biens.filter((b) => b.id === filtre);
   const t0 = jour(aujourdhui);
@@ -85,6 +85,9 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
     .map((r) => overlapNights({ startDate: jour(r.du), endDate: jour(r.au) }, debutPeriode, finPeriode))
     .filter((n) => n > 0);
 
+  const totalFraisPlateformes = [...parPlateforme.values()].reduce((s, p) => s + p.frais, 0);
+  const totalCommission = [...parPlateforme.values()].reduce((s, p) => s + p.commission, 0);
+
   const prochaines = resas
     .filter((r) => r.startDate.getTime() >= t0.getTime())
     .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
@@ -110,11 +113,15 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
         </label>
       )}
 
-      <div className="revenus-chiffres">
-        <div><span>{lignes.length === 12 ? t("Chiffre d’affaires sur 12 mois") : t("Chiffre d’affaires depuis {mois}", { mois: lignes[lignes.length - 1].libelle.toLowerCase() })}</span><strong>{formatMAD(total.montant)}</strong></div>
-        <div><span>{t("Frais et dépenses")}</span><strong>{formatMAD(total.commissions + total.frais)}</strong></div>
-        <div><span>{t("Net")}</span><strong>{formatMAD(total.montant - total.commissions - total.frais)}</strong></div>
-      </div>
+      {/* même présentation en cases que la gérante (demande 2026-11-21) */}
+      <span className="titre-p">{lignes.length === 12 ? t("Sur 12 mois") : t("Depuis {mois}", { mois: lignes[lignes.length - 1].libelle.toLowerCase() })}</span>
+      <dl className="ca-cases">
+        <div><dt>{t("Chiffre d’affaires")}</dt><dd>{montant(total.montant)}</dd><small>{t("{n} nuits", { n: total.nuits })}</small></div>
+        <div><dt>{t("Frais plateformes")}</dt><dd>− {montant(totalFraisPlateformes)}</dd><small>Airbnb, Booking…</small></div>
+        <div><dt>{t("Commission Lyze")}</dt><dd>− {montant(totalCommission)}</dd><small>20 %</small></div>
+        <div><dt>{t("Dépenses")}</dt><dd>− {montant(total.frais)}</dd><small>{t("ménage, réparations…")}</small></div>
+        <div className="ca-net"><dt>{t("Net")}</dt><dd>{montant(total.montant - total.commissions - total.frais)}</dd><small>{t("après frais, commission et dépenses")}</small></div>
+      </dl>
 
       <div className="revenus-grille">
         <div>
@@ -129,15 +136,15 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
                   <th scope="row">{l.libelle}{l.enCours && <small> {t("en cours")}</small>}</th>
                   <td data-label={t("Nuits")}>{l.nuits}</td>
                   <td data-label={t("Occupation")}>{l.occupation} %</td>
-                  <td data-label={t("Chiffre d’affaires")}>{l.montant ? formatMAD(l.montant) : "—"}</td>
-                  <td data-label={t("Frais")}>{l.commissions ? `− ${formatMAD(l.commissions)}` : "—"}</td>
-                  <td data-label={t("Dépenses")}>{l.frais ? `− ${formatMAD(l.frais)}` : "—"}</td>
-                  <td data-label={t("Net")}>{l.montant || l.frais || l.commissions ? formatMAD(l.montant - l.commissions - l.frais) : "—"}</td>
+                  <td data-label={t("Chiffre d’affaires")}>{l.montant ? montant(l.montant) : "—"}</td>
+                  <td data-label={t("Frais")}>{l.commissions ? `− ${montant(l.commissions)}` : "—"}</td>
+                  <td data-label={t("Dépenses")}>{l.frais ? `− ${montant(l.frais)}` : "—"}</td>
+                  <td data-label={t("Net")}>{l.montant || l.frais || l.commissions ? montant(l.montant - l.commissions - l.frais) : "—"}</td>
                 </tr>
               ))}
             </tbody>
             <tfoot>
-              <tr><th scope="row">{t("Total")}</th><td data-label={t("Nuits")}>{total.nuits}</td><td className="lz-vide-mobile" /><td data-label={t("Chiffre d’affaires")}>{formatMAD(total.montant)}</td><td data-label={t("Frais")}>{total.commissions ? `− ${formatMAD(total.commissions)}` : "—"}</td><td data-label={t("Dépenses")}>{total.frais ? `− ${formatMAD(total.frais)}` : "—"}</td><td data-label={t("Net")}>{formatMAD(total.montant - total.commissions - total.frais)}</td></tr>
+              <tr><th scope="row">{t("Total")}</th><td data-label={t("Nuits")}>{total.nuits}</td><td className="lz-vide-mobile" /><td data-label={t("Chiffre d’affaires")}>{montant(total.montant)}</td><td data-label={t("Frais")}>{total.commissions ? `− ${montant(total.commissions)}` : "—"}</td><td data-label={t("Dépenses")}>{total.frais ? `− ${montant(total.frais)}` : "—"}</td><td data-label={t("Net")}>{montant(total.montant - total.commissions - total.frais)}</td></tr>
             </tfoot>
           </table>
         </div>
@@ -154,10 +161,10 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
                   <th scope="row"><LogoPlateforme code={code} taille={16} /></th>
                   <td data-label={t("Séjours")}>{p.resas}</td>
                   <td data-label={t("Nuits")}>{p.nuits}</td>
-                  <td data-label={t("Chiffre d’affaires")}>{formatMAD(p.ca)}</td>
-                  <td data-label={t("Frais plateforme")}>{p.frais ? `− ${formatMAD(p.frais)}` : "—"}</td>
-                  <td data-label={t("Commission Lyze")}>{p.commission ? `− ${formatMAD(p.commission)}` : "—"}</td>
-                  <td data-label={t("Net")}>{formatMAD(p.ca - p.frais - p.commission)}</td>
+                  <td data-label={t("Chiffre d’affaires")}>{montant(p.ca)}</td>
+                  <td data-label={t("Frais plateforme")}>{p.frais ? `− ${montant(p.frais)}` : "—"}</td>
+                  <td data-label={t("Commission Lyze")}>{p.commission ? `− ${montant(p.commission)}` : "—"}</td>
+                  <td data-label={t("Net")}>{montant(p.ca - p.frais - p.commission)}</td>
                 </tr>
               ))}
               {sejoursProprio.length > 0 && (
@@ -165,10 +172,10 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
                   <th scope="row">{t("Séjours du propriétaire")}</th>
                   <td data-label={t("Séjours")}>{sejoursProprio.length}</td>
                   <td data-label={t("Nuits")}>{sejoursProprio.reduce((a, n) => a + n, 0)}</td>
-                  <td data-label={t("Chiffre d’affaires")}>{formatMAD(0)}</td>
+                  <td data-label={t("Chiffre d’affaires")}>{montant(0)}</td>
                   <td data-label={t("Frais plateforme")}>—</td>
                   <td data-label={t("Commission Lyze")}>—</td>
-                  <td data-label={t("Net")}>{formatMAD(0)}</td>
+                  <td data-label={t("Net")}>{montant(0)}</td>
                 </tr>
               )}
               {parPlateforme.size === 0 && sejoursProprio.length === 0 && (
@@ -190,7 +197,7 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
                     <small>{t("Voyageur {i}.", { i: r.initiale ?? "" })} · {t("{n} nuits", { n: nights(r) })}</small>
                   </span>
                   <LogoPlateforme code={r.plateforme} avecNom={false} taille={18} />
-                  <span className="arrivee-montant">{r.montant ? formatMAD(r.montant) : "—"}</span>
+                  <span className="arrivee-montant">{r.montant ? montant(r.montant) : "—"}</span>
                 </li>
               ))}
             </ul>

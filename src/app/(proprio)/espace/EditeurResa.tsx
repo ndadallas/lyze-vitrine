@@ -6,7 +6,7 @@ import "@/styles/lz.css";
 import { useActionState, useState } from "react";
 import { enregistrerResa, supprimerResa } from "@/app/actions/espace";
 import { ConfirmButton } from "@/components/ConfirmButton";
-import { formatMAD, parseDay } from "@/lib/dates";
+import { parseDay } from "@/lib/dates";
 import { CHOIX_PLATEFORMES, LogoPlateforme, PLATEFORMES } from "@/lib/plateformes";
 import { nights } from "@/lib/stats";
 import { COMMISSION_LYZE, repartition, TAUX_PLATEFORME } from "@/lib/tarifs";
@@ -40,7 +40,7 @@ export function EditeurResa({
   /** Espace du propriétaire : consultation seulement (demande 2026-11-18), seule la gérante modifie. */
   lectureSeule?: boolean;
 }) {
-  const { t, locale } = useT();
+  const { t, locale, montant } = useT();
   const [modif, setModif] = useState(false);
   // succès : on referme le formulaire (dans l'action, pas dans un effet)
   const [etat, action, envoi] = useActionState(async (prev: Awaited<ReturnType<typeof enregistrerResa>>, fd: FormData) => {
@@ -100,11 +100,11 @@ export function EditeurResa({
           {resa.type !== "BLOCKED" && (
             <>
               <div><dt>{t("Plateforme")}</dt><dd><LogoPlateforme code={resa.plateforme} autre={resa.plateformeAutre} taille={18} /></dd></div>
-              {resa.prixNuit > 0 && <div><dt>{t("Prix de la nuit")}</dt><dd>{formatMAD(resa.prixNuit)}</dd></div>}
-              <div><dt>{t("Chiffre d’affaires")}</dt><dd>{resa.montant > 0 ? formatMAD(resa.montant) : "—"}</dd></div>
-              <div><dt>{t("Frais {p}", { p: PLATEFORMES[resa.plateforme].nom })}</dt><dd>{resa.frais > 0 ? `− ${formatMAD(resa.frais)}` : "—"}</dd></div>
-              <div><dt>{t("Commission Lyze")}</dt><dd>{resa.commission > 0 ? `− ${formatMAD(resa.commission)}` : "—"}</dd></div>
-              <div><dt>{t("Net propriétaire")}</dt><dd>{resa.montant > 0 ? formatMAD(resa.montant - resa.frais - resa.commission) : "—"}</dd></div>
+              {resa.prixNuit > 0 && <div><dt>{t("Prix de la nuit")}</dt><dd>{montant(resa.prixNuit)}</dd></div>}
+              <div><dt>{t("Chiffre d’affaires")}</dt><dd>{resa.montant > 0 ? montant(resa.montant) : "—"}</dd></div>
+              <div><dt>{t("Frais {p}", { p: PLATEFORMES[resa.plateforme].nom })}</dt><dd>{resa.frais > 0 ? `− ${montant(resa.frais)}` : "—"}</dd></div>
+              <div><dt>{t("Commission Lyze")}</dt><dd>{resa.commission > 0 ? `− ${montant(resa.commission)}` : "—"}</dd></div>
+              <div><dt>{t("Net propriétaire")}</dt><dd>{resa.montant > 0 ? montant(resa.montant - resa.frais - resa.commission) : "—"}</dd></div>
               {resa.note && <div><dt>{t("Note")}</dt><dd>{resa.note}</dd></div>}
             </>
           )}
@@ -211,7 +211,7 @@ export function EditeurResa({
             </div>
             {ca > 0 && (
               <p className="lz-aide">
-                {t("Propriétaire :")} <strong>{formatMAD(net)}</strong> {t("· Lyze :")} <strong>{formatMAD(Number(m.commission) || 0)}</strong>
+                {t("Propriétaire :")} <strong>{montant(net)}</strong> {t("· Lyze :")} <strong>{montant(Number(m.commission) || 0)}</strong>
               </p>
             )}
           </>

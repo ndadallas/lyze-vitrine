@@ -5,6 +5,8 @@ import { requireAdmin } from "@/lib/auth";
 import { chargerEspace } from "@/lib/donnees-espace";
 import { EspaceProprietaire } from "@/app/(proprio)/espace/EspaceProprietaire";
 import { ONGLETS } from "@/app/(proprio)/espace/onglets";
+import { LangueProvider } from "@/components/Langue";
+import { deviseCourante } from "@/lib/langue-serveur";
 
 export const metadata: Metadata = { title: "Fiche client" };
 
@@ -27,7 +29,9 @@ export default async function ClientPage({ params }: PageProps<"/admin/clients/[
     select: { id: true, firstName: true, lastName: true },
   });
 
+  const { devise, tauxEur } = await deviseCourante();
   return (
+    <LangueProvider langue="fr" devise={devise} tauxEur={tauxEur}>
     <EspaceProprietaire
       {...await chargerEspace(owner, true)}
       admin={{
@@ -49,5 +53,6 @@ export default async function ClientPage({ params }: PageProps<"/admin/clients/[
         },
       }}
     />
+    </LangueProvider>
   );
 }

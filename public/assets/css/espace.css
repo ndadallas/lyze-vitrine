@@ -327,3 +327,15 @@ button.jour { cursor: pointer; }
 }
 .lz-choix-langue select option { color: #2b1d14; }
 .lz-choix-langue-connexion { position: fixed; top: 18px; inset-inline-end: 70px; z-index: 5; color: #4a3626; }
+
+/* Cases de chiffres (revenus du propriétaire, même présentation que la gérante, 2026-11-21) */
+.ca-cases { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 8px 0 24px; }
+.ca-cases > div { background: rgba(255, 255, 255, .55); border: 1px solid rgba(43, 29, 21, .12); border-radius: 10px; padding: 14px 16px; display: grid; gap: 4px; }
+.ca-cases dt { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
+.ca-cases dd { margin: 0; font-size: 22px; font-weight: 600; white-space: nowrap; }
+.ca-cases small { font-size: 12px; opacity: .6; }
+.ca-cases .ca-net { background: #4a3324; color: #f6f0e4; border-color: #4a3324; }
+.ca-cases .ca-net dt, .ca-cases .ca-net small { opacity: .8; }
+@media (max-width: 860px) { .ca-cases { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; } .ca-cases dd { font-size: 17px; white-space: normal; } .ca-cases .ca-net { grid-column: 1 / -1; } }
+.lz-reglages { display: flex; gap: 6px; flex-wrap: wrap; }
+.revenus .revenus-filtre + .titre-p { display: block; margin-top: 20px; }

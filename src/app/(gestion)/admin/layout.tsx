@@ -4,6 +4,8 @@ import { Sidebar } from "@/components/Sidebar";
 import { IconUsers } from "@/components/icons";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { ChoixDevise, LangueProvider } from "@/components/Langue";
+import { deviseCourante } from "@/lib/langue-serveur";
 
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   await requireAdmin();
@@ -33,7 +35,9 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   // Mot de passe changé par le client depuis moins de 7 jours : signalé sous son nom
   const recent = Date.now() - 7 * 24 * 3600 * 1000;
 
+  const { devise, tauxEur } = await deviseCourante();
   return (
+    <LangueProvider langue="fr" devise={devise} tauxEur={tauxEur}>
     <div className="shell">
       <Sidebar home="/admin">
         <NavLink href="/admin" exact icon={<IconUsers />}>
@@ -49,6 +53,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
             )}
           </NavLink>
         ))}
+        <ChoixDevise className="lz-choix-langue lz-devise-admin" />
         <details className="nav-clients" open>
           <summary>Clients ({clients.length})</summary>
           <ul>
@@ -67,5 +72,6 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       </Sidebar>
       <main className="content">{children}</main>
     </div>
+    </LangueProvider>
   );
 }

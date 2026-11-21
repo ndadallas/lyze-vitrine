@@ -9,7 +9,9 @@ import { basculerMessage, refuserResa, validerResa } from "@/app/actions/espace"
 const jourCourt = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 import { versDemandeItem } from "@/lib/espace";
 import { createOwner } from "./actions";
-import { addMonths, formatMAD, today } from "@/lib/dates";
+import { addMonths, today } from "@/lib/dates";
+import { formatMontant } from "@/lib/devise";
+import { deviseCourante } from "@/lib/langue-serveur";
 import { nights, overlapNights } from "@/lib/stats";
 import { LogoPlateforme, type Plateforme } from "@/lib/plateformes";
 
@@ -24,6 +26,8 @@ const lastLogin = new Intl.DateTimeFormat("fr-FR", {
 
 export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
   const admin = await requireAdmin();
+  const { devise, tauxEur } = await deviseCourante();
+  const montant = (mad: number) => formatMontant(mad, devise, tauxEur);
   // Recherche de clients (nom, identifiant, téléphone, e-mail, nom d'un bien) ; vide = tous les clients
   const sp = await searchParams;
   const q = String(sp.q ?? "").trim().slice(0, 80);
@@ -143,11 +147,11 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
             <div key={nom} className="ca-bloc">
               <h3>{nom}</h3>
               <dl className="ca-cases">
-                <div><dt>Chiffre d’affaires</dt><dd>{formatMAD(r.ca)}</dd><small>{r.nuits} nuits</small></div>
-                <div><dt>Frais plateformes</dt><dd>− {formatMAD(r.frais)}</dd><small>Airbnb, Booking…</small></div>
-                <div className="ca-lyze"><dt>CA Lyze</dt><dd>{formatMAD(r.lyze)}</dd><small>commissions</small></div>
-                <div><dt>Dépenses</dt><dd>− {formatMAD(r.depenses)}</dd><small>ménage, réparations…</small></div>
-                <div className="ca-net"><dt>Net propriétaires</dt><dd>{formatMAD(r.ca - r.frais - r.lyze - r.depenses)}</dd><small>après frais, commission et dépenses</small></div>
+                <div><dt>Chiffre d’affaires</dt><dd>{montant(r.ca)}</dd><small>{r.nuits} nuits</small></div>
+                <div><dt>Frais plateformes</dt><dd>− {montant(r.frais)}</dd><small>Airbnb, Booking…</small></div>
+                <div className="ca-lyze"><dt>CA Lyze</dt><dd>{montant(r.lyze)}</dd><small>commissions</small></div>
+                <div><dt>Dépenses</dt><dd>− {montant(r.depenses)}</dd><small>ménage, réparations…</small></div>
+                <div className="ca-net"><dt>Net propriétaires</dt><dd>{montant(r.ca - r.frais - r.lyze - r.depenses)}</dd><small>après frais, commission et dépenses</small></div>
               </dl>
             </div>
           ))}
@@ -162,9 +166,9 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                     <tr key={code}>
                       <th scope="row"><LogoPlateforme code={code} taille={16} /></th>
                       <td data-label="Nuits">{p.nuits}</td>
-                      <td data-label="Chiffre d’affaires">{formatMAD(p.ca)}</td>
-                      <td data-label="Frais plateforme">{formatMAD(p.frais)}</td>
-                      <td data-label="CA Lyze">{formatMAD(p.lyze)}</td>
+                      <td data-label="Chiffre d’affaires">{montant(p.ca)}</td>
+                      <td data-label="Frais plateforme">{montant(p.frais)}</td>
+                      <td data-label="CA Lyze">{montant(p.lyze)}</td>
                     </tr>
                   ))}
                 </tbody>

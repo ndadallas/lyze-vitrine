@@ -15,7 +15,7 @@ import { FicheBienForm } from "@/components/FicheBienForm";
 import { PhotoManager, type PhotoItem } from "@/components/PhotoManager";
 import type { AvisItem, DemandeItem, DepenseItem, DocumentItem, FicheBien } from "@/lib/espace";
 import { ELECTROMENAGER } from "@/lib/espace";
-import { DAY_MS, daysInMonth, formatMAD, monthStart, parseDay } from "@/lib/dates";
+import { DAY_MS, daysInMonth, monthStart, parseDay } from "@/lib/dates";
 import { monthStats, nights } from "@/lib/stats";
 import { LogoPlateforme, PLATEFORMES, type Plateforme } from "@/lib/plateformes";
 import { EditeurResa, type Brouillon } from "./EditeurResa";
@@ -23,7 +23,7 @@ import { MonCompte, type CompteEspace } from "./MonCompte";
 import { ChoixMois, Planning } from "./Planning";
 import { Revenus } from "./Revenus";
 import { ONGLETS, lienOnglet } from "./onglets";
-import { ChoixLangue, useT } from "@/components/Langue";
+import { ChoixDevise, ChoixLangue, useT } from "@/components/Langue";
 
 export type ResaEspace = {
   id: string;
@@ -113,7 +113,7 @@ function IconeCoche(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, biens, documents, demandes, depenses, compte, contact }: Props) {
-  const { t, mois: nomMois, jours } = useT();
+  const { t, mois: nomMois, jours, montant } = useT();
   const listeBiens = biens.map((b) => ({ id: b.id, nom: b.nom }));
   const aTraiter = demandes.filter((d) => d.reponse && d.statut !== "NOUVELLE").length;
   // Une page par rubrique (URL /espace/<id>) ; changement de page par pushState : bien et mois choisis sont gardés
@@ -234,7 +234,10 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
               {t("Connecté·e :")} <strong>{nom}</strong>
             </span>
           )}
-          {!admin && <ChoixLangue />}
+          <span className="lz-reglages">
+            {!admin && <ChoixLangue />}
+            <ChoixDevise />
+          </span>
           <form action={logout}>
             <button type="submit">{t("Se déconnecter")}</button>
           </form>
@@ -354,7 +357,7 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
                     <span className="titre-p">{titreMois}</span>
                     <div><span>{t("Taux d’occupation")}</span><strong>{stats.occupancy} %</strong></div>
                     <div><span>{t("Nuits réservées")}</span><strong>{stats.reservedNights}</strong></div>
-                    <div><span>{t("Revenus du mois")}</span><strong>{formatMAD(stats.revenue)}</strong></div>
+                    <div><span>{t("Revenus du mois")}</span><strong>{montant(stats.revenue)}</strong></div>
                   </div>
                 )}
               </section>
@@ -503,7 +506,7 @@ function Calendrier({
   modifiable: boolean;
   onJour: (jourIso: string) => void;
 }) {
-  const { t: tr, mois: nomMois } = useT();
+  const { t: tr, mois: nomMois, montant } = useT();
   const an = mois.getUTCFullYear();
   const m = mois.getUTCMonth();
   const decalage = (mois.getUTCDay() + 6) % 7; // lundi = 0
@@ -568,7 +571,7 @@ const isoJour = (t: number) => new Date(t).toISOString().slice(0, 10);
 
 /** Espace du propriétaire : photos en consultation (seule Lyze les ajoute ou les range). */
 function GaleriePhotos({ nom, photos }: { nom: string; photos: PhotoItem[] }) {
-  const { t } = useT();
+  const { t, montant } = useT();
   if (!photos.length) return <p className="lz-vide">{t("Lyze n’a pas encore ajouté de photo pour ce bien.")}</p>;
   return (
     <ul className="lz-galerie-lecture">
@@ -586,7 +589,7 @@ function GaleriePhotos({ nom, photos }: { nom: string; photos: PhotoItem[] }) {
 
 /** Espace du propriétaire : fiche du bien en consultation. */
 function FicheLecture({ fiche }: { fiche: FicheBien }) {
-  const { t } = useT();
+  const { t, montant } = useT();
   const liste = (l: string[]) => l.map((e) => t(e)).join(", ");
   const lignes = (
     [
@@ -600,7 +603,7 @@ function FicheLecture({ fiche }: { fiche: FicheBien }) {
       ["Wifi", [fiche.wifiName, fiche.wifiPassword].filter(Boolean).join(` · ${t("mot de passe :")} `)],
       ["Consignes d’arrivée", fiche.arrival],
       ["Présentation sur le site", fiche.description],
-      ["Prix à partir de", fiche.price ? `${formatMAD(fiche.price)} / ${t("nuit")}` : ""],
+      ["Prix à partir de", fiche.price ? `${montant(fiche.price)} / ${t("nuit")}` : ""],
     ] as [string, string][]
   ).filter(([, v]) => v);
   if (!lignes.length) return <p className="lz-vide">{t("Lyze n’a pas encore rempli la fiche de ce bien.")}</p>;

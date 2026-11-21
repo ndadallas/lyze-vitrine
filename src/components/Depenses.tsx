@@ -6,7 +6,6 @@ import "@/styles/lz.css";
 import { useActionState, useState } from "react";
 import { ajouterDepense, modifierDepense, supprimerDepense } from "@/app/actions/espace";
 import { ConfirmButton } from "@/components/ConfirmButton";
-import { formatMAD } from "@/lib/dates";
 import { CATEGORIES_DEPENSE, CODES_DEPENSES, type DepenseItem } from "@/lib/espace";
 
 const MOIS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
@@ -28,7 +27,7 @@ export function Depenses({
   aujourdhui: string;
   admin?: boolean;
 }) {
-  const { t, locale } = useT();
+  const { t, locale, montant } = useT();
   const [etat, action, envoi] = useActionState(ajouterDepense, undefined);
   const [filtre, setFiltre] = useState("tous");
   const [ouvert, setOuvert] = useState(false);
@@ -129,7 +128,7 @@ export function Depenses({
                     </small>
                   </td>
                   <td data-label={t("Bien")}>{nomBien.get(d.bienId) ?? "—"}</td>
-                  <td data-label={t("Montant")}>{formatMAD(d.montant)}</td>
+                  <td data-label={t("Montant")}>{montant(d.montant)}</td>
                   <td className="lz-actions-cellule">
                     {!lectureSeule && (admin || d.parProprio) && (
                       <>
@@ -153,7 +152,7 @@ export function Depenses({
                 <th scope="row">{t("Total")}</th>
                 <td className="lz-vide-mobile" />
                 <td className="lz-vide-mobile" />
-                <td data-label={t("Montant")}>{formatMAD(total)}</td>
+                <td data-label={t("Montant")}>{montant(total)}</td>
                 <td className="lz-vide-mobile" />
               </tr>
             </tfoot>
@@ -166,7 +165,7 @@ export function Depenses({
 
 /** Formulaire de modification d'une dépense (date, catégorie, libellé, montant). */
 function ModifierDepense({ d, onFini }: { d: DepenseItem; onFini: () => void }) {
-  const { t, locale } = useT();
+  const { t, locale, montant } = useT();
   const [etat, action, envoi] = useActionState(async (prev: Awaited<ReturnType<typeof modifierDepense>>, fd: FormData) => {
     const r = await modifierDepense(prev, fd);
     if (r?.ok) onFini();

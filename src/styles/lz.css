@@ -326,7 +326,7 @@
 
 /* Message d'accueil + messages de Lyze */
 .app .entete-app .lz-alerte-msg { margin-top: 16px; display: inline-flex; gap: 10px; align-items: center; padding: 10px 16px; border-radius: 10px; background: #fbeee2; color: #4a3426; font-size: 15px; border: 1px solid rgba(156, 102, 68, .35); cursor: pointer; font-family: inherit; }
-.app .side nav .lz-badge { display: inline-grid; place-items: center; min-width: 20px; height: 20px; margin-left: 8px; padding: 0 6px; border-radius: 10px; background: #f6f0e4; color: #4a3426; font-size: 12px; font-weight: 700; }
+.app .side nav .lz-badge { display: inline-grid; place-items: center; min-width: 20px; height: 20px; margin-left: 8px; padding: 0 6px; border-radius: 10px; background: #c0392b; color: #fff; font-size: 12px; font-weight: 700; } /* rouge comme côté gérante (2026-11-21) */
 .lz-avis-nouveau { border-left: 3px solid var(--lz-accent, #9c6644); padding-left: 14px; }
 .lz-avis-date { margin-top: 8px; font-weight: 600; color: #7e4f33; }
 .lz-avis-texte { white-space: pre-line; }
