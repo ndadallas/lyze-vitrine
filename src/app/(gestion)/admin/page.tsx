@@ -87,8 +87,20 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
     where: { kind: "RESERVED", startDate: { lt: finMois }, endDate: { gt: debut12 } },
     select: { startDate: true, endDate: true, amount: true, fees: true, commission: true, platform: true },
   });
+  // Dépenses de tous les biens sur la même période (déduites du net des propriétaires, demande 2026-11-21)
+  const depensesPeriode = await db.expense.findMany({
+    where: { date: { gte: debut12, lt: finMois } },
+    select: { date: true, amount: true },
+  });
   const somme = (de: Date, a: Date) => {
-    const r = { ca: 0, frais: 0, lyze: 0, nuits: 0, parPlateforme: new Map<Plateforme, { ca: number; lyze: number; nuits: number }>() };
+    const r = {
+      ca: 0,
+      frais: 0,
+      lyze: 0,
+      nuits: 0,
+      depenses: depensesPeriode.filter((d) => d.date >= de && d.date < a).reduce((s, d) => s + d.amount, 0),
+      parPlateforme: new Map<Plateforme, { ca: number; frais: number; lyze: number; nuits: number }>(),
+    };
     for (const v of ventes) {
       const n = overlapNights(v, de, a);
       if (!n) continue;
@@ -97,8 +109,9 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
       r.frais += v.fees * part;
       r.lyze += v.commission * part;
       r.nuits += n;
-      const p = r.parPlateforme.get(v.platform) ?? { ca: 0, lyze: 0, nuits: 0 };
+      const p = r.parPlateforme.get(v.platform) ?? { ca: 0, frais: 0, lyze: 0, nuits: 0 };
       p.ca += v.amount * part;
+      p.frais += v.fees * part;
       p.lyze += v.commission * part;
       p.nuits += n;
       r.parPlateforme.set(v.platform, p);
@@ -129,7 +142,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
           <div className="lz-table-defile">
             <table className="releve lz-fiches-mobile">
               <thead>
-                <tr><th scope="col">Période</th><th scope="col">Nuits</th><th scope="col">Chiffre d’affaires</th><th scope="col">Frais plateformes</th><th scope="col">CA Lyze (commissions)</th><th scope="col">Net propriétaires</th></tr>
+                <tr><th scope="col">Période</th><th scope="col">Nuits</th><th scope="col">Chiffre d’affaires</th><th scope="col">Frais plateformes</th><th scope="col">CA Lyze (commissions)</th><th scope="col">Dépenses</th><th scope="col">Net propriétaires</th></tr>
               </thead>
               <tbody>
                 {([["Mois en cours", caMois], ["12 derniers mois", ca12]] as const).map(([nom, r]) => (
@@ -139,7 +152,8 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                     <td data-label="Chiffre d’affaires">{formatMAD(r.ca)}</td>
                     <td data-label="Frais plateformes">{formatMAD(r.frais)}</td>
                     <td data-label="CA Lyze"><strong>{formatMAD(r.lyze)}</strong></td>
-                    <td data-label="Net propriétaires">{formatMAD(r.ca - r.frais - r.lyze)}</td>
+                    <td data-label="Dépenses">{formatMAD(r.depenses)}</td>
+                    <td data-label="Net propriétaires">{formatMAD(r.ca - r.frais - r.lyze - r.depenses)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -149,7 +163,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
             <div className="lz-table-defile">
               <table className="releve lz-fiches-mobile">
                 <thead>
-                  <tr><th scope="col">Plateforme (12 mois)</th><th scope="col">Nuits</th><th scope="col">Chiffre d’affaires</th><th scope="col">CA Lyze</th></tr>
+                  <tr><th scope="col">Plateforme (12 mois)</th><th scope="col">Nuits</th><th scope="col">Chiffre d’affaires</th><th scope="col">Frais plateforme</th><th scope="col">CA Lyze</th></tr>
                 </thead>
                 <tbody>
                   {[...ca12.parPlateforme].map(([code, p]) => (
@@ -157,6 +171,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                       <th scope="row"><LogoPlateforme code={code} taille={16} /></th>
                       <td data-label="Nuits">{p.nuits}</td>
                       <td data-label="Chiffre d’affaires">{formatMAD(p.ca)}</td>
+                      <td data-label="Frais plateforme">{formatMAD(p.frais)}</td>
                       <td data-label="CA Lyze">{formatMAD(p.lyze)}</td>
                     </tr>
                   ))}
@@ -164,7 +179,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
               </table>
             </div>
           )}
-          <p className="muted" style={{ fontSize: 13 }}>Réservations voyageurs de tous les clients, réparties au prorata des nuits. Les réservations saisies avant le 20/11/2026 n’ont ni frais ni commission renseignés.</p>
+          <p className="muted" style={{ fontSize: 13 }}>Réservations voyageurs de tous les clients, réparties au prorata des nuits. Frais et commission par défaut (Airbnb 18 %, Booking 20 %, autre 15 %, Lyze 20 %), modifiables sur chaque réservation. Dépenses = celles notées dans les biens des clients.</p>
         </section>
       )}
 

@@ -364,6 +364,8 @@ ul {
   position: sticky;
   top: 0;
   height: calc(100 * var(--vh));
+  /* petit écran ou zoom : la barre défile au lieu de couper le bas (Déconnexion, liste des clients), retour 2026-11-21 */
+  overflow-y: auto;
 }
 .sidebar-top {
   display: flex;
