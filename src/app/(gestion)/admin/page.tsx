@@ -139,31 +139,23 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
       {voir("ca") && (
         <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="ca-title">
           <h2 id="ca-title" style={{ fontSize: 20 }}>Chiffre d’affaires</h2>
-          <div className="lz-table-defile">
-            <table className="releve lz-fiches-mobile">
-              <thead>
-                <tr><th scope="col">Période</th><th scope="col">Nuits</th><th scope="col">Chiffre d’affaires</th><th scope="col">Frais plateformes</th><th scope="col">CA Lyze (commissions)</th><th scope="col">Dépenses</th><th scope="col">Net propriétaires</th></tr>
-              </thead>
-              <tbody>
-                {([["Mois en cours", caMois], ["12 derniers mois", ca12]] as const).map(([nom, r]) => (
-                  <tr key={nom}>
-                    <th scope="row">{nom}</th>
-                    <td data-label="Nuits">{r.nuits}</td>
-                    <td data-label="Chiffre d’affaires">{formatMAD(r.ca)}</td>
-                    <td data-label="Frais plateformes">{formatMAD(r.frais)}</td>
-                    <td data-label="CA Lyze"><strong>{formatMAD(r.lyze)}</strong></td>
-                    <td data-label="Dépenses">{formatMAD(r.depenses)}</td>
-                    <td data-label="Net propriétaires">{formatMAD(r.ca - r.frais - r.lyze - r.depenses)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {([["Mois en cours", caMois], ["12 derniers mois", ca12]] as const).map(([nom, r]) => (
+            <div key={nom} className="ca-bloc">
+              <h3>{nom}</h3>
+              <dl className="ca-cases">
+                <div><dt>Chiffre d’affaires</dt><dd>{formatMAD(r.ca)}</dd><small>{r.nuits} nuits</small></div>
+                <div><dt>Frais plateformes</dt><dd>− {formatMAD(r.frais)}</dd><small>Airbnb, Booking…</small></div>
+                <div className="ca-lyze"><dt>CA Lyze</dt><dd>{formatMAD(r.lyze)}</dd><small>commissions</small></div>
+                <div><dt>Dépenses</dt><dd>− {formatMAD(r.depenses)}</dd><small>ménage, réparations…</small></div>
+                <div className="ca-net"><dt>Net propriétaires</dt><dd>{formatMAD(r.ca - r.frais - r.lyze - r.depenses)}</dd><small>après frais, commission et dépenses</small></div>
+              </dl>
+            </div>
+          ))}
           {ca12.parPlateforme.size > 0 && (
             <div className="lz-table-defile">
-              <table className="releve lz-fiches-mobile">
+              <table className="releve lz-fiches-mobile ca-table">
                 <thead>
-                  <tr><th scope="col">Plateforme (12 mois)</th><th scope="col">Nuits</th><th scope="col">Chiffre d’affaires</th><th scope="col">Frais plateforme</th><th scope="col">CA Lyze</th></tr>
+                  <tr><th scope="col">Par plateforme (12 mois)</th><th scope="col">Nuits</th><th scope="col">Chiffre d’affaires</th><th scope="col">Frais plateforme</th><th scope="col">CA Lyze</th></tr>
                 </thead>
                 <tbody>
                   {[...ca12.parPlateforme].map(([code, p]) => (

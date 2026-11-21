@@ -1028,3 +1028,43 @@ img.logo-name { height: 44px; }
 .nav-clients a:hover, .nav-clients a:focus-visible { background: rgba(246, 240, 228, .1); color: var(--card); }
 .vue-client .revenus-plateformes { grid-column: 1 / -1; order: 1; }
 .vue-client .revenus-plateformes .plateforme { display: inline-flex; align-items: center; gap: 6px; }
+
+/* Téléphone (retour 2026-11-21 : onglets, clients et Déconnexion invisibles) :
+   logo en haut, onglets en boutons qui défilent avec leur libellé, clients repliés, Retour au site + Déconnexion visibles */
+@media (max-width: 860px) {
+  .sidebar { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 16px 12px; overflow: visible; }
+  .sidebar-top { flex-direction: column; align-items: stretch; gap: 10px; }
+  .sidebar-nav { flex-direction: row; flex-wrap: nowrap; overflow-x: auto; gap: 6px; padding-bottom: 4px; scrollbar-width: thin; }
+  .sidebar-link { padding: 8px 12px; border: 1px solid rgba(246, 240, 228, .25); border-radius: 999px; font-size: 13px; }
+  .sidebar-link .label { display: inline-flex; }
+  .sidebar-link svg { display: none; }
+  .nav-clients { flex: 0 0 auto; margin: 0; }
+  .nav-clients summary { padding: 4px 0; font-size: 13px; }
+  .nav-clients ul { display: flex; gap: 6px; padding: 4px 0 0; overflow-x: auto; max-height: none; }
+  .nav-clients a { white-space: nowrap; border: 1px solid rgba(246, 240, 228, .2); border-radius: 999px; padding: 6px 12px; font-size: 13px; }
+  .sidebar-bottom { flex-direction: row; justify-content: space-between; gap: 8px; }
+  .sidebar-bottom .sidebar-link { border: 0; padding: 6px 0; }
+}
+
+/* Chiffre d'affaires de la gérante en cases lisibles (retour 2026-11-21 « présentation plus claire ») */
+.ca-bloc { display: grid; gap: 10px; }
+.ca-bloc h3 { font-size: 15px; font-weight: 600; margin: 0; }
+.ca-cases { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin: 0; }
+.ca-cases > div { background: rgba(255, 255, 255, .55); border: 1px solid rgba(43, 29, 21, .12); border-radius: 10px; padding: 14px 16px; display: grid; gap: 4px; }
+.ca-cases dt { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
+.ca-cases dd { margin: 0; font-size: 22px; font-weight: 600; white-space: nowrap; }
+.ca-cases small { font-size: 12px; opacity: .6; }
+.ca-cases .ca-lyze dd { color: #9c3d2e; }
+.ca-cases .ca-net { background: #4a3324; color: #f6f0e4; border-color: #4a3324; }
+.ca-cases .ca-net dt, .ca-cases .ca-net small { opacity: .8; }
+.ca-table th, .ca-table td { padding: 10px 14px; text-align: right; }
+.ca-table th:first-child { text-align: left; }
+.ca-table thead th { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; opacity: .7; border-bottom: 1px solid rgba(43, 29, 21, .15); }
+.ca-table tbody tr + tr td, .ca-table tbody tr + tr th { border-top: 1px solid rgba(43, 29, 21, .08); }
+@media (max-width: 860px) {
+  .sidebar { position: static; height: auto; }
+  .ca-cases { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .ca-cases > div { padding: 10px 12px; }
+  .ca-cases dd { font-size: 17px; white-space: normal; }
+  .ca-cases .ca-net { grid-column: 1 / -1; }
+}
