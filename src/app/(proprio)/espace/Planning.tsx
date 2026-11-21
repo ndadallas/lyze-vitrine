@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/Langue";
 import "@/styles/lz.css";
 
 import { daysInMonth, parseDay } from "@/lib/dates";
@@ -9,11 +10,13 @@ import type { BienEspace, ResaEspace } from "./EspaceProprietaire";
 const MOIS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
 const INITIALES_JOURS = ["D", "L", "M", "M", "J", "V", "S"];
 const jour = (iso: string) => parseDay(iso)!.getTime();
+const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const iso = (t: number) => new Date(t).toISOString().slice(0, 10);
 const DAY = 86_400_000;
 
 /** Flèches + menus déroulants mois / année (demande 2026-11-17). `onMois` reçoit un décalage en mois. */
 export function ChoixMois({ mois, aujourdhui, onMois }: { mois: Date; aujourdhui: string; onMois: (delta: number) => void }) {
+  const { t, mois: nomMois } = useT();
   const m = mois.getUTCMonth();
   const an = mois.getUTCFullYear();
   const an0 = Number(aujourdhui.slice(0, 4));
@@ -22,16 +25,16 @@ export function ChoixMois({ mois, aujourdhui, onMois }: { mois: Date; aujourdhui
   if (!annees.includes(an)) annees.push(an);
   return (
     <div className="champ-app mois-nav">
-      <button type="button" onClick={() => onMois(-1)} aria-label="Mois précédent">‹</button>
+      <button type="button" onClick={() => onMois(-1)} aria-label={t("Mois précédent")}>‹</button>
       <span>
-        <select aria-label="Mois" value={m} onChange={(e) => onMois(Number(e.target.value) - m)}>
-          {MOIS.map((nom, i) => <option key={nom} value={i}>{nom}</option>)}
+        <select aria-label={t("Mois")} value={m} onChange={(e) => onMois(Number(e.target.value) - m)}>
+          {MOIS.map((_, i) => <option key={i} value={i}>{capital(nomMois(i))}</option>)}
         </select>
-        <select aria-label="Année" value={an} onChange={(e) => onMois((Number(e.target.value) - an) * 12)}>
+        <select aria-label={t("Année")} value={an} onChange={(e) => onMois((Number(e.target.value) - an) * 12)}>
           {annees.sort().map((a) => <option key={a} value={a}>{a}</option>)}
         </select>
       </span>
-      <button type="button" onClick={() => onMois(1)} aria-label="Mois suivant">›</button>
+      <button type="button" onClick={() => onMois(1)} aria-label={t("Mois suivant")}>›</button>
     </div>
   );
 }
@@ -68,6 +71,8 @@ export function Planning({
   onResa: (bien: BienEspace, resa: ResaEspace) => void;
   onJourLibre: (bien: BienEspace, jourIso: string) => void;
 }) {
+  const { t, mois: nomMois, jours } = useT();
+  const initiales = jours("narrow");
   const debut = mois.getTime();
   const nb = daysInMonth(mois);
   const t0 = jour(aujourdhui);
@@ -75,14 +80,14 @@ export function Planning({
 
   return (
     <section className="panneau lz-section" id="planning">
-      <span className="eyebrow eyebrow--brique">Planning</span>
+      <span className="eyebrow eyebrow--brique">{t("Planning")}</span>
       <h2>{titre}</h2>
       <p className="aide-p">{aide}</p>
       <div className="lz-planning-tete">
         <ChoixMois mois={mois} aujourdhui={aujourdhui} onMois={onMois} />
         <div className="legende-app">
-          <span><i className="l-brique" />Réservé</span>
-          <span><i className="l-bloque" />Bloqué par le propriétaire</span>
+          <span><i className="l-brique" />{t("Réservé")}</span>
+          <span><i className="l-bloque" />{t("Bloqué par le propriétaire")}</span>
         </div>
       </div>
 
@@ -94,7 +99,7 @@ export function Planning({
             const d = new Date(t);
             return (
               <div key={i} className={`lz-pl-jour${t === t0 ? " lz-aujourdhui" : ""}${d.getUTCDay() % 6 === 0 ? " lz-we" : ""}`}>
-                <small>{INITIALES_JOURS[d.getUTCDay()]}</small>
+                <small>{initiales[(d.getUTCDay() + 6) % 7]}</small>
                 {i + 1}
               </div>
             );
@@ -113,7 +118,7 @@ export function Planning({
                   type="button"
                   className="lz-pl-case"
                   style={{ gridRow: rangee, gridColumn: i + 2 }}
-                  aria-label={`${b.nom}, ${i + 1} ${MOIS[mois.getUTCMonth()]} : ajouter`}
+                  aria-label={`${b.nom}, ${i + 1} ${nomMois(mois.getUTCMonth())}`}
                   onClick={() => onJourLibre(b, iso(debut + i * DAY))}
                 />
               )),
@@ -123,7 +128,7 @@ export function Planning({
                   type="button"
                   className={`lz-pl-barre lz-pl-${r.type.toLowerCase()}${r.attente ? " lz-pl-attente" : ""}`}
                   style={{ gridRow: rangee, gridColumn: `${col + 1} / span ${span}` }}
-                  title={r.type !== "BLOCKED" ? (r.voyageur ?? `Voyageur ${r.initiale}.`) : (r.note ?? undefined)}
+                  title={r.type !== "BLOCKED" ? (r.voyageur ?? t("Voyageur {i}.", { i: r.initiale ?? "" })) : (r.note ?? undefined)}
                   onClick={() => onResa(b, r)}
                 >
                   {r.type !== "BLOCKED" ? (
@@ -132,7 +137,7 @@ export function Planning({
                       {span > 1 && <span>{r.initiale}.</span>}
                     </>
                   ) : (
-                    span > 2 && <span>{r.note || "Bloqué"}</span>
+                    span > 2 && <span>{r.note || t("Bloqué")}</span>
                   )}
                 </button>
               )),

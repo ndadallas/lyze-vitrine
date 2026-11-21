@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/Langue";
 import "@/styles/lz.css";
 
 import { useActionState, useState } from "react";
@@ -14,10 +15,8 @@ import type { BienEspace, ResaEspace } from "./EspaceProprietaire";
 
 const MOIS_COURT = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
 const jour = (iso: string) => parseDay(iso)!;
-const court = (iso: string) => {
-  const d = jour(iso);
-  return `${d.getUTCDate()} ${MOIS_COURT[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
-};
+const court = (iso: string, locale = "fr-FR") =>
+  new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${iso.slice(0, 10)}T00:00:00Z`));
 // « Réservé par l’entreprise » (MANAGED) retiré le 2026-11-18 : converti en réservation via Lyze
 const TYPES = { RESERVED: "Réservation voyageur", BLOCKED: "Bloqué par le propriétaire (usage perso, travaux…)" } as const;
 
@@ -41,6 +40,7 @@ export function EditeurResa({
   /** Espace du propriétaire : consultation seulement (demande 2026-11-18), seule la gérante modifie. */
   lectureSeule?: boolean;
 }) {
+  const { t, locale } = useT();
   const [modif, setModif] = useState(false);
   // succès : on referme le formulaire (dans l'action, pas dans un effet)
   const [etat, action, envoi] = useActionState(async (prev: Awaited<ReturnType<typeof enregistrerResa>>, fd: FormData) => {
@@ -76,10 +76,10 @@ export function EditeurResa({
     if (!resa) {
       return (
         <section className="panneau detail" aria-live="polite">
-          <span className="titre-p">Calendrier</span>
+          <span className="titre-p">{t("Calendrier")}</span>
           <p className="vide-msg">
             {lectureSeule
-              ? "Cliquez sur un jour réservé ou bloqué pour voir le détail."
+              ? t("Cliquez sur un jour réservé ou bloqué pour voir le détail.")
               : "Cliquez sur un jour libre pour ajouter une réservation ou bloquer des dates, ou sur un jour occupé pour le modifier."}
           </p>
         </section>
@@ -87,25 +87,25 @@ export function EditeurResa({
     }
     return (
       <section className="panneau detail" aria-live="polite">
-        <span className="titre-p">{resa.type === "BLOCKED" ? TYPES.BLOCKED : "Réservation sélectionnée"}</span>
-        <h2>{resa.type === "BLOCKED" ? resa.note || TYPES.BLOCKED : resa.voyageur || `Voyageur ${resa.initiale}.`}</h2>
-        {resa.attente && <p className="lz-attente">En attente de validation par Lyze</p>}
+        <span className="titre-p">{resa.type === "BLOCKED" ? t(TYPES.BLOCKED) : t("Réservation sélectionnée")}</span>
+        <h2>{resa.type === "BLOCKED" ? resa.note || t(TYPES.BLOCKED) : resa.voyageur || t("Voyageur {i}.", { i: resa.initiale ?? "" })}</h2>
+        {resa.attente && <p className="lz-attente">{t("En attente de validation par Lyze")}</p>}
         <dl>
           <div>
-            <dt>Dates</dt>
+            <dt>{t("Dates")}</dt>
             <dd>
-              {court(resa.du)} → {court(resa.au)} ({nights({ startDate: jour(resa.du), endDate: jour(resa.au) })} nuits)
+              {court(resa.du, locale)} → {court(resa.au, locale)} ({t("{n} nuits", { n: nights({ startDate: jour(resa.du), endDate: jour(resa.au) }) })})
             </dd>
           </div>
           {resa.type !== "BLOCKED" && (
             <>
-              <div><dt>Plateforme</dt><dd><LogoPlateforme code={resa.plateforme} autre={resa.plateformeAutre} taille={18} /></dd></div>
-              {resa.prixNuit > 0 && <div><dt>Prix de la nuit</dt><dd>{formatMAD(resa.prixNuit)}</dd></div>}
-              <div><dt>Chiffre d’affaires</dt><dd>{resa.montant > 0 ? formatMAD(resa.montant) : "—"}</dd></div>
-              <div><dt>Frais {PLATEFORMES[resa.plateforme].nom}</dt><dd>{resa.frais > 0 ? `− ${formatMAD(resa.frais)}` : "—"}</dd></div>
-              <div><dt>Commission Lyze</dt><dd>{resa.commission > 0 ? `− ${formatMAD(resa.commission)}` : "—"}</dd></div>
-              <div><dt>Net propriétaire</dt><dd>{resa.montant > 0 ? formatMAD(resa.montant - resa.frais - resa.commission) : "—"}</dd></div>
-              {resa.note && <div><dt>Note</dt><dd>{resa.note}</dd></div>}
+              <div><dt>{t("Plateforme")}</dt><dd><LogoPlateforme code={resa.plateforme} autre={resa.plateformeAutre} taille={18} /></dd></div>
+              {resa.prixNuit > 0 && <div><dt>{t("Prix de la nuit")}</dt><dd>{formatMAD(resa.prixNuit)}</dd></div>}
+              <div><dt>{t("Chiffre d’affaires")}</dt><dd>{resa.montant > 0 ? formatMAD(resa.montant) : "—"}</dd></div>
+              <div><dt>{t("Frais {p}", { p: PLATEFORMES[resa.plateforme].nom })}</dt><dd>{resa.frais > 0 ? `− ${formatMAD(resa.frais)}` : "—"}</dd></div>
+              <div><dt>{t("Commission Lyze")}</dt><dd>{resa.commission > 0 ? `− ${formatMAD(resa.commission)}` : "—"}</dd></div>
+              <div><dt>{t("Net propriétaire")}</dt><dd>{resa.montant > 0 ? formatMAD(resa.montant - resa.frais - resa.commission) : "—"}</dd></div>
+              {resa.note && <div><dt>{t("Note")}</dt><dd>{resa.note}</dd></div>}
             </>
           )}
         </dl>
@@ -128,12 +128,12 @@ export function EditeurResa({
                 setModif(true);
               }}
             >
-              Modifier
+              {t("Modifier")}
             </button>
             <form action={supprimerResa}>
               <input type="hidden" name="bookingId" value={resa.id} />
               <ConfirmButton message="Supprimer cette ligne du calendrier ?" className="lz-lien lz-danger">
-                Supprimer
+                {t("Supprimer")}
               </ConfirmButton>
             </form>
           </div>
@@ -152,7 +152,7 @@ export function EditeurResa({
         <input type="hidden" name="propertyId" value={bien.id} />
         {base && <input type="hidden" name="bookingId" value={base.id} />}
         <label className="lz-champ">
-          <span>Type</span>
+          <span>{t("Type")}</span>
           <select name="kind" value={type} onChange={(e) => setType(e.target.value as ResaEspace["type"])}>
             {Object.entries(TYPES).map(([k, v]) => (
               <option key={k} value={k}>{v}</option>
@@ -161,18 +161,18 @@ export function EditeurResa({
         </label>
         <div className="lz-deux">
           <label className="lz-champ">
-            <span>Arrivée</span>
+            <span>{t("Arrivée")}</span>
             <input type="date" name="startDate" value={du} required onChange={(e) => { setDu(e.target.value); recalculer(m.prixNuit, e.target.value, au, plateforme); }} />
           </label>
           <label className="lz-champ">
-            <span>Départ</span>
+            <span>{t("Départ")}</span>
             <input type="date" name="endDate" value={au} required onChange={(e) => { setAu(e.target.value); recalculer(m.prixNuit, du, e.target.value, plateforme); }} />
           </label>
         </div>
         {type === "RESERVED" ? (
           <>
             <label className="lz-champ">
-              <span>Plateforme</span>
+              <span>{t("Plateforme")}</span>
               <select name="platform" value={plateforme} onChange={(e) => { const p = e.target.value as Plateforme; setPlateforme(p); if (ca > 0) setM(depuisCA(ca, p, m.prixNuit)); }}>
                 {CHOIX_PLATEFORMES.map((c) => (
                   <option key={c} value={c}>{PLATEFORMES[c].nom}</option>
@@ -181,8 +181,8 @@ export function EditeurResa({
             </label>
             {plateforme === "OTHER" && (
               <label className="lz-champ">
-                <span>Laquelle ?</span>
-                <input name="platformOther" required maxLength={60} defaultValue={base?.plateformeAutre ?? ""} placeholder="Ex. Abritel, Vrbo, bouche-à-oreille" />
+                <span>{t("Laquelle ?")}</span>
+                <input name="platformOther" required maxLength={60} defaultValue={base?.plateformeAutre ?? ""} placeholder={t("Ex. Abritel, Vrbo, bouche-à-oreille")} />
               </label>
             )}
             <label className="lz-champ">
@@ -191,7 +191,7 @@ export function EditeurResa({
             </label>
             <div className="lz-deux">
               <label className="lz-champ">
-                <span>Prix de la nuit (MAD)</span>
+                <span>{t("Prix de la nuit (MAD)")}</span>
                 <input name="nightPrice" type="number" min={0} step={1} inputMode="numeric" value={m.prixNuit} onChange={(e) => recalculer(e.target.value, du, au, plateforme)} />
               </label>
               <label className="lz-champ">
@@ -211,7 +211,7 @@ export function EditeurResa({
             </div>
             {ca > 0 && (
               <p className="lz-aide">
-                Propriétaire : <strong>{formatMAD(net)}</strong> · Lyze : <strong>{formatMAD(Number(m.commission) || 0)}</strong>
+                {t("Propriétaire :")} <strong>{formatMAD(net)}</strong> {t("· Lyze :")} <strong>{formatMAD(Number(m.commission) || 0)}</strong>
               </p>
             )}
           </>
@@ -235,7 +235,7 @@ export function EditeurResa({
               onFini();
             }}
           >
-            Annuler
+            {t("Annuler")}
           </button>
         </div>
       </form>

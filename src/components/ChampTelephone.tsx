@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/Langue";
 import { Fragment, useEffect, useRef, useState } from "react";
 
 type Pays = { tel: string; nom: string; iso: string };
@@ -11,6 +12,7 @@ const drapeau = (iso: string) => `/assets/img/drapeaux/${iso.toLowerCase()}.svg`
  * Liste maison pour afficher les drapeaux (impossible dans un <select>) ; la valeur part dans un champ caché.
  */
 export function ChampTelephone({ defaut = "+212", numero = "" }: { defaut?: string; numero?: string }) {
+  const { t } = useT();
   const [pays, setPays] = useState<Pays[]>([{ tel: "+212", nom: "Maroc", iso: "MA" }]);
   const [choix, setChoix] = useState<number | null>(null); // index dans `pays`, choisi à la main
   const [ouvert, setOuvert] = useState(false);
@@ -94,7 +96,7 @@ export function ChampTelephone({ defaut = "+212", numero = "" }: { defaut?: stri
           className="pays-bouton"
           aria-haspopup="listbox"
           aria-expanded={ouvert}
-          aria-label={`Indicatif du pays : ${actuel.nom} (${actuel.tel})`}
+          aria-label={`${t("Indicatif du pays")} : ${actuel.nom} (${actuel.tel})`}
           onClick={() => setOuvert((o) => !o)}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -131,7 +133,7 @@ export function ChampTelephone({ defaut = "+212", numero = "" }: { defaut?: stri
           </ul>
         )}
       </div>
-      <input name="numero" type="tel" autoComplete="tel-national" placeholder="6 12 34 56 78" defaultValue={numero} required aria-label="Numéro" />
+      <input name="numero" type="tel" autoComplete="tel-national" placeholder="6 12 34 56 78" defaultValue={numero} required aria-label={t("Numéro")} />
     </span>
   );
 }

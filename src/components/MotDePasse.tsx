@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, type InputHTMLAttributes } from "react";
+import { useT } from "@/components/Langue";
 
 /** Champ mot de passe avec un œil pour afficher / masquer la saisie. */
 export function MotDePasse(props: Omit<InputHTMLAttributes<HTMLInputElement>, "type">) {
+  const { t } = useT();
   const [visible, setVisible] = useState(false);
   return (
     <span className="mdp">
@@ -11,7 +13,7 @@ export function MotDePasse(props: Omit<InputHTMLAttributes<HTMLInputElement>, "t
       <button
         type="button"
         className="mdp-oeil"
-        aria-label={visible ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+        aria-label={visible ? t("Masquer le mot de passe") : t("Afficher le mot de passe")}
         aria-pressed={visible}
         onClick={() => setVisible((v) => !v)}
       >

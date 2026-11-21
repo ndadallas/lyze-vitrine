@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/Langue";
 import { useState } from "react";
 import { addMonths, daysInMonth, formatMAD, parseDay } from "@/lib/dates";
 import { nights, overlapNights } from "@/lib/stats";
@@ -10,10 +11,12 @@ import type { BienEspace } from "./EspaceProprietaire";
 const MOIS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
 const MOIS_COURT = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
 const jour = (iso: string) => parseDay(iso)!;
-const court = (d: Date) => `${d.getUTCDate()} ${MOIS_COURT[d.getUTCMonth()]}`;
+const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const court = (d: Date, locale = "fr-FR") => new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", timeZone: "UTC" }).format(d);
 
 /** Relevé mois par mois (12 derniers mois, mois en cours compris) + prochaines arrivées, tous biens ou un seul. */
 export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: { biens: BienEspace[]; aujourdhui: string; depenses: DepenseItem[]; titre?: string }) {
+  const { t, locale, mois: nomMois } = useT();
   const [filtre, setFiltre] = useState("tous");
   const choisis = filtre === "tous" ? biens : biens.filter((b) => b.id === filtre);
   const t0 = jour(aujourdhui);
@@ -45,7 +48,7 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
       .reduce((s, d) => s + d.montant, 0);
     return {
       cle: debut.toISOString(),
-      libelle: `${MOIS[debut.getUTCMonth()]} ${debut.getUTCFullYear()}`,
+      libelle: `${capital(nomMois(debut.getUTCMonth()))} ${debut.getUTCFullYear()}`,
       enCours: i === 0,
       nuits,
       occupation: dispo ? Math.round((nuits / dispo) * 100) : 0,
@@ -89,14 +92,14 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
 
   return (
     <section className="panneau revenus" id="releve">
-      <span className="eyebrow eyebrow--brique">Revenus</span>
+      <span className="eyebrow eyebrow--brique">{t("Revenus")}</span>
       <h2>{titre}</h2>
-      <p className="aide-p">Net = chiffre d’affaires − frais de plateforme (Airbnb, Booking…) − commission Lyze Conciergerie − dépenses.</p>
+      <p className="aide-p">{t("Net = chiffre d’affaires − frais de plateforme (Airbnb, Booking…) − commission Lyze Conciergerie − dépenses.")}</p>
 
       {biens.length > 1 && (
         <label className="champ-app select revenus-filtre">
-          <select aria-label="Biens pris en compte" value={filtre} onChange={(e) => setFiltre(e.target.value)}>
-            <option value="tous">Tous mes biens</option>
+          <select aria-label={t("Biens pris en compte")} value={filtre} onChange={(e) => setFiltre(e.target.value)}>
+            <option value="tous">{t("Tous mes biens")}</option>
             {biens.map((b) => (
               <option key={b.id} value={b.id}>{b.nom}</option>
             ))}
@@ -108,83 +111,83 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
       )}
 
       <div className="revenus-chiffres">
-        <div><span>Chiffre d’affaires {lignes.length === 12 ? "sur 12 mois" : `depuis ${lignes[lignes.length - 1].libelle.toLowerCase()}`}</span><strong>{formatMAD(total.montant)}</strong></div>
-        <div><span>Frais et dépenses</span><strong>{formatMAD(total.commissions + total.frais)}</strong></div>
-        <div><span>Net</span><strong>{formatMAD(total.montant - total.commissions - total.frais)}</strong></div>
+        <div><span>{lignes.length === 12 ? t("Chiffre d’affaires sur 12 mois") : t("Chiffre d’affaires depuis {mois}", { mois: lignes[lignes.length - 1].libelle.toLowerCase() })}</span><strong>{formatMAD(total.montant)}</strong></div>
+        <div><span>{t("Frais et dépenses")}</span><strong>{formatMAD(total.commissions + total.frais)}</strong></div>
+        <div><span>{t("Net")}</span><strong>{formatMAD(total.montant - total.commissions - total.frais)}</strong></div>
       </div>
 
       <div className="revenus-grille">
         <div>
-          <span className="titre-p">Relevé mois par mois</span>
+          <span className="titre-p">{t("Relevé mois par mois")}</span>
           <table className="releve lz-fiches-mobile">
             <thead>
-              <tr><th scope="col">Mois</th><th scope="col">Nuits</th><th scope="col">Occupation</th><th scope="col">Chiffre d’affaires</th><th scope="col">Frais</th><th scope="col">Dépenses</th><th scope="col">Net</th></tr>
+              <tr><th scope="col">{t("Mois")}</th><th scope="col">{t("Nuits")}</th><th scope="col">{t("Occupation")}</th><th scope="col">{t("Chiffre d’affaires")}</th><th scope="col">{t("Frais")}</th><th scope="col">{t("Dépenses")}</th><th scope="col">{t("Net")}</th></tr>
             </thead>
             <tbody>
               {lignes.map((l) => (
                 <tr key={l.cle}>
-                  <th scope="row">{l.libelle}{l.enCours && <small> en cours</small>}</th>
-                  <td data-label="Nuits">{l.nuits}</td>
-                  <td data-label="Occupation">{l.occupation} %</td>
-                  <td data-label="Chiffre d’affaires">{l.montant ? formatMAD(l.montant) : "—"}</td>
-                  <td data-label="Frais">{l.commissions ? `− ${formatMAD(l.commissions)}` : "—"}</td>
-                  <td data-label="Dépenses">{l.frais ? `− ${formatMAD(l.frais)}` : "—"}</td>
-                  <td data-label="Net">{l.montant || l.frais || l.commissions ? formatMAD(l.montant - l.commissions - l.frais) : "—"}</td>
+                  <th scope="row">{l.libelle}{l.enCours && <small> {t("en cours")}</small>}</th>
+                  <td data-label={t("Nuits")}>{l.nuits}</td>
+                  <td data-label={t("Occupation")}>{l.occupation} %</td>
+                  <td data-label={t("Chiffre d’affaires")}>{l.montant ? formatMAD(l.montant) : "—"}</td>
+                  <td data-label={t("Frais")}>{l.commissions ? `− ${formatMAD(l.commissions)}` : "—"}</td>
+                  <td data-label={t("Dépenses")}>{l.frais ? `− ${formatMAD(l.frais)}` : "—"}</td>
+                  <td data-label={t("Net")}>{l.montant || l.frais || l.commissions ? formatMAD(l.montant - l.commissions - l.frais) : "—"}</td>
                 </tr>
               ))}
             </tbody>
             <tfoot>
-              <tr><th scope="row">Total</th><td data-label="Nuits">{total.nuits}</td><td className="lz-vide-mobile" /><td data-label="Chiffre d’affaires">{formatMAD(total.montant)}</td><td data-label="Frais">{total.commissions ? `− ${formatMAD(total.commissions)}` : "—"}</td><td data-label="Dépenses">{total.frais ? `− ${formatMAD(total.frais)}` : "—"}</td><td data-label="Net">{formatMAD(total.montant - total.commissions - total.frais)}</td></tr>
+              <tr><th scope="row">{t("Total")}</th><td data-label={t("Nuits")}>{total.nuits}</td><td className="lz-vide-mobile" /><td data-label={t("Chiffre d’affaires")}>{formatMAD(total.montant)}</td><td data-label={t("Frais")}>{total.commissions ? `− ${formatMAD(total.commissions)}` : "—"}</td><td data-label={t("Dépenses")}>{total.frais ? `− ${formatMAD(total.frais)}` : "—"}</td><td data-label={t("Net")}>{formatMAD(total.montant - total.commissions - total.frais)}</td></tr>
             </tfoot>
           </table>
         </div>
 
         <div className="revenus-plateformes">
-          <span className="titre-p">Détail par plateforme</span>
+          <span className="titre-p">{t("Détail par plateforme")}</span>
           <table className="releve lz-fiches-mobile">
             <thead>
-              <tr><th scope="col">Plateforme</th><th scope="col">Séjours</th><th scope="col">Nuits</th><th scope="col">Chiffre d’affaires</th><th scope="col">Frais plateforme</th><th scope="col">Commission Lyze</th><th scope="col">Net</th></tr>
+              <tr><th scope="col">{t("Plateforme")}</th><th scope="col">{t("Séjours")}</th><th scope="col">{t("Nuits")}</th><th scope="col">{t("Chiffre d’affaires")}</th><th scope="col">{t("Frais plateforme")}</th><th scope="col">{t("Commission Lyze")}</th><th scope="col">{t("Net")}</th></tr>
             </thead>
             <tbody>
               {[...parPlateforme].map(([code, p]) => (
                 <tr key={code}>
                   <th scope="row"><LogoPlateforme code={code} taille={16} /></th>
-                  <td data-label="Séjours">{p.resas}</td>
-                  <td data-label="Nuits">{p.nuits}</td>
-                  <td data-label="Chiffre d’affaires">{formatMAD(p.ca)}</td>
-                  <td data-label="Frais plateforme">{p.frais ? `− ${formatMAD(p.frais)}` : "—"}</td>
-                  <td data-label="Commission Lyze">{p.commission ? `− ${formatMAD(p.commission)}` : "—"}</td>
-                  <td data-label="Net">{formatMAD(p.ca - p.frais - p.commission)}</td>
+                  <td data-label={t("Séjours")}>{p.resas}</td>
+                  <td data-label={t("Nuits")}>{p.nuits}</td>
+                  <td data-label={t("Chiffre d’affaires")}>{formatMAD(p.ca)}</td>
+                  <td data-label={t("Frais plateforme")}>{p.frais ? `− ${formatMAD(p.frais)}` : "—"}</td>
+                  <td data-label={t("Commission Lyze")}>{p.commission ? `− ${formatMAD(p.commission)}` : "—"}</td>
+                  <td data-label={t("Net")}>{formatMAD(p.ca - p.frais - p.commission)}</td>
                 </tr>
               ))}
               {sejoursProprio.length > 0 && (
                 <tr>
-                  <th scope="row">Séjours du propriétaire</th>
-                  <td data-label="Séjours">{sejoursProprio.length}</td>
-                  <td data-label="Nuits">{sejoursProprio.reduce((a, n) => a + n, 0)}</td>
-                  <td data-label="Chiffre d’affaires">{formatMAD(0)}</td>
-                  <td data-label="Frais plateforme">—</td>
-                  <td data-label="Commission Lyze">—</td>
-                  <td data-label="Net">{formatMAD(0)}</td>
+                  <th scope="row">{t("Séjours du propriétaire")}</th>
+                  <td data-label={t("Séjours")}>{sejoursProprio.length}</td>
+                  <td data-label={t("Nuits")}>{sejoursProprio.reduce((a, n) => a + n, 0)}</td>
+                  <td data-label={t("Chiffre d’affaires")}>{formatMAD(0)}</td>
+                  <td data-label={t("Frais plateforme")}>—</td>
+                  <td data-label={t("Commission Lyze")}>—</td>
+                  <td data-label={t("Net")}>{formatMAD(0)}</td>
                 </tr>
               )}
               {parPlateforme.size === 0 && sejoursProprio.length === 0 && (
-                <tr><td colSpan={7} className="vide-msg">Aucun séjour sur la période.</td></tr>
+                <tr><td colSpan={7} className="vide-msg">{t("Aucun séjour sur la période.")}</td></tr>
               )}
             </tbody>
           </table>
         </div>
 
         <div>
-          <span className="titre-p">Prochaines arrivées</span>
+          <span className="titre-p">{t("Prochaines arrivées")}</span>
           {prochaines.length ? (
             <ul className="arrivees">
               {prochaines.map((r) => (
                 <li key={r.id}>
-                  <span className="arrivee-date">{court(r.startDate)}</span>
+                  <span className="arrivee-date">{court(r.startDate, locale)}</span>
                   <span>
                     <strong>{r.bien}</strong>
-                    <small>Voyageur {r.initiale}. · {nights(r)} nuits</small>
+                    <small>{t("Voyageur {i}.", { i: r.initiale ?? "" })} · {t("{n} nuits", { n: nights(r) })}</small>
                   </span>
                   <LogoPlateforme code={r.plateforme} avecNom={false} taille={18} />
                   <span className="arrivee-montant">{r.montant ? formatMAD(r.montant) : "—"}</span>
@@ -192,7 +195,7 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
               ))}
             </ul>
           ) : (
-            <p className="vide-msg">Aucune arrivée prévue pour le moment.</p>
+            <p className="vide-msg">{t("Aucune arrivée prévue pour le moment.")}</p>
           )}
         </div>
       </div>

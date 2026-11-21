@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SCRIPT_ECHELLE } from "@/lib/echelle";
+import { langueCourante } from "@/lib/langue-serveur";
 
 export const metadata: Metadata = {
   title: { default: "Espace propriétaire — Lyze", template: "%s — Espace propriétaire Lyze" },
@@ -7,9 +8,10 @@ export const metadata: Metadata = {
 };
 
 // Connexion + espace propriétaire : mêmes polices et mêmes feuilles de style que le site vitrine (public/).
-export default function ProprioLayout({ children }: { children: React.ReactNode }) {
+export default async function ProprioLayout({ children }: { children: React.ReactNode }) {
+  const langue = await langueCourante();
   return (
-    <html lang="fr" suppressHydrationWarning>
+    <html lang={langue} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_ECHELLE }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -20,7 +22,7 @@ export default function ProprioLayout({ children }: { children: React.ReactNode 
           rel="stylesheet"
         />
         <link rel="stylesheet" href="/assets/css/style.css?v=62" />
-        <link rel="stylesheet" href="/assets/css/espace.css?v=31" />
+        <link rel="stylesheet" href="/assets/css/espace.css?v=32" />
       </head>
       <body>{children}</body>
     </html>

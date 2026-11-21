@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/auth";
+import { LangueProvider } from "@/components/Langue";
+import { langueCourante } from "@/lib/langue-serveur";
 import { chargerEspace } from "@/lib/donnees-espace";
 import { EspaceProprietaire } from "../EspaceProprietaire";
 import { ONGLETS } from "../onglets";
@@ -16,5 +18,10 @@ export default async function EspacePage({ params }: PageProps<"/espace/[[...ong
   const { onglet } = await params;
   if ((onglet?.length ?? 0) > 1 || onglet?.[0] === "biens" || !libelle(onglet)) notFound();
   const user = await requireOwner();
-  return <EspaceProprietaire {...await chargerEspace(user, false)} />;
+  const langue = await langueCourante();
+  return (
+    <LangueProvider langue={langue}>
+      <EspaceProprietaire {...await chargerEspace(user, false)} />
+    </LangueProvider>
+  );
 }

@@ -67,7 +67,7 @@ export async function POST(req: Request) {
     `Téléphone : ${d.telephone || "—"}`,
     `${d.type === "reservation" ? "Bien" : "Ville du bien"} : ${d.ville || "—"}`,
     ...(d.type === "reservation" ? [] : [`Meublé : ${d.meuble || "—"}`]),
-    `Langue du site : ${{ ar: "arabe", en: "anglais", fr: "français", it: "italien", es: "espagnol" }[d.langue ?? "fr"]}`,
+    `Langue du site : ${{ ar: "arabe", en: "anglais", fr: "français", it: "italien", es: "espagnol", de: "allemand" }[d.langue ?? "fr"]}`,
     "",
     d.message || "(pas de message)",
   ].join("\n");

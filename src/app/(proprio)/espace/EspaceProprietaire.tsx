@@ -23,6 +23,7 @@ import { MonCompte, type CompteEspace } from "./MonCompte";
 import { ChoixMois, Planning } from "./Planning";
 import { Revenus } from "./Revenus";
 import { ONGLETS, lienOnglet } from "./onglets";
+import { ChoixLangue, useT } from "@/components/Langue";
 
 export type ResaEspace = {
   id: string;
@@ -68,13 +69,8 @@ type Props = {
   contact: string;
 };
 
-const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
-const MOIS_COURT = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
-const JOURS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
-
 const jour = (iso: string) => parseDay(iso)!;
 const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-const court = (d: Date) => `${d.getUTCDate()} ${MOIS_COURT[d.getUTCMonth()]}`;
 const versStats = (r: ResaEspace) => ({ kind: r.type, startDate: jour(r.du), endDate: jour(r.au), amount: r.montant - r.frais - r.commission });
 
 /** Réservation (ou blocage) qui occupe la nuit du jour t ; une réservation l'emporte sur un blocage. */
@@ -117,6 +113,7 @@ function IconeCoche(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, biens, documents, demandes, depenses, compte, contact }: Props) {
+  const { t, mois: nomMois, jours } = useT();
   const listeBiens = biens.map((b) => ({ id: b.id, nom: b.nom }));
   const aTraiter = demandes.filter((d) => d.reponse && d.statut !== "NOUVELLE").length;
   // Une page par rubrique (URL /espace/<id>) ; changement de page par pushState : bien et mois choisis sont gardés
@@ -137,10 +134,10 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
   }
   useEffect(() => {
     const libelle = ONGLETS.find(([id]) => id === onglet)?.[1];
-    if (libelle) document.title = admin ? `${libelle} — ${nom} — Lyze` : `${libelle} — Espace propriétaire Lyze`;
+    if (libelle) document.title = admin ? `${libelle} — ${nom} — Lyze` : `${t(libelle)} — ${t("Espace propriétaire")} Lyze`;
     // téléphone : la barre des rubriques défile, garder la rubrique ouverte visible
     document.querySelector(".side nav [aria-current]")?.scrollIntoView({ block: "nearest", inline: "center" });
-  }, [onglet, admin, nom]);
+  }, [onglet, admin, nom]); // eslint-disable-line react-hooks/exhaustive-deps
   // page Messages ouverte (lien ou adresse directe) : messages marqués lus
   useEffect(() => {
     if (!admin && lus && nonLus.length) marquerAvisLus();
@@ -184,13 +181,13 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
   }
 
   const stats = useMemo(() => (bien ? monthStats(bien.resas.map(versStats), mois, 1) : null), [bien, mois]);
-  const titreMois = `${capital(MOIS[mois.getUTCMonth()])} ${mois.getUTCFullYear()}`;
+  const titreMois = `${capital(nomMois(mois.getUTCMonth()))} ${mois.getUTCFullYear()}`;
 
   return (
     <div className="app">
       <aside className="side">
         <a className="logo" href={admin ? "/admin" : "/"}><img src="/assets/img/logo-lyze-creme.png" alt="Lyze Conciergerie" width={599} height={200} />{/* eslint-disable-line @next/next/no-img-element */}</a>
-        <span className="role">{admin ? "VUE GÉRANTE" : "ESPACE PROPRIÉTAIRE"}</span>
+        <span className="role">{admin ? "VUE GÉRANTE" : t("Espace propriétaire").toUpperCase()}</span>
         {admin && (
           <label className="lz-choix-client">
             <span>Client</span>
@@ -201,7 +198,7 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
             </select>
           </label>
         )}
-        <nav aria-label="Espace propriétaire">
+        <nav aria-label={t("Espace propriétaire")}>
           {onglets.map(([id, libelle]) => (
             <a
               key={id}
@@ -213,15 +210,15 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
                 aller(id);
               }}
             >
-              {libelle}
+              {t(libelle)}
               {id === "messages" && nonLus.length > 0 && !lus && (
-                <span className="lz-badge" aria-label={`${nonLus.length} non lu${nonLus.length > 1 ? "s" : ""}`}>{nonLus.length}</span>
+                <span className="lz-badge" aria-label={t("{n} non lu(s)", { n: nonLus.length })}>{nonLus.length}</span>
               )}
             </a>
           ))}
         </nav>
         <div className="bas">
-          <a className="contacter" href="/">← Retour au site</a>
+          <a className="contacter" href="/">{t("← Retour au site")}</a>
           {admin ? (
             <a className="contacter" href="/admin">← Tous les clients</a>
           ) : (
@@ -229,43 +226,44 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
             <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
               <path fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" d="M4 5h16v11H9l-5 4z" />
             </svg>
-            Contacter Lyze
+            {t("Contacter Lyze")}
           </a>
           )}
           {!admin && (
             <span>
-              Connecté·e : <strong>{nom}</strong>
+              {t("Connecté·e :")} <strong>{nom}</strong>
             </span>
           )}
+          {!admin && <ChoixLangue />}
           <form action={logout}>
-            <button type="submit">Se déconnecter</button>
+            <button type="submit">{t("Se déconnecter")}</button>
           </form>
         </div>
       </aside>
 
       <main className="contenu" id="haut">
         <header className="entete-app" hidden={onglet !== "biens"}>
-          <span className="eyebrow eyebrow--brique">{admin ? "Vue gérante : ce que voit le client" : "Espace propriétaire"}</span>
-          <h1>{admin ? salutation : `Bienvenue dans votre espace, ${salutation}`}</h1>
+          <span className="eyebrow eyebrow--brique">{admin ? "Vue gérante : ce que voit le client" : t("Espace propriétaire")}</span>
+          <h1>{admin ? salutation : t("Bienvenue dans votre espace, {nom}", { nom: salutation })}</h1>
           <p className="lead">
             {admin
               ? "Le même affichage que le client. Ici vous pouvez tout modifier ; lui ne fait que consulter."
-              : "Vos réservations, vos photos et vos revenus, réunis au même endroit."}
+              : t("Vos réservations, vos photos et vos revenus, réunis au même endroit.")}
           </p>
           {!admin && nonLus.length > 0 && !lus && (
             <button type="button" className="lz-alerte-msg" onClick={() => aller("messages")}>
-              {nonLus.length === 1 ? "Vous avez un nouveau message de Lyze" : `Vous avez ${nonLus.length} nouveaux messages de Lyze`} →
+              {nonLus.length === 1 ? t("Vous avez un nouveau message de Lyze") : t("Vous avez {n} nouveaux messages de Lyze", { n: nonLus.length })} →
             </button>
           )}
         </header>
 
         {!bien ? (
           <section className="panneau vide-biens" hidden={onglet !== "biens"}>
-            <span className="titre-p">Vos biens</span>
+            <span className="titre-p">{t("Vos biens")}</span>
             <p>
               {admin
                 ? "Aucun bien pour ce client. Ajoutez son premier bien : calendrier, fiche et photos apparaîtront ici."
-                : "Aucun bien n’est encore rattaché à votre compte : Lyze l’ajoute pour vous."}
+                : t("Aucun bien n’est encore rattaché à votre compte : Lyze l’ajoute pour vous.")}
             </p>
             {admin && <AjoutBien ouvertAuDepart ownerId={admin.clientId} />}
           </section>
@@ -274,7 +272,7 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
             <div className="outils" id="calendrier" hidden={onglet !== "biens"}>
               <label className="champ-app select">
                 <select
-                  aria-label="Bien affiché"
+                  aria-label={t("Bien affiché")}
                   value={bien.id}
                   onChange={(e) => choisir(biens.find((b) => b.id === e.target.value), mois)}
                 >
@@ -302,19 +300,19 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
                   <i className="l-vert" style={{ color: "var(--creme)" }}>
                     <IconeCoche width={12} height={12} />
                   </i>
-                  Réservation sélectionnée
+                  {t("Réservation sélectionnée")}
                 </span>
-                <span><i className="l-brique" />Réservé</span>
-                <span><i className="l-bloque" />Bloqué par le propriétaire</span>
-                <span><i className="l-attente" />En attente de validation</span>
-                <span><i className="l-libre" />Libre</span>
+                <span><i className="l-brique" />{t("Réservé")}</span>
+                <span><i className="l-bloque" />{t("Bloqué par le propriétaire")}</span>
+                <span><i className="l-attente" />{t("En attente de validation")}</span>
+                <span><i className="l-libre" />{t("Libre")}</span>
               </div>
             </div>
 
             <div className="grille-app" hidden={onglet !== "biens"}>
-              <section className="panneau cal" aria-label="Calendrier du mois">
+              <section className="panneau cal" aria-label={t("Calendrier du mois")}>
                 <div className="cal-entete">
-                  {JOURS.map((j) => <span key={j}>{j}</span>)}
+                  {jours().map((j, i) => <span key={i}>{j}</span>)}
                 </div>
                 <Calendrier bien={bien} mois={mois} resaChoisie={resa} modifiable={!!admin} onJour={(j) => ouvrirJour(bien, j)} />
               </section>
@@ -329,8 +327,8 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
               />
 
               <section className="panneau liste" aria-labelledby="titre-liste">
-                <span className="titre-p" id="titre-liste">Vos biens</span>
-                <p className="aide-p">Cliquez sur un bien pour voir son calendrier</p>
+                <span className="titre-p" id="titre-liste">{t("Vos biens")}</span>
+                <p className="aide-p">{t("Cliquez sur un bien pour voir son calendrier")}</p>
                 <ul>
                   {biens.map((b) => (
                     <li key={b.id}>
@@ -345,7 +343,7 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
                           <strong>{b.nom}</strong>
                           <small>{b.ville}</small>
                         </span>
-                        <span className="statut">{statut(b, t0.getTime())}</span>
+                        <span className="statut">{t(statut(b, t0.getTime()))}</span>
                       </button>
                     </li>
                   ))}
@@ -354,9 +352,9 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
                 {stats && (
                   <div className="stats">
                     <span className="titre-p">{titreMois}</span>
-                    <div><span>Taux d’occupation</span><strong>{stats.occupancy} %</strong></div>
-                    <div><span>Nuits réservées</span><strong>{stats.reservedNights}</strong></div>
-                    <div><span>Revenus du mois</span><strong>{formatMAD(stats.revenue)}</strong></div>
+                    <div><span>{t("Taux d’occupation")}</span><strong>{stats.occupancy} %</strong></div>
+                    <div><span>{t("Nuits réservées")}</span><strong>{stats.reservedNights}</strong></div>
+                    <div><span>{t("Revenus du mois")}</span><strong>{formatMAD(stats.revenue)}</strong></div>
                   </div>
                 )}
               </section>
@@ -364,11 +362,11 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
 
             <div hidden={onglet !== "planning"}>
             <Planning
-              titre={admin ? "Tous ses biens" : "Tous vos biens"}
+              titre={admin ? "Tous ses biens" : t("Tous vos biens")}
               aide={
                 admin
                   ? "Le mois en un coup d’œil. Cliquez sur une case libre pour ajouter une réservation ou bloquer une date, ou sur une barre pour la modifier."
-                  : "Le mois en un coup d’œil. Cliquez sur une barre pour voir le détail de la réservation."
+                  : t("Le mois en un coup d’œil. Cliquez sur une barre pour voir le détail de la réservation.")
               }
               biens={biens}
               mois={mois}
@@ -381,41 +379,41 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
             </div>
 
             <div hidden={onglet !== "revenus"}>
-              <Revenus biens={biens} aujourdhui={aujourdhui} depenses={depenses} titre={admin ? "Ses revenus" : "Vos revenus"} />
+              <Revenus biens={biens} aujourdhui={aujourdhui} depenses={depenses} titre={admin ? "Ses revenus" : t("Vos revenus")} />
             </div>
 
             <section className="panneau lz-section" id="depenses" hidden={onglet !== "depenses"}>
-              <span className="eyebrow eyebrow--brique">Dépenses</span>
-              <h2>Vos dépenses</h2>
+              <span className="eyebrow eyebrow--brique">{t("Dépenses")}</span>
+              <h2>{t("Vos dépenses")}</h2>
               <p className="aide-p">
                 {admin
                   ? "Ménage, réparations, charges, taxes : notez chaque dépense, elle est déduite des revenus dans le relevé du client."
-                  : "Ménage, réparations, charges, taxes : les dépenses notées par Lyze, déduites de vos revenus dans le relevé."}
+                  : t("Ménage, réparations, charges, taxes : les dépenses notées par Lyze, déduites de vos revenus dans le relevé.")}
               </p>
               <Depenses depenses={depenses} biens={listeBiens} aujourdhui={aujourdhui} admin={!!admin} lectureSeule={!admin} />
             </section>
 
             <section className="panneau photos" id="photos" hidden={onglet !== "photos"}>
-              <span className="eyebrow eyebrow--brique">Photos</span>
+              <span className="eyebrow eyebrow--brique">{t("Photos")}</span>
               <h2>{bien.nom}</h2>
               <p className="aide-p">
                 {admin
                   ? "Glissez les photos dans le cadre pour les ajouter. Faites-les glisser entre elles pour changer l’ordre : la première est la photo de couverture."
-                  : "Les photos de votre logement, gérées par Lyze. La première est la photo de couverture."}
+                  : t("Les photos de votre logement, gérées par Lyze. La première est la photo de couverture.")}
               </p>
               {admin ? <PhotoManager key={bien.id} propertyId={bien.id} initial={bien.photos} /> : <GaleriePhotos nom={bien.nom} photos={bien.photos} />}
             </section>
 
             <section className="panneau lz-section" id="fiche" hidden={onglet !== "fiche"}>
-              <span className="eyebrow eyebrow--brique">Fiche du bien</span>
+              <span className="eyebrow eyebrow--brique">{t("Fiche du bien")}</span>
               <h2>{bien.nom}</h2>
               <p className="aide-p">
                 {admin
                   ? "Les informations pratiques du logement : Lyze s’en sert pour préparer chaque arrivée."
-                  : "Les informations pratiques de votre logement, tenues à jour par Lyze pour préparer chaque arrivée."}
+                  : t("Les informations pratiques de votre logement, tenues à jour par Lyze pour préparer chaque arrivée.")}
               </p>
               {biens.length > 1 && (
-                <div className="lz-choix-bien" role="group" aria-label="Bien affiché">
+                <div className="lz-choix-bien" role="group" aria-label={t("Bien affiché")}>
                   {biens.map((b) => (
                     <button key={b.id} type="button" aria-pressed={b.id === bien.id} onClick={() => choisir(b, mois)}>
                       {b.nom}
@@ -441,21 +439,20 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
         )}
 
         <section className="panneau lz-section" id="documents" hidden={onglet !== "documents"}>
-          <span className="eyebrow eyebrow--brique">Documents</span>
-          <h2>Vos documents</h2>
+          <span className="eyebrow eyebrow--brique">{t("Documents")}</span>
+          <h2>{t("Vos documents")}</h2>
           <p className="aide-p">
-            Contrat, relevés, factures, états des lieux : tout est classé par catégorie.
+            {t("Contrat, relevés, factures, états des lieux : tout est classé par catégorie.")}
           </p>
           <Documents documents={documents} biens={listeBiens} admin={!!admin} ownerId={admin?.clientId} lectureSeule={!admin} />
         </section>
 
         <section className="panneau lz-section" id="demandes" hidden={onglet !== "demandes"}>
-          <span className="eyebrow eyebrow--brique">Demandes</span>
-          <h2>Une demande pour Lyze ?</h2>
+          <span className="eyebrow eyebrow--brique">{t("Demandes")}</span>
+          <h2>{t("Une demande pour Lyze ?")}</h2>
           <p className="aide-p">
-            Bloquez des dates pour vous, demandez un ménage ou signalez un problème : Barka suit chaque demande et vous
-            répond ici.
-            {aTraiter > 0 && ` ${aTraiter} réponse${aTraiter > 1 ? "s" : ""} de Lyze ci-dessous.`}
+            {t("Bloquez des dates pour vous, demandez un ménage ou signalez un problème : Barka suit chaque demande et vous répond ici.")}
+            {aTraiter > 0 && ` ${t("{n} réponse(s) de Lyze ci-dessous.", { n: aTraiter })}`}
           </p>
           {admin ? (
             demandes.length ? (
@@ -473,11 +470,10 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
         </section>
 
         <section className="panneau lz-section" id="messages" hidden={onglet !== "messages"}>
-          <span className="eyebrow eyebrow--brique">Messages</span>
-          <h2>Messages de Lyze</h2>
+          <span className="eyebrow eyebrow--brique">{t("Messages")}</span>
+          <h2>{t("Messages de Lyze")}</h2>
           <p className="aide-p">
-            Interventions, pannes, informations sur vos biens : Lyze vous tient au courant ici. Répondez directement sous
-            chaque message, comme à un mail.
+            {t("Interventions, pannes, informations sur vos biens : Lyze vous tient au courant ici. Répondez directement sous chaque message, comme à un mail.")}
           </p>
           {admin ? (
             <MessagesAdmin ownerId={admin.clientId} nomClient={nom} biens={listeBiens} avis={avis} />
@@ -507,6 +503,7 @@ function Calendrier({
   modifiable: boolean;
   onJour: (jourIso: string) => void;
 }) {
+  const { t: tr, mois: nomMois } = useT();
   const an = mois.getUTCFullYear();
   const m = mois.getUTCMonth();
   const decalage = (mois.getUTCDay() + 6) % 7; // lundi = 0
@@ -525,7 +522,7 @@ function Calendrier({
       cases.push(<div key={d} className="jour">{d}</div>);
     } else if (!r) {
       cases.push(
-        <button key={d} type="button" className="jour" aria-label={`${d} ${MOIS[m]} : libre, ajouter`} onClick={() => onJour(leJour)}>
+        <button key={d} type="button" className="jour" aria-label={`${d} ${nomMois(m)} : libre, ajouter`} onClick={() => onJour(leJour)}>
           {d}
         </button>,
       );
@@ -535,11 +532,11 @@ function Calendrier({
           key={d}
           type="button"
           className={`jour bloque${choisie ? " choisi" : ""}${r.attente ? " attente" : ""}`}
-          aria-label={`${d} ${MOIS[m]} : bloqué`}
+          aria-label={`${d} ${nomMois(m)} : ${tr("bloqué")}`}
           onClick={() => onJour(leJour)}
         >
           {d}
-          {debutOuPremier && <span className="etiquette">Bloqué</span>}
+          {debutOuPremier && <span className="etiquette">{tr("Bloqué")}</span>}
         </button>,
       );
     } else {
@@ -548,7 +545,7 @@ function Calendrier({
           key={d}
           type="button"
           className={`jour ${choisie ? "reserve" : "loue"}${r.attente ? " attente" : ""}`}
-          aria-label={`${d} ${MOIS[m]} : réservé via ${PLATEFORMES[r.plateforme].nom}`}
+          aria-label={`${d} ${nomMois(m)} : ${tr("réservé via {p}", { p: PLATEFORMES[r.plateforme].nom })}`}
           onClick={() => onJour(leJour)}
         >
           {d}
@@ -571,14 +568,15 @@ const isoJour = (t: number) => new Date(t).toISOString().slice(0, 10);
 
 /** Espace du propriétaire : photos en consultation (seule Lyze les ajoute ou les range). */
 function GaleriePhotos({ nom, photos }: { nom: string; photos: PhotoItem[] }) {
-  if (!photos.length) return <p className="lz-vide">Lyze n’a pas encore ajouté de photo pour ce bien.</p>;
+  const { t } = useT();
+  if (!photos.length) return <p className="lz-vide">{t("Lyze n’a pas encore ajouté de photo pour ce bien.")}</p>;
   return (
     <ul className="lz-galerie-lecture">
       {photos.map((p, i) => (
         <li key={p.id}>
           <a href={p.url} target="_blank" rel="noopener">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={p.url} alt={`${nom}, photo ${i + 1}`} loading="lazy" />
+            <img src={p.url} alt={`${nom}, ${t("photo")} ${i + 1}`} loading="lazy" />
           </a>
         </li>
       ))}
@@ -588,27 +586,29 @@ function GaleriePhotos({ nom, photos }: { nom: string; photos: PhotoItem[] }) {
 
 /** Espace du propriétaire : fiche du bien en consultation. */
 function FicheLecture({ fiche }: { fiche: FicheBien }) {
+  const { t } = useT();
+  const liste = (l: string[]) => l.map((e) => t(e)).join(", ");
   const lignes = (
     [
-      ["Catégorie", fiche.kind],
+      ["Catégorie", fiche.kind ? t(fiche.kind) : ""],
       ["Adresse", fiche.address],
       ["Chambres", fiche.bedrooms?.toString() ?? ""],
       ["Voyageurs max.", fiche.capacity?.toString() ?? ""],
       ["Surface", fiche.surface ? `${fiche.surface} m²` : ""],
-      ["Équipements", fiche.equipment.filter((e) => !(ELECTROMENAGER as readonly string[]).includes(e)).join(", ")],
-      ["Électroménager", fiche.equipment.filter((e) => (ELECTROMENAGER as readonly string[]).includes(e)).join(", ")],
-      ["Wifi", [fiche.wifiName, fiche.wifiPassword].filter(Boolean).join(" · mot de passe : ")],
+      ["Équipements", liste(fiche.equipment.filter((e) => !(ELECTROMENAGER as readonly string[]).includes(e)))],
+      ["Électroménager", liste(fiche.equipment.filter((e) => (ELECTROMENAGER as readonly string[]).includes(e)))],
+      ["Wifi", [fiche.wifiName, fiche.wifiPassword].filter(Boolean).join(` · ${t("mot de passe :")} `)],
       ["Consignes d’arrivée", fiche.arrival],
       ["Présentation sur le site", fiche.description],
-      ["Prix à partir de", fiche.price ? `${formatMAD(fiche.price)} / nuit` : ""],
+      ["Prix à partir de", fiche.price ? `${formatMAD(fiche.price)} / ${t("nuit")}` : ""],
     ] as [string, string][]
   ).filter(([, v]) => v);
-  if (!lignes.length) return <p className="lz-vide">Lyze n’a pas encore rempli la fiche de ce bien.</p>;
+  if (!lignes.length) return <p className="lz-vide">{t("Lyze n’a pas encore rempli la fiche de ce bien.")}</p>;
   return (
     <dl className="lz-fiche-lecture">
       {lignes.map(([k, v]) => (
         <div key={k}>
-          <dt>{k}</dt>
+          <dt>{t(k)}</dt>
           <dd>{v}</dd>
         </div>
       ))}

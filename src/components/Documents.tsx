@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/Langue";
 import "@/styles/lz.css";
 
 import { useRouter } from "next/navigation";
@@ -17,10 +18,9 @@ import {
 } from "@/lib/espace";
 
 const MOIS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
-const dateCourte = (iso: string) => {
-  const [a, m, j] = iso.split("-").map(Number);
-  return `${j} ${MOIS[m - 1]} ${a}`;
-};
+// date du jour en toutes lettres courtes, dans la langue de l'espace (« 12 nov. 2026 »)
+const dateCourte = (iso: string, locale = "fr-FR") =>
+  new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${iso.slice(0, 10)}T00:00:00Z`));
 
 function IconeFichier({ pdf }: { pdf: boolean }) {
   return (
@@ -52,6 +52,7 @@ export function Documents({
   admin?: boolean;
   ownerId?: string;
 }) {
+  const { t, locale } = useT();
   const router = useRouter();
   const [filtre, setFiltre] = useState<CategorieDoc | "TOUS">("TOUS");
   const [ouvert, setOuvert] = useState(false);
@@ -96,13 +97,13 @@ export function Documents({
   return (
     <div className="lz-docs">
       <div className="lz-docs-barre">
-        <div className="lz-filtres" role="group" aria-label="Filtrer par catégorie">
+        <div className="lz-filtres" role="group" aria-label={t("Filtrer par catégorie")}>
           <button type="button" aria-pressed={filtre === "TOUS"} onClick={() => setFiltre("TOUS")}>
-            Tous <small>{documents.length}</small>
+            {t("Tous")} <small>{documents.length}</small>
           </button>
           {presentes.map((c) => (
             <button key={c} type="button" aria-pressed={filtre === c} onClick={() => setFiltre(c)}>
-              {CATEGORIES_DOC[c]} <small>{documents.filter((d) => d.categorie === c).length}</small>
+              {t(CATEGORIES_DOC[c])} <small>{documents.filter((d) => d.categorie === c).length}</small>
             </button>
           ))}
         </div>
@@ -117,11 +118,11 @@ export function Documents({
         <form className="lz-form lz-depot" onSubmit={deposer}>
           <div className="lz-grille">
             <label className="lz-champ lz-large">
-              <span>Titre</span>
+              <span>{t("Titre")}</span>
               <input name="title" required maxLength={120} placeholder={admin ? "Relevé d'octobre" : "Attestation d'assurance"} />
             </label>
             <label className="lz-champ">
-              <span>Catégorie</span>
+              <span>{t("Catégorie")}</span>
               <select name="category" defaultValue={admin ? "RELEVE" : "ASSURANCE"}>
                 {CODES_CATEGORIES.map((c) => (
                   <option key={c} value={c}>{CATEGORIES_DOC[c]}</option>
@@ -129,16 +130,16 @@ export function Documents({
               </select>
             </label>
             <label className="lz-champ">
-              <span>Bien concerné</span>
+              <span>{t("Bien concerné")}</span>
               <select name="propertyId" defaultValue="">
-                <option value="">Tous les biens</option>
+                <option value="">{t("Tous les biens")}</option>
                 {biens.map((b) => (
                   <option key={b.id} value={b.id}>{b.nom}</option>
                 ))}
               </select>
             </label>
             <label className="lz-champ lz-pleine">
-              <span>Fichier (PDF, JPG ou PNG, 4 Mo max.)</span>
+              <span>{t("Fichier (PDF, JPG ou PNG, 4 Mo max.)")}</span>
               <input name="file" type="file" required accept="application/pdf,image/jpeg,image/png,image/webp" />
             </label>
           </div>
@@ -148,15 +149,15 @@ export function Documents({
           </button>
         </form>
       )}
-      {ok && !ouvert && <p className="lz-msg lz-ok" role="status">Document ajouté.</p>}
+      {ok && !ouvert && <p className="lz-msg lz-ok" role="status">{t("Document ajouté.")}</p>}
 
       {visibles.length === 0 ? (
         <p className="lz-vide">
           {documents.length === 0
             ? admin
               ? "Aucun document pour ce client. Déposez son contrat, ses relevés ou ses factures."
-              : "Aucun document pour l'instant. Lyze déposera ici votre contrat, vos relevés et vos factures."
-            : "Aucun document dans cette catégorie."}
+              : t("Aucun document pour l'instant. Lyze déposera ici votre contrat, vos relevés et vos factures.")
+            : t("Aucun document dans cette catégorie.")}
         </p>
       ) : (
         <ul className="lz-liste-docs">
@@ -166,17 +167,17 @@ export function Documents({
               <span className="lz-doc-texte">
                 <a href={documentUrl(d.id)} target="_blank" rel="noopener">{d.titre}</a>
                 <small>
-                  {CATEGORIES_DOC[d.categorie]} · {d.bien ?? "Tous les biens"} · {dateCourte(d.date)} · {tailleFichier(d.taille)}
-                  {!d.parLyze && (admin ? " · déposé par le client" : " · déposé par vous")}
+                  {t(CATEGORIES_DOC[d.categorie])} · {d.bien ?? t("Tous les biens")} · {dateCourte(d.date, locale)} · {tailleFichier(d.taille)}
+                  {!d.parLyze && (admin ? " · déposé par le client" : ` · ${t("déposé par vous")}`)}
                 </small>
               </span>
               <span className="lz-doc-actions">
-                <a className="lz-lien" href={documentUrl(d.id)} target="_blank" rel="noopener">Ouvrir</a>
+                <a className="lz-lien" href={documentUrl(d.id)} target="_blank" rel="noopener">{t("Ouvrir")}</a>
                 {!lectureSeule && (admin || !d.parLyze) && (
                   <form action={supprimerDocument}>
                     <input type="hidden" name="documentId" value={d.id} />
                     <ConfirmButton message={`Supprimer « ${d.titre} » ?`} className="lz-lien lz-danger">
-                      Supprimer
+                      {t("Supprimer")}
                     </ConfirmButton>
                   </form>
                 )}

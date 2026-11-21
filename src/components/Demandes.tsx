@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/Langue";
 import "@/styles/lz.css";
 
 import { useActionState, useState } from "react";
@@ -15,21 +16,21 @@ import {
 } from "@/lib/espace";
 
 const MOIS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
-const dateCourte = (iso: string) => {
-  const [a, m, j] = iso.split("-").map(Number);
-  return `${j} ${MOIS[m - 1]} ${a}`;
-};
+// date du jour en toutes lettres courtes, dans la langue de l'espace (« 12 nov. 2026 »)
+const dateCourte = (iso: string, locale = "fr-FR") =>
+  new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${iso.slice(0, 10)}T00:00:00Z`));
 
 function Resume({ d }: { d: DemandeItem }) {
+  const { t, locale } = useT();
   return (
     <>
       <div className="lz-dem-tete">
-        <strong>{TYPES_DEMANDE[d.type]}</strong>
-        <span className={`lz-statut lz-statut-${d.statut.toLowerCase()}`}>{STATUTS_DEMANDE[d.statut]}</span>
+        <strong>{t(TYPES_DEMANDE[d.type])}</strong>
+        <span className={`lz-statut lz-statut-${d.statut.toLowerCase()}`}>{t(STATUTS_DEMANDE[d.statut])}</span>
       </div>
       <small className="lz-dem-meta">
-        {d.bien ?? "Tous les biens"} · envoyée le {dateCourte(d.date)}
-        {d.du && d.au && ` · du ${dateCourte(d.du)} au ${dateCourte(d.au)}`}
+        {d.bien ?? t("Tous les biens")} · {t("envoyée le {date}", { date: dateCourte(d.date, locale) })}
+        {d.du && d.au && ` · ${t("du {du} au {au}", { du: dateCourte(d.du, locale), au: dateCourte(d.au, locale) })}`}
       </small>
       {d.message && d.message !== "Usage personnel" && <p className="lz-dem-message">{d.message}</p>}
     </>
@@ -38,6 +39,7 @@ function Resume({ d }: { d: DemandeItem }) {
 
 /** Espace propriétaire : nouvelle demande + suivi des demandes envoyées. */
 export function DemandesProprio({ demandes, biens }: { demandes: DemandeItem[]; biens: { id: string; nom: string }[] }) {
+  const { t, locale } = useT();
   const [etat, action, envoi] = useActionState(envoyerDemande, undefined);
   const [type, setType] = useState<TypeDemande>("USAGE_PERSO");
   const dates = type === "USAGE_PERSO";
@@ -45,21 +47,21 @@ export function DemandesProprio({ demandes, biens }: { demandes: DemandeItem[]; 
   return (
     <div className="lz-demandes">
       <form action={action} className="lz-form lz-nouvelle">
-        <span className="titre-p">Nouvelle demande</span>
-        <div className="lz-types" role="radiogroup" aria-label="Type de demande">
-          {CODES_TYPES_DEMANDE.map((t) => (
-            <label key={t}>
-              <input type="radio" name="type" value={t} checked={type === t} onChange={() => setType(t)} />
-              {TYPES_DEMANDE[t]}
+        <span className="titre-p">{t("Nouvelle demande")}</span>
+        <div className="lz-types" role="radiogroup" aria-label={t("Type de demande")}>
+          {CODES_TYPES_DEMANDE.map((code) => (
+            <label key={code}>
+              <input type="radio" name="type" value={code} checked={type === code} onChange={() => setType(code)} />
+              {t(TYPES_DEMANDE[code])}
             </label>
           ))}
         </div>
         <div className="lz-grille">
           <label className="lz-champ lz-large">
-            <span>Bien concerné</span>
+            <span>{t("Bien concerné")}</span>
             <select name="propertyId" defaultValue={biens.length === 1 ? biens[0].id : ""} key={dates ? "d" : "s"}>
-              {!dates && <option value="">Tous mes biens</option>}
-              {dates && biens.length !== 1 && <option value="">— Choisir —</option>}
+              {!dates && <option value="">{t("Tous mes biens")}</option>}
+              {dates && biens.length !== 1 && <option value="">{t("— Choisir —")}</option>}
               {biens.map((b) => (
                 <option key={b.id} value={b.id}>{b.nom}</option>
               ))}
@@ -68,46 +70,46 @@ export function DemandesProprio({ demandes, biens }: { demandes: DemandeItem[]; 
           {dates && (
             <>
               <label className="lz-champ">
-                <span>Arrivée</span>
+                <span>{t("Arrivée")}</span>
                 <input type="date" name="du" required />
               </label>
               <label className="lz-champ">
-                <span>Départ</span>
+                <span>{t("Départ")}</span>
                 <input type="date" name="au" required />
               </label>
             </>
           )}
           <label className="lz-champ lz-pleine">
-            <span>{dates ? "Message (facultatif)" : "Votre message"}</span>
+            <span>{dates ? t("Message (facultatif)") : t("Votre message")}</span>
             <textarea
               name="message"
               rows={3}
               required={!dates}
               placeholder={
                 type === "MAINTENANCE"
-                  ? "Ex. la climatisation du salon ne refroidit plus."
+                  ? t("Ex. la climatisation du salon ne refroidit plus.")
                   : type === "MENAGE"
-                    ? "Ex. ménage complet avant mon arrivée du 20."
+                    ? t("Ex. ménage complet avant mon arrivée du 20.")
                     : dates
-                      ? "Ex. je viens avec ma famille, merci de préparer le linge."
-                      : "Votre question"
+                      ? t("Ex. je viens avec ma famille, merci de préparer le linge.")
+                      : t("Votre question")
               }
             />
           </label>
         </div>
-        {etat?.error && <p className="lz-msg lz-erreur" role="alert">{etat.error}</p>}
+        {etat?.error && <p className="lz-msg lz-erreur" role="alert">{t(etat.error)}</p>}
         <button type="submit" className="lz-bouton" disabled={envoi || biens.length === 0}>
-          {envoi ? "Envoi…" : "Envoyer à Lyze"}
+          {envoi ? t("Envoi…") : t("Envoyer à Lyze")}
         </button>
         {etat?.ok && !etat.error && (
-          <p className="lz-msg lz-ok" role="status">Demande envoyée. Barka vous répond sous 24 h.</p>
+          <p className="lz-msg lz-ok" role="status">{t("Demande envoyée. Barka vous répond sous 24 h.")}</p>
         )}
       </form>
 
       <div className="lz-suivi">
-        <span className="titre-p">Vos demandes</span>
+        <span className="titre-p">{t("Vos demandes")}</span>
         {demandes.length === 0 ? (
-          <p className="lz-vide">Aucune demande envoyée pour l’instant.</p>
+          <p className="lz-vide">{t("Aucune demande envoyée pour l’instant.")}</p>
         ) : (
           <ul className="lz-liste-dem">
             {demandes.map((d) => (
@@ -115,14 +117,14 @@ export function DemandesProprio({ demandes, biens }: { demandes: DemandeItem[]; 
                 <Resume d={d} />
                 {d.reponse && (
                   <p className="lz-reponse">
-                    <strong>Réponse de Lyze :</strong> {d.reponse}
+                    <strong>{t("Réponse de Lyze :")}</strong> {d.reponse}
                   </p>
                 )}
                 {d.statut === "NOUVELLE" && (
                   <form action={annulerDemande}>
                     <input type="hidden" name="demandeId" value={d.id} />
-                    <ConfirmButton message="Retirer cette demande ?" className="lz-lien lz-danger">
-                      Retirer la demande
+                    <ConfirmButton message={t("Retirer cette demande ?")} className="lz-lien lz-danger">
+                      {t("Retirer la demande")}
                     </ConfirmButton>
                   </form>
                 )}
@@ -137,6 +139,7 @@ export function DemandesProprio({ demandes, biens }: { demandes: DemandeItem[]; 
 
 /** Admin : une demande avec son traitement (statut, réponse, blocage des dates). */
 export function DemandeAdmin({ d, client }: { d: DemandeItem; client?: { nom: string; lien: string } }) {
+  const { t, locale } = useT();
   const [etat, action, envoi] = useActionState(traiterDemande, undefined);
   const blocable = d.type === "USAGE_PERSO" && d.statut !== "TRAITEE" && d.statut !== "REFUSEE";
 
@@ -150,7 +153,7 @@ export function DemandeAdmin({ d, client }: { d: DemandeItem; client?: { nom: st
         <input type="hidden" name="demandeId" value={d.id} />
         <div className="lz-grille">
           <label className="lz-champ">
-            <span>Statut</span>
+            <span>{t("Statut")}</span>
             <select name="status" defaultValue={d.statut === "NOUVELLE" ? "EN_COURS" : d.statut}>
               {CODES_STATUTS.map((s) => (
                 <option key={s} value={s}>{s === "NOUVELLE" ? "Nouvelle" : STATUTS_DEMANDE[s]}</option>
@@ -158,18 +161,18 @@ export function DemandeAdmin({ d, client }: { d: DemandeItem; client?: { nom: st
             </select>
           </label>
           <label className="lz-champ lz-large">
-            <span>Réponse au propriétaire</span>
-            <input name="reply" defaultValue={d.reponse ?? ""} maxLength={2000} placeholder="Visible dans son espace" />
+            <span>{t("Réponse au propriétaire")}</span>
+            <input name="reply" defaultValue={d.reponse ?? ""} maxLength={2000} placeholder={t("Visible dans son espace")} />
           </label>
         </div>
         {blocable && (
           <label className="lz-coche-seule">
             <input type="checkbox" name="bloquer" />
-            Accepter et bloquer ces dates dans le calendrier
+            {t("Accepter et bloquer ces dates dans le calendrier")}
           </label>
         )}
         {etat?.error && <p className="lz-msg lz-erreur" role="alert">{etat.error}</p>}
-        {etat?.ok && !etat.error && <p className="lz-msg lz-ok" role="status">Enregistré.</p>}
+        {etat?.ok && !etat.error && <p className="lz-msg lz-ok" role="status">{t("Enregistré.")}</p>}
         <button type="submit" className="lz-bouton lz-petit" disabled={envoi}>
           {envoi ? "…" : "Enregistrer"}
         </button>

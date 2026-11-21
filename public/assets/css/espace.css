@@ -317,3 +317,13 @@ button.jour { cursor: pointer; }
 /* Détail par plateforme : pleine largeur sous le relevé et les arrivées */
 .revenus-plateformes { grid-column: 1 / -1; order: 1; }
 .revenus-plateformes .plateforme { display: inline-flex; align-items: center; gap: 6px; }
+
+/* Langue de l'espace (2026-11-21) : enveloppe sans effet sur la mise en page + choix de la langue */
+.lz-langue { display: contents; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.lz-choix-langue select {
+  font: inherit; font-size: 13px; color: inherit; background: transparent;
+  border: 1px solid currentColor; border-radius: 2px; padding: 6px 8px; opacity: 0.85; cursor: pointer;
+}
+.lz-choix-langue select option { color: #2b1d14; }
+.lz-choix-langue-connexion { position: fixed; top: 18px; inset-inline-end: 70px; z-index: 5; color: #4a3626; }
