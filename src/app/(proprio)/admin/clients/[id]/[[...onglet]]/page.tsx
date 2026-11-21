@@ -44,6 +44,7 @@ export default async function ClientPage({ params }: PageProps<"/admin/clients/[
           adresse: [owner.address, owner.country].filter(Boolean).join(" — "),
           contactPreference: owner.contactPreference ?? "",
           derniereConnexion: owner.lastLoginAt ? derniere.format(owner.lastLoginAt) : "Jamais connecté",
+          mdpChange: owner.passwordChangedAt ? derniere.format(owner.passwordChangedAt) : "",
           active: owner.active,
         },
       }}

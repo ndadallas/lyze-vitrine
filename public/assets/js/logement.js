@@ -9,6 +9,7 @@
     fr: { voy: 'voyageurs', ch: 'chambres', photos: 'Voir les %n photos', absent: 'Ce bien n’est plus affiché sur le site.', retour: 'Retour à l’accueil', photo: 'photo' },
     en: { voy: 'guests', ch: 'bedrooms', photos: 'See all %n photos', absent: 'This property is no longer listed on the site.', retour: 'Back to home', photo: 'photo' },
     es: { voy: 'huéspedes', ch: 'habitaciones', photos: 'Ver las %n fotos', absent: 'Este alojamiento ya no aparece en el sitio.', retour: 'Volver al inicio', photo: 'foto' },
+    de: { voy: 'Gäste', ch: 'Schlafzimmer', photos: 'Alle %n Fotos ansehen', absent: 'Diese Unterkunft wird nicht mehr auf der Website angezeigt.', retour: 'Zurück zur Startseite', photo: 'Foto' },
     it: { voy: 'ospiti', ch: 'camere', photos: 'Vedi le %n foto', absent: 'Questa struttura non è più presente sul sito.', retour: 'Torna alla home', photo: 'foto' },
     ar: { voy: 'ضيوف', ch: 'غرف', photos: 'شاهد الصور (%n)', absent: 'لم يعد هذا العقار معروضًا على الموقع.', retour: 'العودة إلى الرئيسية', photo: 'صورة' }
   };

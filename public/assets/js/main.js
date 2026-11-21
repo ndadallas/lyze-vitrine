@@ -98,16 +98,17 @@
   /* Calendriers de disponibilité (fiche bien) */
   var arabe = document.documentElement.lang === 'ar';
   var anglais = document.documentElement.lang === 'en';
-  var lang = ['en', 'ar', 'it', 'es'].indexOf(document.documentElement.lang) > -1 ? document.documentElement.lang : 'fr';
-  var LOCALE = { fr: 'fr-FR', en: 'en-GB', ar: 'ar-MA', it: 'it-IT', es: 'es-ES' }[lang];
+  var lang = ['en', 'ar', 'it', 'es', 'de'].indexOf(document.documentElement.lang) > -1 ? document.documentElement.lang : 'fr';
+  var LOCALE = { fr: 'fr-FR', en: 'en-GB', ar: 'ar-MA', it: 'it-IT', es: 'es-ES', de: 'de-DE' }[lang];
   var MOIS = {
     ar: ['يناير', 'فبراير', 'مارس', 'أبريل', 'ماي', 'يونيو', 'يوليوز', 'غشت', 'شتنبر', 'أكتوبر', 'نونبر', 'دجنبر'],
     en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
     it: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
     es: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+    de: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
     fr: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
   }[lang];
-  var JOURS = { ar: ['ن', 'ث', 'ر', 'خ', 'ج', 'س', 'ح'], en: ['M', 'T', 'W', 'T', 'F', 'S', 'S'], it: ['L', 'M', 'M', 'G', 'V', 'S', 'D'], es: ['L', 'M', 'X', 'J', 'V', 'S', 'D'], fr: ['L', 'M', 'M', 'J', 'V', 'S', 'D'] }[lang];
+  var JOURS = { ar: ['ن', 'ث', 'ر', 'خ', 'ج', 'س', 'ح'], en: ['M', 'T', 'W', 'T', 'F', 'S', 'S'], it: ['L', 'M', 'M', 'G', 'V', 'S', 'D'], es: ['L', 'M', 'X', 'J', 'V', 'S', 'D'], de: ['M', 'D', 'M', 'D', 'F', 'S', 'S'], fr: ['L', 'M', 'M', 'J', 'V', 'S', 'D'] }[lang];
   /* Fiche bien : calendrier navigable mois par mois + choix arrivée / départ + demande de réservation.
      data-indispo = séjours déjà pris « arrivée/départ » (départ exclu : ce jour-là reste possible comme départ). */
   var dispo = document.querySelector('[data-dispo]');
@@ -124,7 +125,7 @@
     var choix = { du: null, au: null };
     var calPrec = document.querySelector('[data-cal-prec]'), calSuiv = document.querySelector('[data-cal-suiv]');
     var unSeul = window.matchMedia('(max-width: 760px)');
-    var dateLongue = function (t) { var d = new Date(t), m = MOIS[d.getUTCMonth()]; return d.getUTCDate() + ' ' + (anglais || arabe ? m : m.toLowerCase()) + ' ' + d.getUTCFullYear(); };
+    var dateLongue = function (t) { var d = new Date(t), m = MOIS[d.getUTCMonth()]; return d.getUTCDate() + ' ' + (anglais || arabe || lang === 'de' ? m : m.toLowerCase()) + ' ' + d.getUTCFullYear(); };
 
     var rendre = function () {
       var html = '';
@@ -176,7 +177,8 @@
       en: { redir: 'Request sent to Lyze. Redirecting you to the platform to complete the booking…', dates: 'Choose your check-in and check-out dates in the calendar.', ok: 'Thank you! Your request has been sent: Barka will reply on WhatsApp within 24 hours.', sujet: 'Booking request', bien: 'Property', arr: 'Check-in', dep: 'Check-out', nuits: 'Nights', voy: 'Guests', titre: 'Booking request' },
       ar: { redir: 'تم إرسال الطلب إلى Lyze. جارٍ تحويلك إلى المنصة لإتمام الحجز…', dates: 'اختر تاريخَي الوصول والمغادرة من التقويم.', ok: 'شكرًا! تم إرسال طلبك: ستردّ عليك بركة عبر واتساب خلال 24 ساعة.', sujet: 'طلب حجز', bien: 'العقار', arr: 'الوصول', dep: 'المغادرة', nuits: 'الليالي', voy: 'الضيوف', titre: 'طلب حجز' },
       it: { redir: 'Richiesta inviata a Lyze. Ti reindirizziamo alla piattaforma per completare la prenotazione…', dates: 'Scegli le date di arrivo e di partenza nel calendario.', ok: 'Grazie! La tua richiesta è stata inviata: Barka ti risponderà su WhatsApp entro 24 ore.', sujet: 'Richiesta di prenotazione', bien: 'Struttura', arr: 'Arrivo', dep: 'Partenza', nuits: 'Notti', voy: 'Ospiti', titre: 'Richiesta di prenotazione' },
-      es: { redir: 'Solicitud enviada a Lyze. Te redirigimos a la plataforma para completar la reserva…', dates: 'Elige tus fechas de llegada y salida en el calendario.', ok: '¡Gracias! Tu solicitud se ha enviado: Barka te responderá por WhatsApp en menos de 24 horas.', sujet: 'Solicitud de reserva', bien: 'Alojamiento', arr: 'Llegada', dep: 'Salida', nuits: 'Noches', voy: 'Huéspedes', titre: 'Solicitud de reserva' }
+      es: { redir: 'Solicitud enviada a Lyze. Te redirigimos a la plataforma para completar la reserva…', dates: 'Elige tus fechas de llegada y salida en el calendario.', ok: '¡Gracias! Tu solicitud se ha enviado: Barka te responderá por WhatsApp en menos de 24 horas.', sujet: 'Solicitud de reserva', bien: 'Alojamiento', arr: 'Llegada', dep: 'Salida', nuits: 'Noches', voy: 'Huéspedes', titre: 'Solicitud de reserva' },
+      de: { redir: 'Anfrage an Lyze gesendet. Sie werden zur Plattform weitergeleitet, um die Buchung abzuschließen…', dates: 'Wählen Sie Ihr Anreise- und Abreisedatum im Kalender.', ok: 'Vielen Dank! Ihre Anfrage wurde gesendet: Barka antwortet Ihnen innerhalb von 24 Stunden per WhatsApp.', sujet: 'Buchungsanfrage', bien: 'Unterkunft', arr: 'Anreise', dep: 'Abreise', nuits: 'Nächte', voy: 'Gäste', titre: 'Buchungsanfrage' }
     }[lang];
     var nbNuits = function () { return choix.au !== null ? Math.round((choix.au - choix.du) / JOUR) : 0; };
     var majCarte = function () {
@@ -310,6 +312,19 @@
       corps: function (d) {
         return 'Nombre: ' + d.nom + '\nE-mail: ' + d.email + '\nTeléfono: ' + d.telephone
           + '\nCiudad del inmueble: ' + d.ville + '\nAmueblado: ' + d.meuble + '\n\n' + d.message;
+      }
+    },
+    de: {
+      photo: 'Foto', devise: 'MAD', aucune: 'Wählen Sie mindestens eine Plattform.',
+      bruts: 'Bruttoeinnahmen', parAn: 'pro Jahr', fraisDe: 'Provision', comLyze: 'Provision Lyze Conciergerie', parNuit: 'auf die Übernachtungen / Jahr', recevez: 'Sie erhalten',
+      vousTouchez: 'Sie erhalten', envoi: 'Wird gesendet…',
+      ok: 'Vielen Dank, Ihre Nachricht wurde gesendet. Wir melden uns schnell bei Ihnen.',
+      invalide: 'Bitte überprüfen Sie die Formularfelder.',
+      repli: 'Der Online-Versand ist nicht verfügbar: Ihr E-Mail-Programm öffnet sich mit der fertigen Nachricht.',
+      sujet: 'Nachricht von der Lyze-Website',
+      corps: function (d) {
+        return 'Name: ' + d.nom + '\nE-Mail: ' + d.email + '\nTelefon: ' + d.telephone
+          + '\nOrt der Immobilie: ' + d.ville + '\nMöbliert: ' + d.meuble + '\n\n' + d.message;
       }
     }
   }[lang];
@@ -639,7 +654,7 @@
     var surAccueil = document.body.classList.contains('accueil');
     var pointsEcrans = document.createElement('nav');
     pointsEcrans.className = 'points-ecrans';
-    pointsEcrans.setAttribute('aria-label', { ar: 'أقسام الصفحة', en: 'Page sections', it: 'Sezioni della pagina', es: 'Secciones de la página', fr: 'Sections de la page' }[lang]);
+    pointsEcrans.setAttribute('aria-label', { ar: 'أقسام الصفحة', en: 'Page sections', it: 'Sezioni della pagina', es: 'Secciones de la página', de: 'Abschnitte der Seite', fr: 'Sections de la page' }[lang]);
     ecrans.forEach(function (s, i) {
       var b = document.createElement('button');
       b.type = 'button';
@@ -795,7 +810,7 @@
   var L = {
     fr: ['Fermer', 'Photo précédente', 'Photo suivante'], en: ['Close', 'Previous photo', 'Next photo'],
     ar: ['إغلاق', 'الصورة السابقة', 'الصورة التالية'], it: ['Chiudi', 'Foto precedente', 'Foto successiva'],
-    es: ['Cerrar', 'Foto anterior', 'Foto siguiente']
+    es: ['Cerrar', 'Foto anterior', 'Foto siguiente'], de: ['Schließen', 'Vorheriges Foto', 'Nächstes Foto']
   }[(document.documentElement.lang || 'fr').slice(0, 2)] || ['Fermer', 'Photo précédente', 'Photo suivante'];
   var d = document.createElement('dialog');
   d.className = 'visionneuse';

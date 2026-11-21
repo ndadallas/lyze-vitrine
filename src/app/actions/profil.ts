@@ -79,7 +79,7 @@ export async function changerMotDePasse(_prev: ProfilState, formData: FormData):
     return { error: "Mot de passe actuel incorrect." };
   }
 
-  await db.user.update({ where: { id: user.id }, data: { passwordHash: await hashPassword(nouveau) } });
+  await db.user.update({ where: { id: user.id }, data: { passwordHash: await hashPassword(nouveau), passwordChangedAt: new Date() } });
   await revokeOtherSessions(user.id);
   return { ok: Date.now() };
 }

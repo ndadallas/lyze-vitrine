@@ -372,3 +372,6 @@ aside.side { overflow-y: auto; overscroll-behavior: contain; }
 .lz-fiche-lecture dt { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #7a6a5a; }
 .lz-fiche-lecture dd { margin: 4px 0 0; white-space: pre-line; overflow-wrap: anywhere; }
 .app .cal-jours div.jour:not(.vide) { background: #fff; color: #4a3426; border: 1px solid rgba(43, 29, 21, .12); }
+
+/* Texte d’aide sous un titre de formulaire (2026-11-21) */
+.lz-aide { margin: 0 0 12px; font-size: 13px; line-height: 1.5; opacity: 0.75; }

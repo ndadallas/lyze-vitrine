@@ -13,7 +13,7 @@ const ContactSchema = z.object({
   meuble: z.string().trim().max(30).optional(),
   message: z.string().trim().max(5000).optional(),
   site: z.string().max(200).optional(), // piège à robots : doit rester vide
-  langue: z.enum(["fr", "en", "ar", "it", "es"]).optional(),
+  langue: z.enum(["fr", "en", "ar", "it", "es", "de"]).optional(),
   type: z.enum(["rappel", "reservation"]).optional(), // réservation = demande d'un voyageur depuis une fiche bien
 });
 

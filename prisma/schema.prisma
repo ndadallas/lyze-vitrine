@@ -47,6 +47,7 @@ model User {
   onboardedAt       DateTime?
   active       Boolean   @default(true)
   lastLoginAt  DateTime?
+  passwordChangedAt DateTime? // changé par le propriétaire lui-même (« Mon compte »), signalé à la gérante
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 

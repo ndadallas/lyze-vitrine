@@ -11,7 +11,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const clients = await db.user.findMany({
     where: { role: "OWNER" },
     orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
-    select: { id: true, firstName: true, lastName: true },
+    select: { id: true, firstName: true, lastName: true, passwordChangedAt: true },
   });
 
   const [aValider, demandes, messages, reponses] = await Promise.all([
@@ -20,16 +20,18 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     db.siteMessage.count({ where: { handled: false } }),
     db.noticeReply.count({ where: { fromAdmin: false, readAt: null } }),
   ]);
-  const compte = (n: number) => (n > 0 ? ` (${n})` : "");
-  const ONGLETS = [
-    ["ca", "Chiffre d’affaires"],
-    ["valider", `À valider${compte(aValider)}`],
-    ["demandes", `Demandes${compte(demandes)}`],
-    ["messages", `Messages du site${compte(messages)}`],
-    ["reponses", `Réponses des propriétaires${compte(reponses)}`],
-    ["nouveau", "Nouveau client"],
-    ["clients", "Liste des clients"],
-  ] as const;
+  // Pastille rouge avec le nombre à traiter (demande 2026-11-21 : notification visible dans l'onglet)
+  const ONGLETS: [string, string, number][] = [
+    ["ca", "Chiffre d’affaires", 0],
+    ["valider", "À valider", aValider],
+    ["demandes", "Demandes", demandes],
+    ["messages", "Messages du site", messages],
+    ["reponses", "Réponses des propriétaires", reponses],
+    ["nouveau", "Nouveau client", 0],
+    ["clients", "Liste des clients", 0],
+  ];
+  // Mot de passe changé par le client depuis moins de 7 jours : signalé sous son nom
+  const recent = Date.now() - 7 * 24 * 3600 * 1000;
 
   return (
     <div className="shell">
@@ -37,9 +39,14 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
         <NavLink href="/admin" exact icon={<IconUsers />}>
           Tableau de bord
         </NavLink>
-        {ONGLETS.map(([cle, libelle]) => (
+        {ONGLETS.map(([cle, libelle, n]) => (
           <NavLink key={cle} href={`/admin?vue=${cle}`} icon={null}>
             {libelle}
+            {n > 0 && (
+              <span className="nav-pastille" aria-label={`${n} à traiter`}>
+                {n}
+              </span>
+            )}
           </NavLink>
         ))}
         <details className="nav-clients" open>
@@ -49,6 +56,9 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
               <li key={c.id}>
                 <Link href={`/admin/clients/${c.id}`}>
                   {c.firstName} {c.lastName}
+                  {c.passwordChangedAt && c.passwordChangedAt.getTime() > recent && (
+                    <span className="nav-mdp">mot de passe changé</span>
+                  )}
                 </Link>
               </li>
             ))}

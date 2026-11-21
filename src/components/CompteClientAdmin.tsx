@@ -17,6 +17,7 @@ export type CompteClient = {
   adresse: string;
   contactPreference: string;
   derniereConnexion: string; // déjà formatée, « Jamais connecté » sinon
+  mdpChange: string; // date formatée du dernier changement de mot de passe par le client, "" sinon
   active: boolean;
 };
 
@@ -83,6 +84,15 @@ export function CompteClientAdmin({ compte: c }: { compte: CompteClient }) {
 
       <form action={actionMdp} className="lz-form">
         <span className="titre-p">Mot de passe</span>
+        <p className="lz-aide">
+          {c.mdpChange && (
+            <>
+              Le client a changé son mot de passe le <strong>{c.mdpChange}</strong>.{" "}
+            </>
+          )}
+          Un mot de passe est enregistré brouillé pour la sécurité : personne ne peut le relire, ni vous ni le site. Si le client l’a
+          oublié, créez-lui un nouveau mot de passe ci-dessous et envoyez-le-lui.
+        </p>
         <input type="hidden" name="userId" value={c.id} />
         <label className="lz-champ">
           <span>Mot de passe choisi (facultatif, 8 caractères minimum)</span>

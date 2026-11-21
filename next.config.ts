@@ -16,11 +16,12 @@ const nextConfig: NextConfig = {
     return [
       { source: "/connexion.html", destination: "/connexion", permanent: true },
       { source: "/espace.html", destination: "/espace", permanent: true },
-      // /en, /ar, /it, /es : redirection (et non réécriture), sinon les liens relatifs des pages partent vers les pages françaises.
+      // /en, /ar, /it, /es, /de : redirection (et non réécriture), sinon les liens relatifs des pages partent vers les pages françaises.
       { source: "/en", destination: "/en/index.html", permanent: false },
       { source: "/ar", destination: "/ar/index.html", permanent: false },
       { source: "/it", destination: "/it/index.html", permanent: false },
       { source: "/es", destination: "/es/index.html", permanent: false },
+      { source: "/de", destination: "/de/index.html", permanent: false },
     ];
   },
 };
