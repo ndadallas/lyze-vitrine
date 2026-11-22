@@ -278,14 +278,14 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
             Messages du site <span className="muted" style={{ fontSize: 15 }}>({nonTraites} à traiter)</span>
           </h2>
           <p className="muted" style={{ fontSize: 14 }}>
-            Demandes de réservation des voyageurs et demandes de rappel des propriétaires, envoyées depuis le site.
+            Demandes de réservation des voyageurs, demandes de rappel et mots de passe oubliés, envoyés depuis le site.
           </p>
           <ul className="lz-liste-dem">
             {messages.map((m) => (
               <li key={m.id} style={m.handled ? { opacity: 0.55 } : undefined}>
                 <div className="lz-dem-tete">
                   <strong>
-                    {m.type === "reservation" ? "Réservation" : "Rappel"} · {m.name}
+                    {m.type === "reservation" ? "Réservation" : m.type === "mdp" ? "Mot de passe oublié" : "Rappel"} · {m.name}
                     {m.subject ? ` · ${m.subject}` : ""}
                   </strong>
                   <span className={`lz-statut ${m.handled ? "lz-statut-traitee" : "lz-statut-nouvelle"}`}>
@@ -293,14 +293,14 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                   </span>
                 </div>
                 <small className="lz-dem-meta">
-                  <strong className="lz-date">{lastLogin.format(m.createdAt)}</strong> · <a href={`mailto:${m.email}`}>{m.email}</a>
+                  <strong className="lz-date">{lastLogin.format(m.createdAt)}</strong>{m.email && <> · <a href={`mailto:${m.email}`}>{m.email}</a></>}
                   {m.phone && (
                     <>
                       {" · "}
                       <a href={`https://wa.me/${m.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener">{m.phone}</a>
                     </>
                   )}
-                  {!m.mailSent && " · mail non envoyé (clé Resend absente)"}
+                  {!m.mailSent && m.type !== "mdp" && " · mail non envoyé (clé Resend absente)"}
                 </small>
                 {m.body && <p className="lz-dem-message">{m.body}</p>}
                 <form action={basculerMessage}>

@@ -80,3 +80,38 @@ export async function logout() {
   await deleteSession();
   redirect("/connexion");
 }
+
+// Mot de passe oublié : pas d'e-mail automatique (Resend pas branché), la demande arrive à la gérante
+// dans « Messages du site » ; elle voit le mot de passe (copie chiffrée) ou en génère un nouveau.
+const OublieSchema = z.object({
+  username: z.string().trim().toLowerCase().min(1, { error: "Saisissez votre identifiant." }).max(80),
+  telephone: z.string().trim().max(40).regex(/^[+\d\s.\-()]*$/, { error: "Numéro de téléphone invalide." }),
+});
+
+export type OublieState = { error?: string; ok?: boolean } | undefined;
+
+export async function motDePasseOublie(_prev: OublieState, formData: FormData): Promise<OublieState> {
+  const parsed = OublieSchema.safeParse({ username: formData.get("username"), telephone: formData.get("telephone") ?? "" });
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Formulaire invalide." };
+  const { username, telephone } = parsed.data;
+  const subject = `Identifiant : ${username}`;
+  // 3 demandes par heure et par identifiant ; au-delà on répond pareil sans enregistrer
+  const recentes = await db.siteMessage.count({
+    where: { type: "mdp", subject, createdAt: { gte: new Date(Date.now() - 60 * 60 * 1000) } },
+  });
+  if (recentes < 3) {
+    const user = await db.user.findUnique({ where: { username }, select: { firstName: true, lastName: true, email: true, phone: true } });
+    await db.siteMessage.create({
+      data: {
+        type: "mdp",
+        name: user ? `${user.firstName} ${user.lastName}` : "Identifiant inconnu",
+        email: user?.email ?? "",
+        phone: telephone || user?.phone || null,
+        subject,
+        body: user ? "Mot de passe oublié : renvoyez-lui son mot de passe (fiche client, Mon compte)." : "Mot de passe oublié, mais cet identifiant n'existe pas.",
+      },
+    });
+  }
+  // Même réponse que l'identifiant existe ou non : ne révèle pas les comptes
+  return { ok: true };
+}

@@ -22,7 +22,7 @@ export default async function ProprioLayout({ children }: { children: React.Reac
           rel="stylesheet"
         />
         <link rel="stylesheet" href="/assets/css/style.css?v=65" />
-        <link rel="stylesheet" href="/assets/css/espace.css?v=34" />
+        <link rel="stylesheet" href="/assets/css/espace.css?v=35" />
       </head>
       <body>{children}</body>
     </html>

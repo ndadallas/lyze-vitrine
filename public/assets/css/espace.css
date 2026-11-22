@@ -348,3 +348,7 @@ button.jour { cursor: pointer; }
 .langues .drapeau { width: 20px; height: 15px; object-fit: cover; border-radius: 2px; flex: none; }
 .langues .lien-langue { background: #fff; }
 @media (max-width: 999px) { .langues.lz-langue-coin { position: static; display: flex; justify-content: flex-end; margin-bottom: 12px; } .langues.lz-langue-coin .langues-liste { inset-inline-end: 0; } .langues.lz-langue-coin summary { margin-inline-start: auto; } }
+
+/* Mot de passe oublié (page de connexion) */
+.lien-oublie { align-self: flex-start; margin-top: 12px; padding: 0; border: 0; background: none; font: inherit; font-size: 13px; color: var(--brique); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.retour.lien-oublie { margin-top: 0; font-size: 12px; color: var(--gris); text-decoration: none; }
