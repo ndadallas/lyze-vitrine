@@ -359,7 +359,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
             type="search"
             name="q"
             defaultValue={q}
-            placeholder="Rechercher un client : nom, identifiant, téléphone, e-mail, bien…"
+            placeholder="Nom, téléphone, bien…"
             aria-label="Rechercher un client"
           />
           <button type="submit" className="btn btn-primary">Rechercher</button>

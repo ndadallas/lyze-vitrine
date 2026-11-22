@@ -140,7 +140,7 @@
 .lz-pl-jour.lz-aujourdhui { background: var(--lz-texte); color: #f6f0e4; }
 .lz-pl-jour.lz-aujourdhui small { color: inherit; }
 .lz-pl-bien { position: sticky; left: 0; z-index: 1; display: grid; align-content: center; gap: 1px; padding: 8px 12px; background: var(--lz-fond); border-right: 1px solid var(--lz-ligne); border-bottom: 1px solid var(--lz-ligne); min-width: 0; }
-.lz-pl-bien strong { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lz-pl-bien strong { font-size: 14px; font-weight: 600; overflow-wrap: anywhere; line-height: 1.25; }
 .lz-pl-bien small { font-size: 12px; color: var(--lz-gris); }
 .lz-pl-case { border: 0; border-left: 1px solid rgba(74, 52, 38, .06); border-bottom: 1px solid var(--lz-ligne); background: none; cursor: pointer; padding: 0; }
 .lz-pl-case:hover { background: rgba(156, 102, 68, .1); }
@@ -173,8 +173,8 @@
   .jour .etiquette { left: 4px; bottom: 4px; }
   .jour .etiquette img, .jour .etiquette svg { width: 12px; height: 12px; }
 }
-@media (max-width: 700px) {
-  /* tableaux (relevé, dépenses) : une fiche par ligne avec le nom de chaque valeur */
+/* 2026-11-22 : tableaux en fiches jusqu'à 999 px (le relevé fait 857 px : débordait sur tablette) */
+@media (max-width: 999px) {
   .lz-fiches-mobile, .lz-fiches-mobile tbody, .lz-fiches-mobile tfoot { display: block; width: 100%; min-width: 0; }
   .lz-fiches-mobile thead { display: none; }
   .lz-fiches-mobile tr { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px 14px; padding: 14px 0; border-bottom: 1px solid rgba(74, 52, 38, .14); }
@@ -187,6 +187,8 @@
   .lz-fiches-mobile tfoot tr { border-top: 2px solid var(--lz-texte); border-bottom: 0; }
   .lz-table-dep { min-width: 0; }
   .lz-table-defile { overflow: visible; }
+}
+@media (max-width: 700px) {
   .lz-docs-barre { flex-direction: column; align-items: stretch; }
   .lz-docs-barre .lz-bouton { width: 100%; }
   .lz-filtres { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }

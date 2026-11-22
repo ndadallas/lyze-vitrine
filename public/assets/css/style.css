@@ -1106,7 +1106,7 @@ body { padding-top: 72px; }
 @media (max-width: 760px) { body { padding-top: 64px; } [id] { scroll-margin-top: 70px; } }
 .accueil .nos-biens { grid-template-columns: minmax(0, 1fr); }
 .accueil .une .hero { overflow: hidden; }
-@media (max-width: 760px) { .proprio { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 999px) { .proprio { grid-template-columns: minmax(0, 1fr); } }
 
 /* ===== Mobile (2026-11-05) ===== */
 .plats { grid-template-columns: repeat(3, 1fr); } /* 3 plateformes depuis le retrait de « Direct » */
@@ -1689,3 +1689,11 @@ dialog.visionneuse .v-compte { position: absolute; bottom: 18px; left: 0; right:
 /* 2026-11-20 : fonds inversés, « Zones d’intervention » = bande crème, contact sur le fond sable */
 .zones { background: var(--creme); }
 .questions-contact { background: var(--sable); }
+
+/* 2026-11-22 : en arabe, la police de secours est plus haute que Gloock : interligne et marges pour que titre / prix ne touchent plus les lignes voisines */
+[dir="rtl"] .fiche h1 { line-height: 1.5; margin-top: 14px; }
+[dir="rtl"] .specs { margin-top: 8px; }
+[dir="rtl"] .carte-resa .prix { line-height: 1.5; }
+.hero-slides { overflow: hidden; } /* le zoom lent de la photo active élargissait la page (tablette) */
+[dir="rtl"] .carte-resa .prix { margin-top: 6px; }
+@media (max-width: 999px) { .accueil .proprio-visuel { padding-inline: var(--gutter); } } /* simulateur empilé : centré */
