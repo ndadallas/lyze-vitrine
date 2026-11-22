@@ -6,6 +6,7 @@ import * as z from "zod";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { generatePassword, hashPassword, slugUsername } from "@/lib/passwords";
+import { chiffrerMdp } from "@/lib/mdp-chiffre";
 import { revokeUserSessions } from "@/lib/session";
 import { findClash, parseBooking } from "@/lib/reservations";
 
@@ -66,7 +67,7 @@ export async function createOwner(_prev: ActionState, formData: FormData): Promi
   const password = generatePassword();
 
   await db.user.create({
-    data: { ...data, username, passwordHash: await hashPassword(password), role: "OWNER" },
+    data: { ...data, username, passwordHash: await hashPassword(password), passwordEnc: chiffrerMdp(password), role: "OWNER" },
   });
 
   revalidatePath("/admin");
@@ -99,7 +100,7 @@ export async function resetOwnerPassword(_prev: ActionState, formData: FormData)
   if (!user || user.role !== "OWNER") return { error: "Client introuvable." };
 
   const password = chosen || generatePassword();
-  await db.user.update({ where: { id }, data: { passwordHash: await hashPassword(password) } });
+  await db.user.update({ where: { id }, data: { passwordHash: await hashPassword(password), passwordEnc: chiffrerMdp(password) } });
   await revokeUserSessions(id);
 
   revalidatePath(`/admin/clients/${id}`, "layout");

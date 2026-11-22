@@ -5,6 +5,7 @@ import "@/styles/lz.css";
 import { useActionState } from "react";
 import { deleteOwner, resetOwnerPassword, setOwnerActive, updateOwner } from "@/app/(gestion)/admin/actions";
 import { ConfirmButton } from "@/components/ConfirmButton";
+import { MotDePasse } from "@/components/MotDePasse";
 
 export type CompteClient = {
   id: string;
@@ -18,6 +19,7 @@ export type CompteClient = {
   contactPreference: string;
   derniereConnexion: string; // déjà formatée, « Jamais connecté » sinon
   mdpChange: string; // date formatée du dernier changement de mot de passe par le client, "" sinon
+  motDePasse: string; // mot de passe actuel déchiffré, "" si pas de copie (compte pas encore reconnecté)
   active: boolean;
 };
 
@@ -90,9 +92,16 @@ export function CompteClientAdmin({ compte: c }: { compte: CompteClient }) {
               Le client a changé son mot de passe le <strong>{c.mdpChange}</strong>.{" "}
             </>
           )}
-          Un mot de passe est enregistré brouillé pour la sécurité : personne ne peut le relire, ni vous ni le site. Si le client l’a
-          oublié, créez-lui un nouveau mot de passe ci-dessous et envoyez-le-lui.
+          {c.motDePasse
+            ? "Mot de passe actuel du client (cliquez sur l’œil pour l’afficher). S’il l’a oublié, renvoyez-le-lui ou créez-en un nouveau ci-dessous."
+            : "Mot de passe pas encore visible : il apparaîtra ici après la prochaine connexion du client, ou dès que vous lui en créez un nouveau ci-dessous."}
         </p>
+        {c.motDePasse && (
+          <label className="lz-champ">
+            <span>Mot de passe actuel</span>
+            <MotDePasse value={c.motDePasse} readOnly autoComplete="off" spellCheck={false} />
+          </label>
+        )}
         <input type="hidden" name="userId" value={c.id} />
         <label className="lz-champ">
           <span>Mot de passe choisi (facultatif, 8 caractères minimum)</span>

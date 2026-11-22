@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { dechiffrerMdp } from "@/lib/mdp-chiffre";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
@@ -49,6 +50,7 @@ export default async function ClientPage({ params }: PageProps<"/admin/clients/[
           contactPreference: owner.contactPreference ?? "",
           derniereConnexion: owner.lastLoginAt ? derniere.format(owner.lastLoginAt) : "Jamais connecté",
           mdpChange: owner.passwordChangedAt ? derniere.format(owner.passwordChangedAt) : "",
+          motDePasse: dechiffrerMdp(owner.passwordEnc) ?? "",
           active: owner.active,
         },
       }}

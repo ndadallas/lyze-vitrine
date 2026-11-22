@@ -5,6 +5,7 @@ import * as z from "zod";
 import { db } from "@/lib/db";
 import { homeFor } from "@/lib/auth";
 import { hashPassword, verifyPassword } from "@/lib/passwords";
+import { chiffrerMdp } from "@/lib/mdp-chiffre";
 import { createSession, deleteSession } from "@/lib/session";
 
 // 10 et non 5 : compte souvent partagé à plusieurs, 5 fautes bloquaient tout le monde
@@ -54,10 +55,8 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
   // Mots de passe générés (« kx7m-pq4t-zr9w ») : accepter aussi majuscule auto du mobile, tirets oubliés ou espaces
   const brut = password.toLowerCase().replace(/[^a-z0-9]/g, "");
   const genere = brut.length === 12 ? brut.match(/.{4}/g)!.join("-") : password.toLowerCase();
-  const valid = user
-    ? (await verifyPassword(password, user.passwordHash)) ||
-      (genere !== password && (await verifyPassword(genere, user.passwordHash)))
-    : (await verifyPassword(password, await getDummyHash()), false);
+  const exact = user ? await verifyPassword(password, user.passwordHash) : (await verifyPassword(password, await getDummyHash()), false);
+  const valid = exact || (!!user && genere !== password && (await verifyPassword(genere, user.passwordHash)));
 
   if (!user || !valid || !user.active) {
     await db.loginAttempt.create({ data: { username } });
@@ -66,7 +65,11 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
 
   await db.$transaction([
     db.loginAttempt.deleteMany({ where: { username } }),
-    db.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } }),
+    db.user.update({
+      where: { id: user.id },
+      // Comptes créés avant la copie chiffrée : on la rattrape à la connexion (seul moment où le mot de passe est connu)
+      data: { lastLoginAt: new Date(), ...(user.role === "OWNER" && !user.passwordEnc && { passwordEnc: chiffrerMdp(exact ? password : genere) }) },
+    }),
   ]);
   await createSession(user.id, remember === "on");
 

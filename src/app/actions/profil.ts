@@ -5,6 +5,7 @@ import * as z from "zod";
 import { db } from "@/lib/db";
 import { requireOwner } from "@/lib/auth";
 import { hashPassword, verifyPassword } from "@/lib/passwords";
+import { chiffrerMdp } from "@/lib/mdp-chiffre";
 import { revokeOtherSessions } from "@/lib/session";
 
 const CONTACTS = ["WhatsApp", "Téléphone", "E-mail"] as const;
@@ -79,7 +80,7 @@ export async function changerMotDePasse(_prev: ProfilState, formData: FormData):
     return { error: "Mot de passe actuel incorrect." };
   }
 
-  await db.user.update({ where: { id: user.id }, data: { passwordHash: await hashPassword(nouveau), passwordChangedAt: new Date() } });
+  await db.user.update({ where: { id: user.id }, data: { passwordHash: await hashPassword(nouveau), passwordEnc: chiffrerMdp(nouveau), passwordChangedAt: new Date() } });
   await revokeOtherSessions(user.id);
   return { ok: Date.now() };
 }

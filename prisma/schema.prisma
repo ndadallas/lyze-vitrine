@@ -48,6 +48,7 @@ model User {
   active       Boolean   @default(true)
   lastLoginAt  DateTime?
   passwordChangedAt DateTime? // changé par le propriétaire lui-même (« Mon compte »), signalé à la gérante
+  passwordEnc  String?   // copie chiffrée (AES-GCM, clé LYZE_CLE_MDP) pour que la gérante puisse le lire
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
