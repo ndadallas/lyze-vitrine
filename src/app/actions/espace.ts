@@ -470,14 +470,20 @@ const ReponseSchema = z.object({
 export async function repondreAvis(_prev: EspaceState, formData: FormData): Promise<EspaceState> {
   const user = await getSessionUser();
   if (!user) return { error: "Session expirée, reconnectez-vous." };
-  const parsed = ReponseSchema.safeParse({ noticeId: String(formData.get("noticeId") ?? ""), body: String(formData.get("body") ?? "") });
+  // « Clôturer » (gérante seulement, demande 2026-11-22) : réponse facultative, puis le propriétaire ne peut plus répondre
+  const cloturer = user.role === "ADMIN" && formData.get("cloturer") === "1";
+  const body = String(formData.get("body") ?? "");
+  const parsed = ReponseSchema.safeParse({ noticeId: String(formData.get("noticeId") ?? ""), body: cloturer && !body.trim() ? "-" : body });
   if (!parsed.success) return { error: premier(parsed.error) };
 
-  const avis = await db.ownerNotice.findUnique({ where: { id: parsed.data.noticeId }, select: { id: true, ownerId: true } });
-  // un propriétaire ne répond qu'à ses propres messages
+  const avis = await db.ownerNotice.findUnique({ where: { id: parsed.data.noticeId }, select: { id: true, ownerId: true, closedAt: true } });
+  // un propriétaire ne répond qu'à ses propres messages, et plus du tout une fois la conversation clôturée
   if (!avis || (user.role !== "ADMIN" && avis.ownerId !== user.id)) return { error: "Message introuvable." };
+  if (user.role !== "ADMIN" && avis.closedAt) return { error: "Cette conversation a été clôturée par Lyze." };
 
-  await db.noticeReply.create({ data: { noticeId: avis.id, fromAdmin: user.role === "ADMIN", body: parsed.data.body } });
+  if (body.trim()) await db.noticeReply.create({ data: { noticeId: avis.id, fromAdmin: user.role === "ADMIN", body: parsed.data.body } });
+  // la gérante qui répond sans clôturer rouvre la conversation
+  if (user.role === "ADMIN") await db.ownerNotice.update({ where: { id: avis.id }, data: { closedAt: cloturer ? new Date() : null } });
   rafraichir(avis.ownerId);
   return { ok: Date.now() };
 }

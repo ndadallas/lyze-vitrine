@@ -264,6 +264,7 @@ export type AvisItem = {
   intervention: string | null; // "2026-11-20"
   date: string;
   lu: string | null;
+  cloture: string | null; // "2026-11-22" si Lyze a clôturé la conversation
   /** Fil de réponses, du plus ancien au plus récent (date déjà formatée : « 18 nov., 21:29 ») */
   reponses: { id: string; deLyze: boolean; texte: string; date: string; lu: boolean }[];
 };
@@ -281,6 +282,7 @@ export function versAvisItem(a: {
   property: { name: string } | null;
   eventDate: Date | null;
   readAt: Date | null;
+  closedAt?: Date | null;
   createdAt: Date;
   replies?: { id: string; fromAdmin: boolean; body: string; createdAt: Date; readAt: Date | null }[];
 }): AvisItem {
@@ -292,6 +294,7 @@ export function versAvisItem(a: {
     intervention: a.eventDate ? jourIso(a.eventDate) : null,
     date: jourIso(a.createdAt),
     lu: a.readAt ? jourIso(a.readAt) : null,
+    cloture: a.closedAt ? jourIso(a.closedAt) : null,
     reponses: (a.replies ?? []).map((r) => ({
       id: r.id,
       deLyze: r.fromAdmin,

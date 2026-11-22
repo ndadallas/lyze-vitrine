@@ -293,7 +293,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                   </span>
                 </div>
                 <small className="lz-dem-meta">
-                  {lastLogin.format(m.createdAt)} · <a href={`mailto:${m.email}`}>{m.email}</a>
+                  <strong className="lz-date">{lastLogin.format(m.createdAt)}</strong> · <a href={`mailto:${m.email}`}>{m.email}</a>
                   {m.phone && (
                     <>
                       {" · "}
@@ -327,7 +327,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                   </strong>
                   <span className="lz-statut lz-statut-nouvelle">Nouveau</span>
                 </div>
-                <small className="lz-dem-meta">{lastLogin.format(r.createdAt)}</small>
+                <small className="lz-dem-meta"><strong className="lz-date">{lastLogin.format(r.createdAt)}</strong></small>
                 <p className="lz-dem-message">{r.body}</p>
                 <Link href={`/admin/clients/${r.notice.owner.id}/messages`} className="btn btn-outline btn-sm">
                   Lire et répondre

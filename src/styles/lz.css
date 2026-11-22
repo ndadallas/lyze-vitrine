@@ -385,3 +385,8 @@ aside.side { overflow-y: auto; overscroll-behavior: contain; }
 .lz-titre-devise .lz-choix-langue { display: inline-flex; align-items: center; gap: 10px; }
 .lz-titre-devise .lz-choix-langue .sr-only { position: static !important; width: auto !important; height: auto !important; margin: 0 !important; overflow: visible !important; clip: auto !important; clip-path: none !important; white-space: nowrap; font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--lz-gris, #7a6a5e); }
 .lz-titre-devise .lz-choix-langue select { font-size: 15px; font-weight: 600; padding: 9px 34px 9px 14px; min-height: 42px; border: 1px solid rgba(74, 52, 38, .45); background-color: #fff; color: #2b1d15; border-radius: 4px; }
+/* 2026-11-22 : dates des demandes / messages bien visibles ; conversation clôturée */
+.lz-date { font-weight: 700; color: var(--lz-texte, #2b1d15); font-size: 13px; }
+.lz-bouton.lz-bouton-contour { background: transparent; color: var(--lz-texte, #2b1d15); border: 1px solid currentColor; }
+.lz-bouton.lz-bouton-contour:hover { background: rgba(74, 52, 38, .08); }
+.lz-fil-cloture { margin: 8px 0 0; padding: 8px 12px; font-size: 13px; font-weight: 600; color: var(--lz-gris, #6f6156); background: rgba(74, 52, 38, .06); border-left: 3px solid rgba(74, 52, 38, .35); }

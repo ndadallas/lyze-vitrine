@@ -30,7 +30,7 @@ function Resume({ d }: { d: DemandeItem }) {
         <span className={`lz-statut lz-statut-${d.statut.toLowerCase()}`}>{t(STATUTS_DEMANDE[d.statut])}</span>
       </div>
       <small className="lz-dem-meta">
-        {d.bien ?? t("Tous les biens")} · {t("envoyée le {date}", { date: dateCourte(d.date, locale) })}
+        {d.bien ?? t("Tous les biens")} · <strong className="lz-date">{t("envoyée le {date}", { date: dateCourte(d.date, locale) })}</strong>
         {d.du && d.au && ` · ${t("du {du} au {au}", { du: dateCourte(d.du, locale), au: dateCourte(d.au, locale) })}`}
       </small>
       {d.message && d.message !== "Usage personnel" && <p className="lz-dem-message">{d.message}</p>}

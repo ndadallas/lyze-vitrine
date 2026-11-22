@@ -23,7 +23,7 @@ function Avis({ a, nouveau }: { a: AvisItem; nouveau?: boolean }) {
         {nouveau && <span className="lz-statut lz-statut-nouvelle">{t("Nouveau")}</span>}
       </div>
       <small className="lz-dem-meta">
-        {a.bien ?? t("Tous vos biens")} · {t("envoyé le {date}", { date: dateLongue(a.date, locale) })}
+        {a.bien ?? t("Tous vos biens")} · <strong className="lz-date">{t("envoyé le {date}", { date: dateLongue(a.date, locale) })}</strong>
       </small>
       {a.intervention && <p className="lz-avis-date">{t("Intervention prévue le {date}", { date: dateLongue(a.intervention, locale) })}</p>}
       <p className="lz-dem-message lz-avis-texte">{a.message}</p>
@@ -44,7 +44,7 @@ function Fil({ a, cote, nomClient }: { a: AvisItem; cote: "admin" | "proprio"; n
           {a.reponses.map((r) => (
             <li key={r.id} className={r.deLyze ? "lz-fil-lyze" : "lz-fil-proprio"}>
               <small className="lz-fil-tete">
-                <strong>{auteur(r.deLyze)}</strong> · {r.date}
+                <strong>{auteur(r.deLyze)}</strong> · <strong className="lz-date">{r.date}</strong>
                 {/* « Lu » seulement sur ses propres réponses : l'autre côté les a ouvertes */}
                 {(cote === "admin") === r.deLyze && (r.lu ? " · Lu" : " · Pas encore lu")}
               </small>
@@ -54,14 +54,28 @@ function Fil({ a, cote, nomClient }: { a: AvisItem; cote: "admin" | "proprio"; n
         </ol>
       )}
       <Envoye ok={etat?.error ? undefined : etat?.ok} texte={t("Réponse envoyée.")} />
-      <form action={action} className="lz-fil-form" key={etat?.ok}>
-        <input type="hidden" name="noticeId" value={a.id} />
-        <textarea name="body" rows={2} required maxLength={3000} placeholder={t("Répondre…")} aria-label={t("Répondre à « {titre} »", { titre: a.titre })} />
-        <button type="submit" className="lz-bouton lz-petit" disabled={envoi}>
-          {envoi ? t("Envoi…") : t("Répondre")}
-        </button>
-        {etat?.error && <p className="lz-msg lz-erreur" role="alert">{t(etat.error)}</p>}
-      </form>
+      {a.cloture && (
+        <p className="lz-fil-cloture">
+          {t("Conversation clôturée par Lyze le {date}.", { date: dateLongue(a.cloture, locale) })}
+          {cote === "admin" && " Répondre la rouvre."}
+        </p>
+      )}
+      {(cote === "admin" || !a.cloture) && (
+        <form action={action} className="lz-fil-form" key={etat?.ok}>
+          <input type="hidden" name="noticeId" value={a.id} />
+          <textarea name="body" rows={2} required maxLength={3000} placeholder={t("Répondre…")} aria-label={t("Répondre à « {titre} »", { titre: a.titre })} />
+          <button type="submit" className="lz-bouton lz-petit" disabled={envoi}>
+            {envoi ? t("Envoi…") : t("Répondre")}
+          </button>
+          {cote === "admin" && !a.cloture && (
+            // formNoValidate : on peut clôturer sans écrire de réponse
+            <button type="submit" name="cloturer" value="1" formNoValidate className="lz-bouton lz-petit lz-bouton-contour" disabled={envoi} title="Envoie la réponse éventuelle puis ferme la conversation : le propriétaire ne peut plus répondre">
+              Clôturer
+            </button>
+          )}
+          {etat?.error && <p className="lz-msg lz-erreur" role="alert">{t(etat.error)}</p>}
+        </form>
+      )}
     </div>
   );
 }
