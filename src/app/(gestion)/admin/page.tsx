@@ -89,12 +89,18 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
   const debut12 = addMonths(debutMois, -11);
   const ventes = await db.booking.findMany({
     where: { kind: "RESERVED", startDate: { lt: finMois }, endDate: { gt: debut12 } },
-    select: { startDate: true, endDate: true, amount: true, fees: true, commission: true, platform: true },
+    select: { startDate: true, endDate: true, amount: true, fees: true, commission: true, platform: true, property: { select: { ownerId: true } } },
   });
   // Dépenses de tous les biens sur la même période (déduites du net des propriétaires, demande 2026-11-21)
   const depensesPeriode = await db.expense.findMany({
     where: { date: { gte: debut12, lt: finMois } },
-    select: { date: true, amount: true },
+    select: { date: true, amount: true, property: { select: { ownerId: true } } },
+  });
+  // Récapitulatif par client (demande 2026-11-21) : tous les propriétaires, même sans vente
+  const proprietaires = await db.user.findMany({
+    where: { role: "OWNER" },
+    select: { id: true, firstName: true, lastName: true },
+    orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
   });
   const somme = (de: Date, a: Date) => {
     const r = {
@@ -104,7 +110,14 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
       nuits: 0,
       depenses: depensesPeriode.filter((d) => d.date >= de && d.date < a).reduce((s, d) => s + d.amount, 0),
       parPlateforme: new Map<Plateforme, { ca: number; frais: number; lyze: number; nuits: number }>(),
+      parClient: new Map<string, { ca: number; frais: number; lyze: number; nuits: number; depenses: number }>(),
     };
+    const client = (id: string) => {
+      const c = r.parClient.get(id) ?? { ca: 0, frais: 0, lyze: 0, nuits: 0, depenses: 0 };
+      r.parClient.set(id, c);
+      return c;
+    };
+    for (const d of depensesPeriode) if (d.date >= de && d.date < a) client(d.property.ownerId).depenses += d.amount;
     for (const v of ventes) {
       const n = overlapNights(v, de, a);
       if (!n) continue;
@@ -119,6 +132,11 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
       p.lyze += v.commission * part;
       p.nuits += n;
       r.parPlateforme.set(v.platform, p);
+      const c = client(v.property.ownerId);
+      c.ca += v.amount * part;
+      c.frais += v.fees * part;
+      c.lyze += v.commission * part;
+      c.nuits += n;
     }
     return r;
   };
@@ -171,6 +189,32 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                       <td data-label="CA Lyze">{montant(p.lyze)}</td>
                     </tr>
                   ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {proprietaires.length > 0 && (
+            <div className="lz-table-defile">
+              <table className="releve lz-fiches-mobile ca-table">
+                <thead>
+                  <tr><th scope="col">Par client (12 mois)</th><th scope="col">CA du mois</th><th scope="col">Nuits</th><th scope="col">Chiffre d’affaires</th><th scope="col">Frais plateformes</th><th scope="col">CA Lyze</th><th scope="col">Dépenses</th><th scope="col">Net propriétaire</th></tr>
+                </thead>
+                <tbody>
+                  {proprietaires.map((o) => {
+                    const c = ca12.parClient.get(o.id) ?? { ca: 0, frais: 0, lyze: 0, nuits: 0, depenses: 0 };
+                    return (
+                      <tr key={o.id}>
+                        <th scope="row"><Link href={`/admin/clients/${o.id}/revenus`}>{o.firstName} {o.lastName}</Link></th>
+                        <td data-label="CA du mois">{montant(caMois.parClient.get(o.id)?.ca ?? 0)}</td>
+                        <td data-label="Nuits">{c.nuits}</td>
+                        <td data-label="Chiffre d’affaires">{montant(c.ca)}</td>
+                        <td data-label="Frais plateformes">{"−\u00a0"}{montant(c.frais)}</td>
+                        <td data-label="CA Lyze">{montant(c.lyze)}</td>
+                        <td data-label="Dépenses">{"−\u00a0"}{montant(c.depenses)}</td>
+                        <td data-label="Net propriétaire"><strong>{montant(c.ca - c.frais - c.lyze - c.depenses)}</strong></td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

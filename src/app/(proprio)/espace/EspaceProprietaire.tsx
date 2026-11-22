@@ -199,6 +199,7 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
           </label>
         )}
         <nav aria-label={t("Espace propriétaire")}>
+          {admin && <a href="/admin">Tableau de bord</a>}
           {onglets.map(([id, libelle]) => (
             <a
               key={id}
