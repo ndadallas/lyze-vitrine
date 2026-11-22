@@ -23,7 +23,7 @@ import { MonCompte, type CompteEspace } from "./MonCompte";
 import { ChoixMois, Planning } from "./Planning";
 import { Revenus } from "./Revenus";
 import { ONGLETS, lienOnglet } from "./onglets";
-import { ChoixDevise, ChoixLangue, useT } from "@/components/Langue";
+import { ChoixLangue, useT } from "@/components/Langue";
 
 export type ResaEspace = {
   id: string;
@@ -235,10 +235,11 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
               {t("Connecté·e :")} <strong>{nom}</strong>
             </span>
           )}
-          <span className="lz-reglages">
-            {!admin && <ChoixLangue />}
-            <ChoixDevise />
-          </span>
+          {!admin && (
+            <span className="lz-reglages">
+              <ChoixLangue />
+            </span>
+          )}
           <form action={logout}>
             <button type="submit">{t("Se déconnecter")}</button>
           </form>

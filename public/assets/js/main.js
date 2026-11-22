@@ -515,15 +515,17 @@
     }
     calcul.addEventListener('change', calculer);
     calcul.addEventListener('input', function (e) { if (e.target.closest('[data-plat-autre]')) calculer(); });
-    // Choix MAD / € (demande cliente 2026-11-22) : boutons ajoutés sous le titre, prix converti au changement
+    // Choix MAD / € (demandes cliente 2026-11-22) : menu déroulant à droite du titre, prix converti au changement
     var titreCalcul = calcul.querySelector('.titre');
     if (titreCalcul && nuits) {
-      var choix = document.createElement('div');
+      var choix = document.createElement('select');
       choix.className = 'devise-choix';
-      choix.setAttribute('role', 'group');
       choix.setAttribute('aria-label', 'MAD / €');
-      choix.innerHTML = '<button type="button" data-dev="MAD">MAD</button><button type="button" data-dev="EUR">€</button>';
-      titreCalcul.after(choix);
+      choix.innerHTML = '<option value="MAD">MAD</option><option value="EUR">€ EUR</option>';
+      var teteCalcul = document.createElement('div');
+      teteCalcul.className = 'calcul-tete';
+      titreCalcul.before(teteCalcul);
+      teteCalcul.append(titreCalcul, choix);
       var uniteSaisie = saisie.parentNode.querySelector('small');
       var appliquer = function (d, convertir) {
         var eur = d === 'EUR', pas = eur ? 5 : 50;
@@ -534,14 +536,12 @@
         saisie.max = curseur.max; saisie.step = pas;
         curseur.value = saisie.value = Math.min(+curseur.max, Math.max(+curseur.min, Math.round(v / pas) * pas));
         if (uniteSaisie) uniteSaisie.textContent = eur ? '€' : 'MAD';
-        choix.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.dev === d); });
+        choix.value = d;
         calculer();
       };
-      choix.addEventListener('click', function (e) {
-        var b = e.target.closest('button[data-dev]');
-        if (!b) return;
-        document.cookie = 'lyze_devise=' + b.dataset.dev + '; path=/; max-age=31536000; samesite=lax';
-        appliquer(b.dataset.dev, true);
+      choix.addEventListener('change', function () {
+        document.cookie = 'lyze_devise=' + choix.value + '; path=/; max-age=31536000; samesite=lax';
+        appliquer(choix.value, true);
       });
       var depart = devise; devise = 'MAD'; // la page arrive en MAD : convertir si le cookie dit €
       appliquer(depart, true);

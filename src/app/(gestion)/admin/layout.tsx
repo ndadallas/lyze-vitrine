@@ -4,7 +4,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { IconUsers } from "@/components/icons";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { ChoixDevise, LangueProvider } from "@/components/Langue";
+import { LangueProvider } from "@/components/Langue";
 import { deviseCourante } from "@/lib/langue-serveur";
 
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
@@ -53,7 +53,6 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
             )}
           </NavLink>
         ))}
-        <ChoixDevise className="lz-choix-langue lz-devise-admin" />
         <details className="nav-clients" open>
           <summary>Clients ({clients.length})</summary>
           <ul>

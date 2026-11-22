@@ -1698,8 +1698,13 @@ dialog.visionneuse .v-compte { position: absolute; bottom: 18px; left: 0; right:
 [dir="rtl"] .carte-resa .prix { margin-top: 6px; }
 @media (max-width: 999px) { .accueil .proprio-visuel { padding-inline: var(--gutter); } } /* simulateur empilé : centré */
 
-/* 2026-11-22 : choix MAD / € du simulateur */
-.devise-choix { display: inline-flex; margin-top: 10px; border: 1px solid rgba(74, 52, 38, .35); border-radius: 999px; overflow: hidden; }
-.devise-choix button { appearance: none; border: 0; background: none; padding: 6px 16px; min-height: 32px; font: 600 13px/1 var(--f-texte); letter-spacing: .06em; color: var(--brunF); cursor: pointer; }
-.devise-choix button[aria-pressed="true"] { background: var(--brunF); color: var(--creme); }
-.devise-choix button:focus-visible { outline: 2px solid var(--brique); outline-offset: -2px; }
+/* 2026-11-22 : choix MAD / € du simulateur = menu déroulant à droite du titre */
+.calcul-tete { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.devise-choix { font: 600 14px/1 var(--f-texte); color: var(--brunF); background-color: #fff; border: 1px solid rgba(74, 52, 38, .4); border-radius: 4px; padding: 8px 10px; min-height: 38px; cursor: pointer; }
+.devise-choix:focus-visible { outline: 2px solid var(--brique); outline-offset: 2px; }
+
+/* 2026-11-22 : photo « Parlons de votre bien » = toute la hauteur du titre + formulaire (ordinateur) */
+@media (min-width: 861px) {
+  .questions-contact .contact-photo { position: relative; align-self: stretch; aspect-ratio: auto; height: auto; min-height: 320px; }
+  .questions-contact .contact-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+}
