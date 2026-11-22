@@ -6,6 +6,7 @@ import "@/styles/lz.css";
 import { useActionState, useState } from "react";
 import { annulerDemande, envoyerDemande, traiterDemande } from "@/app/actions/espace";
 import { ConfirmButton } from "@/components/ConfirmButton";
+import { Envoye } from "@/components/Envoye";
 import {
   CODES_STATUTS,
   CODES_TYPES_DEMANDE,
@@ -46,7 +47,8 @@ export function DemandesProprio({ demandes, biens }: { demandes: DemandeItem[]; 
 
   return (
     <div className="lz-demandes">
-      <form action={action} className="lz-form lz-nouvelle">
+      <Envoye ok={etat?.error ? undefined : etat?.ok} texte={t("Demande envoyée. Barka vous répond sous 24 h.")} />
+      <form action={action} className="lz-form lz-nouvelle" key={etat?.error ? "e" : etat?.ok}>
         <span className="titre-p">{t("Nouvelle demande")}</span>
         <div className="lz-types" role="radiogroup" aria-label={t("Type de demande")}>
           {CODES_TYPES_DEMANDE.map((code) => (
@@ -149,6 +151,7 @@ export function DemandeAdmin({ d, client }: { d: DemandeItem; client?: { nom: st
         <a className="lz-lien lz-dem-client" href={client.lien}>{client.nom}</a>
       )}
       <Resume d={d} />
+      <Envoye ok={etat?.error ? undefined : etat?.ok} texte="Demande enregistrée." />
       <form action={action} className="lz-form lz-traiter">
         <input type="hidden" name="demandeId" value={d.id} />
         <div className="lz-grille">

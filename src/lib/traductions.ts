@@ -172,6 +172,7 @@ export const TRADUCTIONS: Record<string, [string, string, string, string, string
   "Votre question": ["Your question", "سؤالك", "La tua domanda", "Tu pregunta", "Ihre Frage"],
   "Envoi…": ["Sending…", "جارٍ الإرسال…", "Invio…", "Enviando…", "Wird gesendet…"],
   "Envoyer à Lyze": ["Send to Lyze", "إرسال إلى Lyze", "Invia a Lyze", "Enviar a Lyze", "An Lyze senden"],
+  "Réponse envoyée.": ["Reply sent.", "تم إرسال الرد.", "Risposta inviata.", "Respuesta enviada.", "Antwort gesendet."],
   "Demande envoyée. Barka vous répond sous 24 h.": ["Request sent. Barka will reply within 24 hours.", "تم إرسال الطلب. ستجيبك بركة خلال 24 ساعة.", "Richiesta inviata. Barka ti risponde entro 24 ore.", "Solicitud enviada. Barka te responde en menos de 24 h.", "Anfrage gesendet. Barka antwortet innerhalb von 24 Std."],
   "Vos demandes": ["Your requests", "طلباتك", "Le tue richieste", "Tus solicitudes", "Ihre Anfragen"],
   "Aucune demande envoyée pour l’instant.": ["No requests sent yet.", "لم ترسل أي طلب بعد.", "Nessuna richiesta inviata per ora.", "Aún no has enviado ninguna solicitud.", "Noch keine Anfragen gesendet."],

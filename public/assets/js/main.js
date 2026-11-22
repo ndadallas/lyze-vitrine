@@ -329,7 +329,10 @@
     }
   }[lang];
   var nombre = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 1 });
-  var mad = function (n) { return nombre.format(Math.round(n)) + ' ' + T.devise; };
+  // Devise du simulateur (MAD / €), même cookie que l'espace propriétaire ; montants saisis et affichés dans la devise choisie
+  var devise = (document.cookie.match(/(?:^|; )lyze_devise=(EUR|MAD)/) || [])[1] || 'MAD';
+  var TAUX_EUR = 10.8; // MAD pour 1 €, indicatif (= défaut de LYZE_TAUX_EUR)
+  var mad = function (n) { return nombre.format(Math.round(n)) + ' ' + (devise === 'EUR' ? '€' : T.devise); };
   var ici = document.currentScript ? document.currentScript.src : location.href;
 
   /* Hero : diaporama en fondu, avec points de navigation */
@@ -512,7 +515,37 @@
     }
     calcul.addEventListener('change', calculer);
     calcul.addEventListener('input', function (e) { if (e.target.closest('[data-plat-autre]')) calculer(); });
-    calculer();
+    // Choix MAD / € (demande cliente 2026-11-22) : boutons ajoutés sous le titre, prix converti au changement
+    var titreCalcul = calcul.querySelector('.titre');
+    if (titreCalcul && nuits) {
+      var choix = document.createElement('div');
+      choix.className = 'devise-choix';
+      choix.setAttribute('role', 'group');
+      choix.setAttribute('aria-label', 'MAD / €');
+      choix.innerHTML = '<button type="button" data-dev="MAD">MAD</button><button type="button" data-dev="EUR">€</button>';
+      titreCalcul.after(choix);
+      var uniteSaisie = saisie.parentNode.querySelector('small');
+      var appliquer = function (d, convertir) {
+        var eur = d === 'EUR', pas = eur ? 5 : 50;
+        var v = +curseur.value || 0;
+        if (convertir && d !== devise) v = eur ? v / TAUX_EUR : v * TAUX_EUR;
+        devise = d;
+        curseur.min = eur ? 20 : 200; curseur.max = eur ? 1000 : 10000; curseur.step = pas;
+        saisie.max = curseur.max; saisie.step = pas;
+        curseur.value = saisie.value = Math.min(+curseur.max, Math.max(+curseur.min, Math.round(v / pas) * pas));
+        if (uniteSaisie) uniteSaisie.textContent = eur ? '€' : 'MAD';
+        choix.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.dev === d); });
+        calculer();
+      };
+      choix.addEventListener('click', function (e) {
+        var b = e.target.closest('button[data-dev]');
+        if (!b) return;
+        document.cookie = 'lyze_devise=' + b.dataset.dev + '; path=/; max-age=31536000; samesite=lax';
+        appliquer(b.dataset.dev, true);
+      });
+      var depart = devise; devise = 'MAD'; // la page arrive en MAD : convertir si le cookie dit €
+      appliquer(depart, true);
+    } else calculer();
   }
 
   /* Indicatifs téléphoniques de tous les pays (noms traduits par le navigateur) */

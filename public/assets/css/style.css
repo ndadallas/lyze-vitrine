@@ -1697,3 +1697,9 @@ dialog.visionneuse .v-compte { position: absolute; bottom: 18px; left: 0; right:
 .hero-slides { overflow: hidden; } /* le zoom lent de la photo active élargissait la page (tablette) */
 [dir="rtl"] .carte-resa .prix { margin-top: 6px; }
 @media (max-width: 999px) { .accueil .proprio-visuel { padding-inline: var(--gutter); } } /* simulateur empilé : centré */
+
+/* 2026-11-22 : choix MAD / € du simulateur */
+.devise-choix { display: inline-flex; margin-top: 10px; border: 1px solid rgba(74, 52, 38, .35); border-radius: 999px; overflow: hidden; }
+.devise-choix button { appearance: none; border: 0; background: none; padding: 6px 16px; min-height: 32px; font: 600 13px/1 var(--f-texte); letter-spacing: .06em; color: var(--brunF); cursor: pointer; }
+.devise-choix button[aria-pressed="true"] { background: var(--brunF); color: var(--creme); }
+.devise-choix button:focus-visible { outline: 2px solid var(--brique); outline-offset: -2px; }

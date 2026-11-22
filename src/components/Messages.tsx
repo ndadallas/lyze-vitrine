@@ -6,6 +6,7 @@ import "@/styles/lz.css";
 import { useActionState, useEffect } from "react";
 import { envoyerAvis, marquerReponsesLues, repondreAvis, supprimerAvis } from "@/app/actions/espace";
 import { ConfirmButton } from "@/components/ConfirmButton";
+import { Envoye } from "@/components/Envoye";
 import type { AvisItem } from "@/lib/espace";
 
 const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
@@ -52,6 +53,7 @@ function Fil({ a, cote, nomClient }: { a: AvisItem; cote: "admin" | "proprio"; n
           ))}
         </ol>
       )}
+      <Envoye ok={etat?.error ? undefined : etat?.ok} texte={t("Réponse envoyée.")} />
       <form action={action} className="lz-fil-form" key={etat?.ok}>
         <input type="hidden" name="noticeId" value={a.id} />
         <textarea name="body" rows={2} required maxLength={3000} placeholder={t("Répondre…")} aria-label={t("Répondre à « {titre} »", { titre: a.titre })} />
@@ -92,6 +94,7 @@ export function MessagesAdmin({ ownerId, nomClient, biens, avis }: { ownerId: st
 
   return (
     <div className="lz-demandes">
+      <Envoye ok={etat?.error ? undefined : etat?.ok} texte="Message envoyé au propriétaire." />
       <form action={action} className="lz-form lz-nouvelle" key={etat?.ok}>
         <span className="titre-p">{t("Nouveau message")}</span>
         <input type="hidden" name="ownerId" value={ownerId} />
