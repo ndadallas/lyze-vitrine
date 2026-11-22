@@ -380,7 +380,7 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
             </div>
 
             <div hidden={onglet !== "revenus"}>
-              <Revenus biens={biens} aujourdhui={aujourdhui} depenses={depenses} titre={admin ? "Ses revenus" : t("Vos revenus")} />
+              <Revenus biens={biens} aujourdhui={aujourdhui} depenses={depenses} titre={admin ? "Ses revenus" : t("Vos revenus")} exportClient={admin?.clientId} />
             </div>
 
             <section className="panneau lz-section" id="depenses" hidden={onglet !== "depenses"}>

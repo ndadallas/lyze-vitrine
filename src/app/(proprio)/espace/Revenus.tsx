@@ -15,9 +15,12 @@ const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const court = (d: Date, locale = "fr-FR") => new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", timeZone: "UTC" }).format(d);
 
 /** Relevé mois par mois (12 derniers mois, mois en cours compris) + prochaines arrivées, tous biens ou un seul. */
-export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: { biens: BienEspace[]; aujourdhui: string; depenses: DepenseItem[]; titre?: string }) {
+export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus", exportClient }: { biens: BienEspace[]; aujourdhui: string; depenses: DepenseItem[]; titre?: string; exportClient?: string }) {
   const { t, locale, mois: nomMois, montant } = useT();
   const [filtre, setFiltre] = useState("tous");
+  const anneeCourante = Number(aujourdhui.slice(0, 4));
+  const [exportAnnee, setExportAnnee] = useState(anneeCourante);
+  const [exportMois, setExportMois] = useState("");
   const choisis = filtre === "tous" ? biens : biens.filter((b) => b.id === filtre);
   const t0 = jour(aujourdhui);
   const moisCourant = new Date(Date.UTC(t0.getUTCFullYear(), t0.getUTCMonth(), 1));
@@ -114,6 +117,34 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus" }: 
             <path fill="none" stroke="currentColor" strokeWidth="2" d="M5 9l7 7 7-7" />
           </svg>
         </label>
+      )}
+
+      {exportClient && (
+        <div className="releve-export">
+          <span className="titre-p">Relevé Excel à envoyer au client</span>
+          <label className="champ-app select">
+            <select aria-label="Mois du relevé" value={exportMois} onChange={(e) => setExportMois(e.target.value)}>
+              <option value="">Toute l’année</option>
+              {MOIS.map((nom, i) => <option key={nom} value={i + 1}>{nom}</option>)}
+            </select>
+            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" strokeWidth="2" d="M5 9l7 7 7-7" /></svg>
+          </label>
+          <label className="champ-app select">
+            <select aria-label="Année du relevé" value={exportAnnee} onChange={(e) => setExportAnnee(Number(e.target.value))}>
+              {[0, 1, 2, 3].map((i) => <option key={i} value={anneeCourante - i}>{anneeCourante - i}</option>)}
+            </select>
+            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" strokeWidth="2" d="M5 9l7 7 7-7" /></svg>
+          </label>
+          <a
+            className="lz-bouton lz-petit"
+            href={`/api/releve?${new URLSearchParams({ client: exportClient, annee: String(exportAnnee), ...(exportMois ? { mois: exportMois } : {}), ...(filtre !== "tous" ? { bien: filtre } : {}) })}`}
+            download
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 19h14" /></svg>
+            Télécharger (.xlsx)
+          </a>
+          {filtre !== "tous" && <small className="aide-p">Seulement le bien choisi ci-dessus.</small>}
+        </div>
       )}
 
       {/* même présentation en cases que la gérante (demande 2026-11-21) */}
