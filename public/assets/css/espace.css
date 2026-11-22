@@ -339,3 +339,12 @@ button.jour { cursor: pointer; }
 @media (max-width: 860px) { .ca-cases { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; } .ca-cases dd { font-size: 17px; white-space: normal; } .ca-cases .ca-net { grid-column: 1 / -1; } }
 .lz-reglages { display: flex; gap: 6px; flex-wrap: wrap; }
 .revenus .revenus-filtre + .titre-p { display: block; margin-top: 20px; }
+
+/* 2026-11-22 : choix de langue à drapeaux (comme l'accueil), en haut à droite de l'espace et de la connexion */
+.contenu { position: relative; }
+.langues.lz-langue-coin { position: absolute; top: 18px; inset-inline-end: 24px; z-index: 30; }
+.langues .langues-liste button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 16px; font: 400 14px/1.2 inherit; color: var(--brunF, #2b1d15); background: none; border: 0; text-align: start; cursor: pointer; }
+.langues .langues-liste button:hover, .langues .langues-liste button:focus-visible { background: var(--sable, #efe6d8); color: var(--brique, #7e4f33); }
+.langues .drapeau { width: 20px; height: 15px; object-fit: cover; border-radius: 2px; flex: none; }
+.langues .lien-langue { background: #fff; }
+@media (max-width: 999px) { .langues.lz-langue-coin { position: static; display: flex; justify-content: flex-end; margin-bottom: 12px; } .langues.lz-langue-coin .langues-liste { inset-inline-end: 0; } .langues.lz-langue-coin summary { margin-inline-start: auto; } }

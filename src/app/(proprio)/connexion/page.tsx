@@ -33,7 +33,7 @@ export default async function ConnexionPage({ searchParams }: PageProps<"/connex
       </div>
 
       <LoginForm />
-      <ChoixLangue className="lz-choix-langue lz-choix-langue-connexion" />
+      <ChoixLangue className="lz-choix-langue-connexion" />
     </main>
     </LangueProvider>
   );

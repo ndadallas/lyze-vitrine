@@ -49,28 +49,35 @@ export function useT() {
   return { t, langue, locale, mois, jours, montant, devise, tauxEur };
 }
 
-/** Choix de la langue (barre de l'espace, page de connexion) : cookie puis rechargement. */
+/** Choix de la langue, même rendu que l'accueil : drapeau + code, liste déroulante (demande 2026-11-22). Cookie puis rechargement. */
+const DRAPEAUX: Record<Langue, string> = { fr: "fr", en: "gb", ar: "ma", it: "it", es: "es", de: "de" };
 export function ChoixLangue({ className }: { className?: string }) {
   const { langue, t } = useT();
+  const choisir = (l: Langue) => {
+    document.cookie = `${COOKIE_LANGUE}=${l}; path=/; max-age=31536000; samesite=lax`;
+    const url = new URL(window.location.href);
+    url.searchParams.delete("lang");
+    window.location.href = url.toString();
+  };
+  const drapeau = (l: Langue) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img className="drapeau" src={`/assets/img/drapeaux/${DRAPEAUX[l]}.svg`} alt="" width={20} height={15} />
+  );
   return (
-    <label className={className ?? "lz-choix-langue"}>
-      <span className="sr-only">{t("Langue")}</span>
-      <select
-        value={langue}
-        onChange={(e) => {
-          document.cookie = `${COOKIE_LANGUE}=${e.target.value}; path=/; max-age=31536000; samesite=lax`;
-          const url = new URL(window.location.href);
-          url.searchParams.delete("lang");
-          window.location.href = url.toString();
-        }}
-      >
-        {LANGUES.map((l) => (
-          <option key={l} value={l}>
+    <details className={`langues ${className ?? ""}`}>
+      <summary className="lien-langue" aria-label={t("Langue")}>
+        {drapeau(langue)}
+        {langue.toUpperCase()}
+      </summary>
+      <div className="langues-liste">
+        {LANGUES.filter((l) => l !== langue).map((l) => (
+          <button key={l} type="button" lang={l} onClick={() => choisir(l)}>
+            {drapeau(l)}
             {NOMS_LANGUES[l]}
-          </option>
+          </button>
         ))}
-      </select>
-    </label>
+      </div>
+    </details>
   );
 }
 

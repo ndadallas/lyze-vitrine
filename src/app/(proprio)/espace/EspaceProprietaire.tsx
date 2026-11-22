@@ -235,11 +235,6 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
               {t("Connecté·e :")} <strong>{nom}</strong>
             </span>
           )}
-          {!admin && (
-            <span className="lz-reglages">
-              <ChoixLangue />
-            </span>
-          )}
           <form action={logout}>
             <button type="submit">{t("Se déconnecter")}</button>
           </form>
@@ -247,6 +242,7 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
       </aside>
 
       <main className="contenu" id="haut">
+        {!admin && <ChoixLangue className="lz-langue-coin" />}
         <header className="entete-app" hidden={onglet !== "biens"}>
           <span className="eyebrow eyebrow--brique">{admin ? "Vue gérante : ce que voit le client" : t("Espace propriétaire")}</span>
           <h1>{admin ? salutation : t("Bienvenue dans votre espace, {nom}", { nom: salutation })}</h1>
