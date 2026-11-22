@@ -29,6 +29,8 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     ["demandes", "Demandes", demandes],
     ["messages", "Messages du site", messages],
     ["reponses", "Réponses des propriétaires", reponses],
+    ["documents", "Documents reçus", 0],
+    ["archives", "Archives", 0],
     ["nouveau", "Nouveau client", 0],
     ["clients", "Liste des clients", 0],
   ];

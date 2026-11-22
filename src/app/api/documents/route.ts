@@ -19,17 +19,18 @@ const Champs = z.object({
 });
 
 /**
- * Dépôt d'un document par la gérante pour un client (ownerId) ; le propriétaire consulte seulement (2026-11-18).
+ * Dépôt d'un document : par la gérante pour un client (ownerId), ou par le propriétaire pour lui-même
+ * (« envoyer un document à Lyze », 2026-11-22 ; signalé à la gérante dans « Documents reçus »).
  * Route handler plutôt que server action : les actions sont limitées à 1 Mo.
  */
 export async function POST(request: Request) {
   const user = await getSessionUser();
-  if (user?.role !== "ADMIN") return NextResponse.json({ error: "Réservé à Lyze." }, { status: 403 });
+  if (!user) return NextResponse.json({ error: "Session expirée, reconnectez-vous." }, { status: 401 });
 
   const form = await request.formData().catch(() => null);
   if (!form) return NextResponse.json({ error: "Envoi invalide." }, { status: 400 });
 
-  const ownerId = String(form.get("ownerId") ?? "");
+  const ownerId = user.role === "ADMIN" ? String(form.get("ownerId") ?? "") : user.id;
   const owner = await db.user.findUnique({ where: { id: ownerId }, select: { id: true, role: true } });
   if (!owner || owner.role !== "OWNER") return NextResponse.json({ error: "Client introuvable." }, { status: 404 });
 

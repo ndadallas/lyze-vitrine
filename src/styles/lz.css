@@ -390,3 +390,7 @@ aside.side { overflow-y: auto; overscroll-behavior: contain; }
 .lz-bouton.lz-bouton-contour { background: transparent; color: var(--lz-texte, #2b1d15); border: 1px solid currentColor; }
 .lz-bouton.lz-bouton-contour:hover { background: rgba(74, 52, 38, .08); }
 .lz-fil-cloture { margin: 8px 0 0; padding: 8px 12px; font-size: 13px; font-weight: 600; color: var(--lz-gris, #6f6156); background: rgba(74, 52, 38, .06); border-left: 3px solid rgba(74, 52, 38, .35); }
+
+/* Archives et documents reçus (tableau de bord de la gérante) */
+.lz-archive-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-top: 8px; }
+.lz-archive-actions form { display: contents; }

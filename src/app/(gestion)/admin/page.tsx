@@ -4,10 +4,11 @@ import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { ActionForm } from "@/components/ActionForm";
 import { DemandeAdmin } from "@/components/Demandes";
-import { basculerMessage, refuserResa, validerResa } from "@/app/actions/espace";
+import { basculerMessage, refuserResa, supprimerAvis, supprimerDemande, supprimerMessageSite, validerResa } from "@/app/actions/espace";
+import { ConfirmButton } from "@/components/ConfirmButton";
 
 const jourCourt = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
-import { versDemandeItem } from "@/lib/espace";
+import { CATEGORIES_DOC, STATUTS_DEMANDE, TYPES_DEMANDE, documentUrl, versDemandeItem } from "@/lib/espace";
 import { createOwner } from "./actions";
 import { addMonths, today } from "@/lib/dates";
 import { formatMontant } from "@/lib/devise";
@@ -144,11 +145,34 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
   const caMois = somme(debutMois, finMois);
   const ca12 = somme(debut12, finMois);
 
-  const messages = await db.siteMessage.findMany({
-    orderBy: [{ handled: "asc" }, { createdAt: "desc" }],
-    take: 40,
+  // Traités = rangés dans Archives (demande 2026-11-22 : ne plus disparaître, pouvoir supprimer)
+  const messages = await db.siteMessage.findMany({ where: { handled: false }, orderBy: { createdAt: "desc" }, take: 40 });
+  const nonTraites = messages.length;
+  const archives = vue === "archives";
+  const [demandesArch, messagesArch, conversationsArch] = archives
+    ? await Promise.all([
+        db.ownerRequest.findMany({
+          where: { status: { in: ["TRAITEE", "REFUSEE"] } },
+          orderBy: { updatedAt: "desc" },
+          take: 100,
+          include: { property: { select: { name: true } }, owner: { select: { id: true, firstName: true, lastName: true } } },
+        }),
+        db.siteMessage.findMany({ where: { handled: true }, orderBy: { createdAt: "desc" }, take: 100 }),
+        db.ownerNotice.findMany({
+          where: { closedAt: { not: null } },
+          orderBy: { closedAt: "desc" },
+          take: 100,
+          include: { owner: { select: { id: true, firstName: true, lastName: true } }, _count: { select: { replies: true } } },
+        }),
+      ])
+    : [[], [], []];
+  // Documents envoyés par les propriétaires (dernier mois)
+  const docsRecus = await db.document.findMany({
+    where: { byAdmin: false, createdAt: { gte: addMonths(t, -1) } },
+    orderBy: { createdAt: "desc" },
+    take: 30,
+    select: { id: true, title: true, category: true, createdAt: true, property: { select: { name: true } }, owner: { select: { id: true, firstName: true, lastName: true } } },
   });
-  const nonTraites = messages.filter((m) => !m.handled).length;
 
   return (
     <>
@@ -279,6 +303,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
           </h2>
           <p className="muted" style={{ fontSize: 14 }}>
             Demandes de réservation des voyageurs, demandes de rappel et mots de passe oubliés, envoyés depuis le site.
+            Une fois traités, ils sont rangés dans <Link href="/admin?vue=archives">Archives</Link>.
           </p>
           <ul className="lz-liste-dem">
             {messages.map((m) => (
@@ -305,11 +330,120 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                 {m.body && <p className="lz-dem-message">{m.body}</p>}
                 <form action={basculerMessage}>
                   <input type="hidden" name="messageId" value={m.id} />
-                  <button type="submit" className="lz-lien">{m.handled ? "Remettre à traiter" : "Marquer comme traité"}</button>
+                  <button type="submit" className="lz-lien">Marquer comme traité (archiver)</button>
                 </form>
               </li>
             ))}
           </ul>
+        </section>
+      )}
+
+      {voir("documents", docsRecus.length) && (
+        <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="docs-title">
+          <h2 id="docs-title" style={{ fontSize: 20 }}>
+            Documents reçus des propriétaires <span className="muted" style={{ fontSize: 15 }}>(dernier mois)</span>
+          </h2>
+          {docsRecus.length === 0 ? (
+            <p className="muted">Aucun document envoyé par un propriétaire ce dernier mois.</p>
+          ) : (
+            <ul className="lz-liste-dem">
+              {docsRecus.map((d) => (
+                <li key={d.id}>
+                  <div className="lz-dem-tete">
+                    <strong>{d.owner.firstName} {d.owner.lastName} · {d.title}</strong>
+                  </div>
+                  <small className="lz-dem-meta">
+                    <strong className="lz-date">{lastLogin.format(d.createdAt)}</strong> · {CATEGORIES_DOC[d.category]}{d.property ? ` · ${d.property.name}` : ""}
+                  </small>
+                  <div className="lz-archive-actions">
+                    <a href={documentUrl(d.id)} target="_blank" rel="noopener" className="btn btn-outline btn-sm">Ouvrir</a>
+                    <Link href={`/admin/clients/${d.owner.id}/documents`} className="lz-lien">Tous ses documents</Link>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
+
+      {archives && (
+        <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="archives-title">
+          <h2 id="archives-title" style={{ fontSize: 20 }}>Archives</h2>
+          <p className="muted" style={{ fontSize: 14 }}>
+            Demandes traitées ou refusées, messages du site traités et conversations clôturées. « Supprimer » les efface définitivement, des deux côtés.
+          </p>
+
+          <h3 style={{ fontSize: 17 }}>Demandes des propriétaires ({demandesArch.length})</h3>
+          {demandesArch.length === 0 ? <p className="muted">Aucune.</p> : (
+            <ul className="lz-liste-dem">
+              {demandesArch.map((r) => (
+                <li key={r.id}>
+                  <div className="lz-dem-tete">
+                    <strong>{r.owner.firstName} {r.owner.lastName} · {TYPES_DEMANDE[r.type]}{r.property ? ` · ${r.property.name}` : ""}</strong>
+                    <span className={`lz-statut ${r.status === "TRAITEE" ? "lz-statut-traitee" : "lz-statut-refusee"}`}>{STATUTS_DEMANDE[r.status]}</span>
+                  </div>
+                  <small className="lz-dem-meta">Envoyée le <strong className="lz-date">{lastLogin.format(r.createdAt)}</strong></small>
+                  <p className="lz-dem-message">{r.message}</p>
+                  {r.reply && <p className="lz-dem-message"><strong>Réponse :</strong> {r.reply}</p>}
+                  <form action={supprimerDemande} className="lz-archive-actions">
+                    <input type="hidden" name="demandeId" value={r.id} />
+                    <Link href={`/admin/clients/${r.owner.id}/demandes`} className="lz-lien">Voir dans sa fiche</Link>
+                    <ConfirmButton message="Supprimer définitivement cette demande (aussi chez le propriétaire) ?" className="lz-lien lz-danger">Supprimer</ConfirmButton>
+                  </form>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <h3 style={{ fontSize: 17 }}>Messages du site ({messagesArch.length})</h3>
+          {messagesArch.length === 0 ? <p className="muted">Aucun.</p> : (
+            <ul className="lz-liste-dem">
+              {messagesArch.map((m) => (
+                <li key={m.id}>
+                  <div className="lz-dem-tete">
+                    <strong>{m.type === "reservation" ? "Réservation" : m.type === "mdp" ? "Mot de passe oublié" : "Rappel"} · {m.name}{m.subject ? ` · ${m.subject}` : ""}</strong>
+                    <span className="lz-statut lz-statut-traitee">Traité</span>
+                  </div>
+                  <small className="lz-dem-meta">
+                    <strong className="lz-date">{lastLogin.format(m.createdAt)}</strong>{m.email && ` · ${m.email}`}{m.phone && ` · ${m.phone}`}
+                  </small>
+                  {m.body && <p className="lz-dem-message">{m.body}</p>}
+                  <div className="lz-archive-actions">
+                    <form action={basculerMessage}>
+                      <input type="hidden" name="messageId" value={m.id} />
+                      <button type="submit" className="lz-lien">Remettre à traiter</button>
+                    </form>
+                    <form action={supprimerMessageSite}>
+                      <input type="hidden" name="messageId" value={m.id} />
+                      <ConfirmButton message="Supprimer définitivement ce message ?" className="lz-lien lz-danger">Supprimer</ConfirmButton>
+                    </form>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <h3 style={{ fontSize: 17 }}>Conversations clôturées ({conversationsArch.length})</h3>
+          {conversationsArch.length === 0 ? <p className="muted">Aucune.</p> : (
+            <ul className="lz-liste-dem">
+              {conversationsArch.map((a) => (
+                <li key={a.id}>
+                  <div className="lz-dem-tete">
+                    <strong>{a.owner.firstName} {a.owner.lastName} · {a.title}</strong>
+                    <span className="lz-statut lz-statut-traitee">Clôturée</span>
+                  </div>
+                  <small className="lz-dem-meta">
+                    Clôturée le <strong className="lz-date">{lastLogin.format(a.closedAt!)}</strong> · {a._count.replies} réponse{a._count.replies > 1 ? "s" : ""}
+                  </small>
+                  <form action={supprimerAvis} className="lz-archive-actions">
+                    <input type="hidden" name="avisId" value={a.id} />
+                    <Link href={`/admin/clients/${a.owner.id}/messages`} className="lz-lien">Relire la conversation</Link>
+                    <ConfirmButton message="Supprimer définitivement cette conversation (aussi chez le propriétaire) ?" className="lz-lien lz-danger">Supprimer</ConfirmButton>
+                  </form>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       )}
 

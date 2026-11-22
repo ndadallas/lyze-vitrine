@@ -109,7 +109,7 @@ export function Documents({
         </div>
         {!lectureSeule && (
           <button type="button" className="lz-bouton" aria-expanded={ouvert} onClick={() => setOuvert((v) => !v)}>
-            {ouvert ? "Fermer" : "+ Ajouter un document"}
+            {ouvert ? t("Fermer") : admin ? "+ Ajouter un document" : t("+ Envoyer un document à Lyze")}
           </button>
         )}
       </div>
@@ -125,7 +125,7 @@ export function Documents({
               <span>{t("Catégorie")}</span>
               <select name="category" defaultValue={admin ? "RELEVE" : "ASSURANCE"}>
                 {CODES_CATEGORIES.map((c) => (
-                  <option key={c} value={c}>{CATEGORIES_DOC[c]}</option>
+                  <option key={c} value={c}>{t(CATEGORIES_DOC[c])}</option>
                 ))}
               </select>
             </label>
@@ -143,13 +143,13 @@ export function Documents({
               <input name="file" type="file" required accept="application/pdf,image/jpeg,image/png,image/webp" />
             </label>
           </div>
-          {erreur && <p className="lz-msg lz-erreur" role="alert">{erreur}</p>}
+          {erreur && <p className="lz-msg lz-erreur" role="alert">{t(erreur)}</p>}
           <button type="submit" className="lz-bouton" disabled={envoi}>
-            {envoi ? "Envoi…" : "Envoyer le document"}
+            {envoi ? t("Envoi…") : admin ? "Envoyer le document" : t("Envoyer à Lyze")}
           </button>
         </form>
       )}
-      {ok && !ouvert && <p className="lz-msg lz-ok" role="status">{t("Document ajouté.")}</p>}
+      {ok && !ouvert && <p className="lz-msg lz-ok" role="status">{admin ? "Document ajouté." : t("Document envoyé à Lyze.")}</p>}
 
       {visibles.length === 0 ? (
         <p className="lz-vide">
@@ -176,7 +176,7 @@ export function Documents({
                 {!lectureSeule && (admin || !d.parLyze) && (
                   <form action={supprimerDocument}>
                     <input type="hidden" name="documentId" value={d.id} />
-                    <ConfirmButton message={`Supprimer « ${d.titre} » ?`} className="lz-lien lz-danger">
+                    <ConfirmButton message={t("Supprimer « {titre} » ?", { titre: d.titre })} className="lz-lien lz-danger">
                       {t("Supprimer")}
                     </ConfirmButton>
                   </form>

@@ -443,9 +443,9 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
           <span className="eyebrow eyebrow--brique">{t("Documents")}</span>
           <h2>{t("Vos documents")}</h2>
           <p className="aide-p">
-            {t("Contrat, relevés, factures, états des lieux : tout est classé par catégorie.")}
+            {t("Contrat, relevés, factures, états des lieux : tout est classé par catégorie.")}{!admin && <> {t("Vous pouvez aussi envoyer vos documents à Lyze (assurance, pièce d'identité, factures…).")}</>}
           </p>
-          <Documents documents={documents} biens={listeBiens} admin={!!admin} ownerId={admin?.clientId} lectureSeule={!admin} />
+          <Documents documents={documents} biens={listeBiens} admin={!!admin} ownerId={admin?.clientId} />
         </section>
 
         <section className="panneau lz-section" id="demandes" hidden={onglet !== "demandes"}>

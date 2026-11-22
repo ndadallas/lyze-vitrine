@@ -268,6 +268,18 @@ export const TRADUCTIONS: Record<string, [string, string, string, string, string
   "Sèche-cheveux": ["Hair dryer", "مجفف شعر", "Asciugacapelli", "Secador de pelo", "Haartrockner"],
   "Aspirateur": ["Vacuum cleaner", "مكنسة كهربائية", "Aspirapolvere", "Aspiradora", "Staubsauger"],
 
+  "Fermer": ["Close", "إغلاق", "Chiudi", "Cerrar", "Schließen"],
+  "Supprimer": ["Delete", "حذف", "Elimina", "Eliminar", "Löschen"],
+  "+ Envoyer un document à Lyze": ["+ Send a document to Lyze", "+ إرسال وثيقة إلى Lyze", "+ Invia un documento a Lyze", "+ Enviar un documento a Lyze", "+ Dokument an Lyze senden"],
+  "Document envoyé à Lyze.": ["Document sent to Lyze.", "تم إرسال الوثيقة إلى Lyze.", "Documento inviato a Lyze.", "Documento enviado a Lyze.", "Dokument an Lyze gesendet."],
+  "Supprimer « {titre} » ?": ["Delete “{titre}”?", "حذف « {titre} »؟", "Eliminare « {titre} »?", "¿Eliminar « {titre} »?", "„{titre}“ löschen?"],
+  "Vous pouvez aussi envoyer vos documents à Lyze (assurance, pièce d'identité, factures…).": ["You can also send your documents to Lyze (insurance, ID, invoices…).", "يمكنك أيضًا إرسال وثائقك إلى Lyze (التأمين، بطاقة الهوية، الفواتير…).", "Puoi anche inviare i tuoi documenti a Lyze (assicurazione, documento d'identità, fatture…).", "También puedes enviar tus documentos a Lyze (seguro, documento de identidad, facturas…).", "Sie können Lyze auch Ihre Dokumente senden (Versicherung, Ausweis, Rechnungen…)."],
+  "Fichier trop lourd (4 Mo maximum).": ["File too large (4 MB maximum).", "الملف كبير جدًا (4 ميغابايت كحد أقصى).", "File troppo pesante (massimo 4 MB).", "Archivo demasiado pesado (4 MB máximo).", "Datei zu groß (maximal 4 MB)."],
+  "Format non accepté : PDF, JPG, PNG ou WebP.": ["Format not accepted: PDF, JPG, PNG or WebP.", "صيغة غير مقبولة: PDF أو JPG أو PNG أو WebP.", "Formato non accettato: PDF, JPG, PNG o WebP.", "Formato no aceptado: PDF, JPG, PNG o WebP.", "Format nicht akzeptiert: PDF, JPG, PNG oder WebP."],
+  "Donnez un titre au document.": ["Give the document a title.", "أعطِ عنوانًا للوثيقة.", "Dai un titolo al documento.", "Ponle un título al documento.", "Geben Sie dem Dokument einen Titel."],
+  "Aucun fichier reçu.": ["No file received.", "لم يتم استلام أي ملف.", "Nessun file ricevuto.", "No se recibió ningún archivo.", "Keine Datei empfangen."],
+  "L'envoi a échoué, réessayez.": ["Sending failed, please try again.", "فشل الإرسال، أعد المحاولة.", "Invio non riuscito, riprova.", "El envío falló, inténtalo de nuevo.", "Senden fehlgeschlagen, bitte erneut versuchen."],
+  "Connexion impossible, réessayez.": ["Connection failed, please try again.", "تعذّر الاتصال، أعد المحاولة.", "Connessione impossibile, riprova.", "Conexión imposible, inténtalo de nuevo.", "Verbindung fehlgeschlagen, bitte erneut versuchen."],
   // Catégories de documents et de dépenses
   "Contrat de gestion": ["Management contract", "عقد التسيير", "Contratto di gestione", "Contrato de gestión", "Verwaltungsvertrag"],
   "Relevé de revenus": ["Income statement", "كشف المداخيل", "Rendiconto dei ricavi", "Extracto de ingresos", "Einnahmenübersicht"],

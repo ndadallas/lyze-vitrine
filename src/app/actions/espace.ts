@@ -84,7 +84,7 @@ export async function enregistrerFiche(_prev: EspaceState, formData: FormData): 
 /* Documents                                                           */
 /* ------------------------------------------------------------------ */
 
-/** Gérante uniquement : le propriétaire consulte ses documents sans les modifier (2026-11-18). */
+/** Gérante : tout document ; propriétaire : seulement ceux qu'il a envoyés (2026-11-22). */
 export async function supprimerDocument(formData: FormData) {
   const user = await getSessionUser();
   if (!user) return;
@@ -93,7 +93,7 @@ export async function supprimerDocument(formData: FormData) {
     select: { id: true, ownerId: true, byAdmin: true },
   });
   if (!doc) return;
-  if (user.role !== "ADMIN") return;
+  if (user.role !== "ADMIN" && (doc.ownerId !== user.id || doc.byAdmin)) return;
   await db.document.delete({ where: { id: doc.id } });
   rafraichir(doc.ownerId);
 }
@@ -486,4 +486,22 @@ export async function repondreAvis(_prev: EspaceState, formData: FormData): Prom
   if (user.role === "ADMIN") await db.ownerNotice.update({ where: { id: avis.id }, data: { closedAt: cloturer ? new Date() : null } });
   rafraichir(avis.ownerId);
   return { ok: Date.now() };
+}
+
+/* ------------------------------------------------------------------ */
+/* Archives de la gérante (2026-11-22) : suppression définitive          */
+/* ------------------------------------------------------------------ */
+
+export async function supprimerDemande(formData: FormData) {
+  await requireAdmin();
+  const d = await db.ownerRequest.findUnique({ where: { id: String(formData.get("demandeId") ?? "") }, select: { id: true, ownerId: true } });
+  if (!d) return;
+  await db.ownerRequest.delete({ where: { id: d.id } });
+  rafraichir(d.ownerId);
+}
+
+export async function supprimerMessageSite(formData: FormData) {
+  await requireAdmin();
+  await db.siteMessage.deleteMany({ where: { id: String(formData.get("messageId") ?? "") } });
+  revalidatePath("/admin");
 }
