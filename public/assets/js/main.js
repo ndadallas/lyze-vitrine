@@ -189,8 +189,38 @@
       var prix = parseFloat(resaForm.dataset.prix); // vide tant que Lyze n'a pas donné le prix
       var ligneTotal = resaForm.querySelector('[data-total-ligne]');
       ligneTotal.hidden = !(prix > 0 && nbNuits());
-      if (!ligneTotal.hidden) resaForm.querySelector('[data-total]').textContent = new Intl.NumberFormat(LOCALE).format(prix * nbNuits()) + ' MAD';
+      if (!ligneTotal.hidden) resaForm.querySelector('[data-total]').textContent = enDevise(prix * nbNuits());
     };
+    // Choix MAD / € sur la fiche d'un bien (demande cliente 2026-11-23), même cookie que le simulateur ; prix enregistré en MAD
+    var deviseResa = (document.cookie.match(/(?:^|; )lyze_devise=(EUR|MAD)/) || [])[1] || 'MAD';
+    var enDevise = function (mad) {
+      return deviseResa === 'EUR' ? new Intl.NumberFormat(LOCALE).format(Math.round(mad / 10.8)) + ' €' : new Intl.NumberFormat(LOCALE).format(mad) + ' MAD';
+    };
+    var prixResa = resaForm && resaForm.querySelector('.prix');
+    if (prixResa) {
+      var uniteResa = prixResa.querySelector('small'), uniteMad = uniteResa.textContent, texteResa = prixResa.firstChild;
+      var choixResa = document.createElement('select');
+      choixResa.className = 'devise-choix';
+      choixResa.setAttribute('aria-label', 'MAD / €');
+      choixResa.innerHTML = '<option value="MAD">MAD</option><option value="EUR">€ EUR</option>';
+      var teteResa = document.createElement('div');
+      teteResa.className = 'resa-tete';
+      prixResa.before(teteResa);
+      teteResa.append(prixResa, choixResa);
+      var afficherPrix = function () {
+        var p = parseFloat(resaForm.dataset.prix);
+        if (p > 0) texteResa.textContent = enDevise(p).replace(/ (MAD|€)$/, '') + ' ';
+        uniteResa.textContent = deviseResa === 'EUR' ? uniteMad.replace(/MAD|درهم/, '€') : uniteMad;
+        choixResa.value = deviseResa;
+        majCarte();
+      };
+      choixResa.addEventListener('change', function () {
+        deviseResa = choixResa.value;
+        document.cookie = 'lyze_devise=' + deviseResa + '; path=/; max-age=31536000; samesite=lax';
+        afficherPrix();
+      });
+      afficherPrix();
+    }
     if (resaForm) {
       var etatResa = resaForm.querySelector('.etat'), boutonResa = resaForm.querySelector('button[type="submit"]');
       var dire = function (texte, classe) { etatResa.textContent = texte; etatResa.className = 'etat ' + (classe || ''); };

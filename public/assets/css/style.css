@@ -1708,3 +1708,6 @@ dialog.visionneuse .v-compte { position: absolute; bottom: 18px; left: 0; right:
   .questions-contact .contact-photo { position: relative; align-self: stretch; aspect-ratio: auto; height: auto; min-height: 320px; }
   .questions-contact .contact-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 }
+
+/* Fiche bien : choix MAD / € à droite du prix (2026-11-23) */
+.resa-tete { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }

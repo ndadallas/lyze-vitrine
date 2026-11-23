@@ -214,7 +214,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                       <td data-label="Nuits">{p.nuits}</td>
                       <td data-label="Chiffre d’affaires">{montant(p.ca)}</td>
                       <td data-label="Frais plateforme">{montant(p.frais)}</td>
-                      <td data-label="CA Lyze">{montant(p.lyze)}</td>
+                      <td data-label="CA Lyze" className="ca-lyze-col">{montant(p.lyze)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -237,7 +237,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                         <td data-label="Nuits">{c.nuits}</td>
                         <td data-label="Chiffre d’affaires">{montant(c.ca)}</td>
                         <td data-label="Frais plateformes">{"−\u00a0"}{montant(c.frais)}</td>
-                        <td data-label="CA Lyze">{montant(c.lyze)}</td>
+                        <td data-label="CA Lyze" className="ca-lyze-col">{montant(c.lyze)}</td>
                         <td data-label="Dépenses">{"−\u00a0"}{montant(c.depenses)}</td>
                         <td data-label="Net propriétaire"><strong>{montant(c.ca - c.frais - c.lyze - c.depenses)}</strong></td>
                       </tr>
