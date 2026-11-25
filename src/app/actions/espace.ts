@@ -154,12 +154,15 @@ export async function envoyerDemande(_prev: EspaceState, formData: FormData): Pr
   return { ok: Date.now() };
 }
 
-/** Le propriétaire retire une demande que Lyze n'a pas encore prise en charge. */
+/**
+ * Le propriétaire supprime une demande : pas encore prise en charge = supprimée pour de bon,
+ * sinon seulement retirée de son espace (Lyze garde l'historique).
+ */
 export async function annulerDemande(formData: FormData) {
   const user = await requireOwner();
-  await db.ownerRequest.deleteMany({
-    where: { id: String(formData.get("demandeId") ?? ""), ownerId: user.id, status: "NOUVELLE" },
-  });
+  const where = { id: String(formData.get("demandeId") ?? ""), ownerId: user.id };
+  await db.ownerRequest.deleteMany({ where: { ...where, status: "NOUVELLE" } });
+  await db.ownerRequest.updateMany({ where, data: { hiddenByOwner: true } });
   rafraichir(user.id);
 }
 
@@ -440,6 +443,29 @@ export async function supprimerAvis(formData: FormData) {
   rafraichir(avis.ownerId);
 }
 
+/** Le propriétaire supprime un message de son espace (Lyze le garde ; une nouvelle réponse de Lyze le fait réapparaître). */
+export async function masquerAvis(formData: FormData) {
+  const user = await requireOwner();
+  await db.ownerNotice.updateMany({ where: { id: String(formData.get("avisId") ?? ""), ownerId: user.id }, data: { hiddenByOwner: true } });
+  rafraichir(user.id);
+}
+
+/** Gérante : supprime une réponse d'un propriétaire. */
+export async function supprimerReponse(formData: FormData) {
+  await requireAdmin();
+  const r = await db.noticeReply.findUnique({ where: { id: String(formData.get("reponseId") ?? "") }, select: { id: true, notice: { select: { ownerId: true } } } });
+  if (!r) return;
+  await db.noticeReply.delete({ where: { id: r.id } });
+  rafraichir(r.notice.ownerId);
+}
+
+/** Gérante : documents envoyés par les propriétaires (un client ou tous) marqués vus → plus de pastille. */
+export async function marquerDocumentsVus(ownerId?: string) {
+  await requireAdmin();
+  const n = await db.document.updateMany({ where: { byAdmin: false, seenAt: null, ...(ownerId ? { ownerId } : {}) }, data: { seenAt: new Date() } });
+  if (n.count) revalidatePath("/admin", "layout");
+}
+
 /** Le propriétaire ouvre l'onglet Messages : tout devient lu (la gérante voit « Lu le … »), réponses de Lyze comprises. */
 export async function marquerAvisLus() {
   const user = await requireOwner();
@@ -483,7 +509,7 @@ export async function repondreAvis(_prev: EspaceState, formData: FormData): Prom
 
   if (body.trim()) await db.noticeReply.create({ data: { noticeId: avis.id, fromAdmin: user.role === "ADMIN", body: parsed.data.body } });
   // la gérante qui répond sans clôturer rouvre la conversation
-  if (user.role === "ADMIN") await db.ownerNotice.update({ where: { id: avis.id }, data: { closedAt: cloturer ? new Date() : null } });
+  if (user.role === "ADMIN") await db.ownerNotice.update({ where: { id: avis.id }, data: { closedAt: cloturer ? new Date() : null, hiddenByOwner: false } });
   rafraichir(avis.ownerId);
   return { ok: Date.now() };
 }

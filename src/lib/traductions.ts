@@ -332,4 +332,8 @@ export const TRADUCTIONS: Record<string, [string, string, string, string, string
   "Dépense supprimée.": ["Expense deleted.", "تم حذف المصروف.", "Spesa eliminata.", "Gasto eliminado.", "Ausgabe gelöscht."],
   "Demande annulée.": ["Request cancelled.", "تم إلغاء الطلب.", "Richiesta annullata.", "Solicitud cancelada.", "Anfrage storniert."],
   "Document supprimé.": ["Document deleted.", "تم حذف المستند.", "Documento eliminato.", "Documento eliminado.", "Dokument gelöscht."],
+  "Demande supprimée.": ["Request deleted.", "تم حذف الطلب.", "Richiesta eliminata.", "Solicitud eliminada.", "Anfrage gelöscht."],
+  "Supprimer cette demande ?": ["Delete this request?", "حذف هذا الطلب؟", "Eliminare questa richiesta?", "¿Eliminar esta solicitud?", "Diese Anfrage löschen?"],
+  "Message supprimé.": ["Message deleted.", "تم حذف الرسالة.", "Messaggio eliminato.", "Mensaje eliminado.", "Nachricht gelöscht."],
+  "Supprimer ce message de votre espace ?": ["Delete this message from your area?", "حذف هذه الرسالة من فضائك؟", "Eliminare questo messaggio dalla tua area?", "¿Eliminar este mensaje de tu área?", "Diese Nachricht aus Ihrem Bereich löschen?"],
 };

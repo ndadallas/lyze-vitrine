@@ -17,12 +17,20 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     select: { id: true, firstName: true, lastName: true, passwordChangedAt: true },
   });
 
-  const [aValider, demandes, messages, reponses] = await Promise.all([
+  const enCours = { status: { in: ["NOUVELLE" as const, "EN_COURS" as const] } };
+  const [resasAValider, blocages, demandes, messages, reponses, docsNonVus] = await Promise.all([
     db.booking.count({ where: { pending: true } }),
-    db.ownerRequest.count({ where: { status: { in: ["NOUVELLE", "EN_COURS"] } } }),
+    // demandes de blocage de dates : dans « À valider » (demande 2026-11-25), pas dans « Demandes »
+    db.ownerRequest.count({ where: { ...enCours, type: "USAGE_PERSO" } }),
+    db.ownerRequest.count({ where: { ...enCours, type: { not: "USAGE_PERSO" } } }),
     db.siteMessage.count({ where: { handled: false } }),
     db.noticeReply.count({ where: { fromAdmin: false, readAt: null } }),
+    // documents envoyés par les propriétaires pas encore ouverts, par client
+    db.document.groupBy({ by: ["ownerId"], where: { byAdmin: false, seenAt: null }, _count: true }),
   ]);
+  const aValider = resasAValider + blocages;
+  const docsParClient = new Map(docsNonVus.map((d) => [d.ownerId, d._count]));
+  const docs = docsNonVus.reduce((s, d) => s + d._count, 0);
   // Pastille rouge avec le nombre à traiter (demande 2026-11-21 : notification visible dans l'onglet)
   const ONGLETS: [string, string, number][] = [
     ["ca", "Chiffre d’affaires", 0],
@@ -30,7 +38,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     ["demandes", "Demandes", demandes],
     ["messages", "Messages du site", messages],
     ["reponses", "Réponses des propriétaires", reponses],
-    ["documents", "Documents reçus", 0],
+    ["documents", "Documents reçus", docs],
     ["archives", "Archives", 0],
     ["nouveau", "Nouveau client", 0],
     ["clients", "Liste des clients", 0],
@@ -64,6 +72,11 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
               <li key={c.id}>
                 <Link href={`/admin/clients/${c.id}`}>
                   {c.firstName} {c.lastName}
+                  {docsParClient.get(c.id) && (
+                    <span className="nav-pastille" aria-label={`${docsParClient.get(c.id)} document(s) reçu(s)`}>
+                      {docsParClient.get(c.id)}
+                    </span>
+                  )}
                   {c.passwordChangedAt && c.passwordChangedAt.getTime() > recent && (
                     <span className="nav-mdp">mot de passe changé</span>
                   )}

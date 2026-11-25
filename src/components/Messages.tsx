@@ -4,7 +4,7 @@ import { useT } from "@/components/Langue";
 import "@/styles/lz.css";
 
 import { useActionState, useEffect } from "react";
-import { envoyerAvis, marquerReponsesLues, repondreAvis, supprimerAvis } from "@/app/actions/espace";
+import { envoyerAvis, marquerReponsesLues, masquerAvis, repondreAvis, supprimerAvis } from "@/app/actions/espace";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { avecConfirmation } from "@/components/Envoye";
 import type { AvisItem } from "@/lib/espace";
@@ -92,6 +92,12 @@ export function MessagesProprio({ avis, nonLus }: { avis: AvisItem[]; nonLus: st
         <li key={a.id} className={nonLus.includes(a.id) ? "lz-avis-nouveau" : undefined}>
           <Avis a={a} nouveau={nonLus.includes(a.id)} />
           <Fil a={a} cote="proprio" />
+          <form action={masquerAvis} data-ok={t("Message supprimé.")}>
+            <input type="hidden" name="avisId" value={a.id} />
+            <ConfirmButton message={t("Supprimer ce message de votre espace ?")} className="lz-lien lz-danger">
+              {t("Supprimer")}
+            </ConfirmButton>
+          </form>
         </li>
       ))}
     </ul>

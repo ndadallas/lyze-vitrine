@@ -137,6 +137,7 @@ export type DocumentItem = {
   taille: number;
   mime: string;
   parLyze: boolean;
+  vu: boolean; // envoyé par le propriétaire et déjà ouvert par la gérante (toujours vrai pour ceux de Lyze)
 };
 
 export type DemandeItem = {
@@ -165,6 +166,7 @@ export function versDocumentItem(d: {
   size: number;
   mimeType: string;
   byAdmin: boolean;
+  seenAt: Date | null;
 }): DocumentItem {
   return {
     id: d.id,
@@ -175,6 +177,7 @@ export function versDocumentItem(d: {
     taille: d.size,
     mime: d.mimeType,
     parLyze: d.byAdmin,
+    vu: d.byAdmin || !!d.seenAt,
   };
 }
 
@@ -209,6 +212,7 @@ export const SELECT_DOCUMENT = {
   category: true,
   property: { select: { name: true } },
   createdAt: true,
+  seenAt: true,
   size: true,
   mimeType: true,
   byAdmin: true,

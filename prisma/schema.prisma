@@ -179,6 +179,7 @@ model Document {
   size       Int
   data       Bytes
   byAdmin    Boolean     @default(true)
+  seenAt     DateTime? // envoyé par le propriétaire : ouvert par la gérante (pastille tant que vide)
   createdAt  DateTime    @default(now())
 
   owner    User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
@@ -226,6 +227,7 @@ model OwnerRequest {
   endDate    DateTime?
   message    String
   reply      String?
+  hiddenByOwner Boolean    @default(false) // supprimée par le propriétaire : reste chez Lyze
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
 
@@ -290,6 +292,7 @@ model OwnerNotice {
   eventDate  DateTime? // date d'intervention prévue (facultative)
   readAt     DateTime?
   closedAt   DateTime? // conversation clôturée par Lyze : le propriétaire ne peut plus répondre
+  hiddenByOwner Boolean @default(false) // supprimé par le propriétaire : reste chez Lyze (une réponse de Lyze le fait réapparaître)
   createdAt  DateTime  @default(now())
 
   owner    User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)

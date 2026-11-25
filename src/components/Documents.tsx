@@ -4,8 +4,8 @@ import { useT } from "@/components/Langue";
 import "@/styles/lz.css";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { supprimerDocument } from "@/app/actions/espace";
+import { useEffect, useState } from "react";
+import { marquerDocumentsVus, supprimerDocument } from "@/app/actions/espace";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { confirmer } from "@/components/Envoye";
 import {
@@ -190,4 +190,12 @@ export function Documents({
       )}
     </div>
   );
+}
+
+/** Gérante : « Documents reçus » ouvert → les documents des propriétaires sont vus (pastilles retirées). */
+export function MarquerDocumentsVus() {
+  useEffect(() => {
+    marquerDocumentsVus();
+  }, []);
+  return null;
 }

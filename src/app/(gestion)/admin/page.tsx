@@ -4,7 +4,8 @@ import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { ActionForm } from "@/components/ActionForm";
 import { DemandeAdmin } from "@/components/Demandes";
-import { basculerMessage, refuserResa, supprimerAvis, supprimerDemande, supprimerMessageSite, validerResa } from "@/app/actions/espace";
+import { basculerMessage, refuserResa, supprimerAvis, supprimerDemande, supprimerDocument, supprimerMessageSite, supprimerReponse, validerResa } from "@/app/actions/espace";
+import { MarquerDocumentsVus } from "@/components/Documents";
 import { ConfirmButton } from "@/components/ConfirmButton";
 
 const jourCourt = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
@@ -66,7 +67,8 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
     include: { property: { select: { name: true, owner: { select: { id: true, firstName: true, lastName: true } } } } },
   });
   // Demandes des propriétaires à traiter (toutes fiches confondues)
-  const demandes = await db.ownerRequest.findMany({
+  // les demandes de blocage de dates sont traitées dans « À valider » (demande 2026-11-25)
+  const toutesDemandes = await db.ownerRequest.findMany({
     where: { status: { in: ["NOUVELLE", "EN_COURS"] } },
     orderBy: { createdAt: "asc" },
     take: 30,
@@ -75,6 +77,8 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
       owner: { select: { id: true, firstName: true, lastName: true } },
     },
   });
+  const blocages = toutesDemandes.filter((d) => d.type === "USAGE_PERSO");
+  const demandes = toutesDemandes.filter((d) => d.type !== "USAGE_PERSO");
 
   // Réponses des propriétaires aux messages de Lyze, pas encore lues
   const reponses = await db.noticeReply.findMany({
@@ -171,7 +175,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
     where: { byAdmin: false, createdAt: { gte: addMonths(t, -1) } },
     orderBy: { createdAt: "desc" },
     take: 30,
-    select: { id: true, title: true, category: true, createdAt: true, property: { select: { name: true } }, owner: { select: { id: true, firstName: true, lastName: true } } },
+    select: { id: true, title: true, category: true, createdAt: true, seenAt: true, property: { select: { name: true } }, owner: { select: { id: true, firstName: true, lastName: true } } },
   });
 
   return (
@@ -251,15 +255,27 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
         </section>
       )}
 
-      {voir("valider", aValider.length) && (
+      {voir("valider", aValider.length + blocages.length) && (
         <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="valider-title">
           <h2 id="valider-title" style={{ fontSize: 20 }}>
-            À valider <span className="muted" style={{ fontSize: 15 }}>({aValider.length})</span>
+            À valider <span className="muted" style={{ fontSize: 15 }}>({aValider.length + blocages.length})</span>
           </h2>
           <p className="muted" style={{ fontSize: 14 }}>
             Réservations et blocages ajoutés ou modifiés par les propriétaires dans leur espace. Validez-les ou refusez-les
-            (refuser supprime la ligne du calendrier).
+            (refuser supprime la ligne du calendrier). Les demandes de blocage de dates des clients sont aussi ici : passez-les en
+            « Traitée » (ou cochez le blocage) pour bloquer les dates dans leur calendrier.
           </p>
+          {blocages.length > 0 && (
+            <ul className="lz-liste-dem">
+              {blocages.map((r) => (
+                <DemandeAdmin
+                  key={`${r.id}-${r.updatedAt.getTime()}`}
+                  d={versDemandeItem(r)}
+                  client={{ nom: `${r.owner.firstName} ${r.owner.lastName}`, lien: `/admin/clients/${r.owner.id}/demandes` }}
+                />
+              ))}
+            </ul>
+          )}
           <ul className="lz-liste-dem">
             {aValider.map((b) => (
               <li key={b.id}>
@@ -328,10 +344,16 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                   {!m.mailSent && m.type !== "mdp" && " · mail non envoyé (clé Resend absente)"}
                 </small>
                 {m.body && <p className="lz-dem-message">{m.body}</p>}
-                <form action={basculerMessage} data-ok="Message archivé.">
-                  <input type="hidden" name="messageId" value={m.id} />
-                  <button type="submit" className="lz-lien">Marquer comme traité (archiver)</button>
-                </form>
+                <div className="lz-archive-actions">
+                  <form action={basculerMessage} data-ok="Message archivé.">
+                    <input type="hidden" name="messageId" value={m.id} />
+                    <button type="submit" className="lz-lien">Marquer comme traité (archiver)</button>
+                  </form>
+                  <form action={supprimerMessageSite} data-ok="Message supprimé.">
+                    <input type="hidden" name="messageId" value={m.id} />
+                    <ConfirmButton message="Supprimer définitivement ce message ?" className="lz-lien lz-danger">Supprimer</ConfirmButton>
+                  </form>
+                </div>
               </li>
             ))}
           </ul>
@@ -343,6 +365,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
           <h2 id="docs-title" style={{ fontSize: 20 }}>
             Documents reçus des propriétaires <span className="muted" style={{ fontSize: 15 }}>(dernier mois)</span>
           </h2>
+          {vue === "documents" && docsRecus.some((d) => !d.seenAt) && <MarquerDocumentsVus />}
           {docsRecus.length === 0 ? (
             <p className="muted">Aucun document envoyé par un propriétaire ce dernier mois.</p>
           ) : (
@@ -351,6 +374,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                 <li key={d.id}>
                   <div className="lz-dem-tete">
                     <strong>{d.owner.firstName} {d.owner.lastName} · {d.title}</strong>
+                    {!d.seenAt && <span className="lz-statut lz-statut-nouvelle">Nouveau</span>}
                   </div>
                   <small className="lz-dem-meta">
                     <strong className="lz-date">{lastLogin.format(d.createdAt)}</strong> · {CATEGORIES_DOC[d.category]}{d.property ? ` · ${d.property.name}` : ""}
@@ -358,6 +382,10 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                   <div className="lz-archive-actions">
                     <a href={documentUrl(d.id)} target="_blank" rel="noopener" className="btn btn-outline btn-sm">Ouvrir</a>
                     <Link href={`/admin/clients/${d.owner.id}/documents`} className="lz-lien">Tous ses documents</Link>
+                    <form action={supprimerDocument} data-ok="Document supprimé.">
+                      <input type="hidden" name="documentId" value={d.id} />
+                      <ConfirmButton message={`Supprimer « ${d.title} » ? Il disparaîtra aussi de l’espace du propriétaire.`} className="lz-lien lz-danger">Supprimer</ConfirmButton>
+                    </form>
                   </div>
                 </li>
               ))}
@@ -463,9 +491,15 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                 </div>
                 <small className="lz-dem-meta"><strong className="lz-date">{lastLogin.format(r.createdAt)}</strong></small>
                 <p className="lz-dem-message">{r.body}</p>
-                <Link href={`/admin/clients/${r.notice.owner.id}/messages`} className="btn btn-outline btn-sm">
-                  Lire et répondre
-                </Link>
+                <div className="lz-archive-actions">
+                  <Link href={`/admin/clients/${r.notice.owner.id}/messages`} className="btn btn-outline btn-sm">
+                    Lire et répondre
+                  </Link>
+                  <form action={supprimerReponse} data-ok="Réponse supprimée.">
+                    <input type="hidden" name="reponseId" value={r.id} />
+                    <ConfirmButton message="Supprimer cette réponse du propriétaire ?" className="lz-lien lz-danger">Supprimer</ConfirmButton>
+                  </form>
+                </div>
               </li>
             ))}
           </ul>

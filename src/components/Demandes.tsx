@@ -4,7 +4,7 @@ import { useT } from "@/components/Langue";
 import "@/styles/lz.css";
 
 import { useActionState, useState } from "react";
-import { annulerDemande, envoyerDemande, traiterDemande } from "@/app/actions/espace";
+import { annulerDemande, envoyerDemande, supprimerDemande, traiterDemande } from "@/app/actions/espace";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { avecConfirmation } from "@/components/Envoye";
 import {
@@ -121,14 +121,12 @@ export function DemandesProprio({ demandes, biens }: { demandes: DemandeItem[]; 
                     <strong>{t("Réponse de Lyze :")}</strong> {d.reponse}
                   </p>
                 )}
-                {d.statut === "NOUVELLE" && (
-                  <form action={annulerDemande} data-ok={t("Demande annulée.")}>
-                    <input type="hidden" name="demandeId" value={d.id} />
-                    <ConfirmButton message={t("Retirer cette demande ?")} className="lz-lien lz-danger">
-                      {t("Retirer la demande")}
-                    </ConfirmButton>
-                  </form>
-                )}
+                <form action={annulerDemande} data-ok={t("Demande supprimée.")}>
+                  <input type="hidden" name="demandeId" value={d.id} />
+                  <ConfirmButton message={t("Supprimer cette demande ?")} className="lz-lien lz-danger">
+                    {t("Supprimer")}
+                  </ConfirmButton>
+                </form>
               </li>
             ))}
           </ul>
@@ -177,6 +175,12 @@ export function DemandeAdmin({ d, client }: { d: DemandeItem; client?: { nom: st
         <button type="submit" className="lz-bouton lz-petit" disabled={envoi}>
           {envoi ? "…" : "Enregistrer"}
         </button>
+      </form>
+      <form action={supprimerDemande} data-ok="Demande supprimée.">
+        <input type="hidden" name="demandeId" value={d.id} />
+        <ConfirmButton message="Supprimer définitivement cette demande (aussi chez le propriétaire) ?" className="lz-lien lz-danger">
+          Supprimer
+        </ConfirmButton>
       </form>
     </li>
   );

@@ -10,7 +10,7 @@ import { Depenses } from "@/components/Depenses";
 import { DemandeAdmin, DemandesProprio } from "@/components/Demandes";
 import { MessagesAdmin, MessagesProprio } from "@/components/Messages";
 import { CompteClientAdmin, type CompteClient } from "@/components/CompteClientAdmin";
-import { marquerAvisLus } from "@/app/actions/espace";
+import { marquerAvisLus, marquerDocumentsVus } from "@/app/actions/espace";
 import { Documents } from "@/components/Documents";
 import { FicheBienForm } from "@/components/FicheBienForm";
 import { PhotoManager, type PhotoItem } from "@/components/PhotoManager";
@@ -127,10 +127,15 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
   const [nonLus] = useState(() => avis.filter((a) => (admin ? a.reponses.some((r) => !r.deLyze && !r.lu) : !a.lu || a.reponses.some((r) => r.deLyze && !r.lu))).map((a) => a.id));
   // page Messages déjà ouverte pendant la visite (ou arrivée directe sur /espace/messages)
   const [vuMessages, setVuMessages] = useState(onglet === "messages");
+  // gérante : documents envoyés par le client pas encore ouverts (pastille sur Documents, comme au tableau de bord)
+  const [docsNonVus] = useState(() => (admin ? documents.filter((d) => !d.vu).length : 0));
+  const [vuDocs, setVuDocs] = useState(onglet === "documents");
+  const docsVus = vuDocs || onglet === "documents";
   const lus = vuMessages || onglet === "messages";
   function aller(id: string) {
     if (id !== onglet) window.history.pushState(null, "", lien(id));
     if (id === "messages") setVuMessages(true);
+    if (id === "documents") setVuDocs(true);
     window.scrollTo({ top: 0 });
   }
   useEffect(() => {
@@ -143,6 +148,9 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
   useEffect(() => {
     if (!admin && lus && nonLus.length) marquerAvisLus();
   }, [admin, lus, nonLus.length]);
+  useEffect(() => {
+    if (admin && docsVus && docsNonVus) marquerDocumentsVus(admin.clientId);
+  }, [admin, docsVus, docsNonVus]);
   const t0 = jour(aujourdhui);
   const [bienId, setBienId] = useState<string | undefined>(biens[0]?.id);
   const [mois, setMois] = useState(() => monthStart(t0.getUTCFullYear(), t0.getUTCMonth()));
@@ -216,6 +224,9 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
               {t(libelle)}
               {id === "messages" && nonLus.length > 0 && !lus && (
                 <span className="lz-badge" aria-label={t("{n} non lu(s)", { n: nonLus.length })}>{nonLus.length}</span>
+              )}
+              {id === "documents" && docsNonVus > 0 && !docsVus && (
+                <span className="lz-badge" aria-label={`${docsNonVus} nouveau(x)`}>{docsNonVus}</span>
               )}
             </a>
           ))}

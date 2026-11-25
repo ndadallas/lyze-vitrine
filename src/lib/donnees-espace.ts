@@ -29,13 +29,14 @@ export async function chargerEspace(user: User, gerante: boolean) {
     }),
     db.document.findMany({ where: { ownerId: user.id }, orderBy: { createdAt: "desc" }, select: SELECT_DOCUMENT }),
     db.ownerRequest.findMany({
-      where: { ownerId: user.id },
+      // supprimées par le propriétaire : cachées chez lui seulement
+      where: { ownerId: user.id, ...(gerante ? {} : { hiddenByOwner: false }) },
       orderBy: { createdAt: "desc" },
       take: 50,
       include: { property: { select: { name: true } } },
     }),
     db.expense.findMany({ where: { property: { ownerId: user.id }, date: { gte: from } }, orderBy: { date: "desc" } }),
-    db.ownerNotice.findMany({ where: { ownerId: user.id }, orderBy: { createdAt: "desc" }, take: 50, include: INCLURE_AVIS }),
+    db.ownerNotice.findMany({ where: { ownerId: user.id, ...(gerante ? {} : { hiddenByOwner: false }) }, orderBy: { createdAt: "desc" }, take: 50, include: INCLURE_AVIS }),
   ]);
 
   const biens: BienEspace[] = properties.map((p) => ({
