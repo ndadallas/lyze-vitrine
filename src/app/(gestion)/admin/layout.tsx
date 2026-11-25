@@ -24,12 +24,15 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     db.ownerRequest.count({ where: { ...enCours, type: "USAGE_PERSO" } }),
     db.ownerRequest.count({ where: { ...enCours, type: { not: "USAGE_PERSO" } } }),
     db.siteMessage.count({ where: { handled: false } }),
-    db.noticeReply.count({ where: { fromAdmin: false, readAt: null } }),
+    // réponses des propriétaires non lues : signalées sur le client (onglet « Réponses » retiré le 2026-11-25)
+    db.noticeReply.findMany({ where: { fromAdmin: false, readAt: null }, select: { notice: { select: { ownerId: true } } } }),
     // documents envoyés par les propriétaires pas encore ouverts, par client
     db.document.groupBy({ by: ["ownerId"], where: { byAdmin: false, seenAt: null }, _count: true }),
   ]);
   const aValider = resasAValider + blocages;
-  const docsParClient = new Map(docsNonVus.map((d) => [d.ownerId, d._count]));
+  // pastille du client = documents reçus non ouverts + réponses non lues
+  const aVoirParClient = new Map(docsNonVus.map((d) => [d.ownerId, d._count]));
+  for (const r of reponses) aVoirParClient.set(r.notice.ownerId, (aVoirParClient.get(r.notice.ownerId) ?? 0) + 1);
   const docs = docsNonVus.reduce((s, d) => s + d._count, 0);
   // Pastille rouge avec le nombre à traiter (demande 2026-11-21 : notification visible dans l'onglet)
   const ONGLETS: [string, string, number][] = [
@@ -37,7 +40,6 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     ["valider", "À valider", aValider],
     ["demandes", "Demandes", demandes],
     ["messages", "Messages du site", messages],
-    ["reponses", "Réponses des propriétaires", reponses],
     ["documents", "Documents reçus", docs],
     ["archives", "Archives", 0],
     ["nouveau", "Nouveau client", 0],
@@ -72,9 +74,9 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
               <li key={c.id}>
                 <Link href={`/admin/clients/${c.id}`}>
                   {c.firstName} {c.lastName}
-                  {docsParClient.get(c.id) && (
-                    <span className="nav-pastille" aria-label={`${docsParClient.get(c.id)} document(s) reçu(s)`}>
-                      {docsParClient.get(c.id)}
+                  {aVoirParClient.get(c.id) && (
+                    <span className="nav-pastille" aria-label={`${aVoirParClient.get(c.id)} nouveauté(s) : documents reçus, réponses`}>
+                      {aVoirParClient.get(c.id)}
                     </span>
                   )}
                   {c.passwordChangedAt && c.passwordChangedAt.getTime() > recent && (

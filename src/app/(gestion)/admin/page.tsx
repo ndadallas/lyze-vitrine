@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { ActionForm } from "@/components/ActionForm";
 import { DemandeAdmin } from "@/components/Demandes";
-import { basculerMessage, refuserResa, supprimerAvis, supprimerDemande, supprimerDocument, supprimerMessageSite, supprimerReponse, validerResa } from "@/app/actions/espace";
+import { basculerMessage, refuserResa, supprimerAvis, supprimerDemande, supprimerDocument, supprimerMessageSite, validerResa } from "@/app/actions/espace";
 import { MarquerDocumentsVus } from "@/components/Documents";
 import { ConfirmButton } from "@/components/ConfirmButton";
 
@@ -79,14 +79,6 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
   });
   const blocages = toutesDemandes.filter((d) => d.type === "USAGE_PERSO");
   const demandes = toutesDemandes.filter((d) => d.type !== "USAGE_PERSO");
-
-  // Réponses des propriétaires aux messages de Lyze, pas encore lues
-  const reponses = await db.noticeReply.findMany({
-    where: { fromAdmin: false, readAt: null },
-    orderBy: { createdAt: "desc" },
-    take: 30,
-    include: { notice: { select: { title: true, owner: { select: { id: true, firstName: true, lastName: true } } } } },
-  });
 
   // Chiffre d'affaires global (toutes réservations voyageurs, au prorata des nuits) : mois en cours et 12 derniers mois
   const t = today();
@@ -472,37 +464,6 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
               ))}
             </ul>
           )}
-        </section>
-      )}
-
-      {voir("reponses", reponses.length) && (
-        <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="reponses-title">
-          <h2 id="reponses-title" style={{ fontSize: 20 }}>
-            Réponses des propriétaires <span className="muted" style={{ fontSize: 15 }}>({reponses.length} à lire)</span>
-          </h2>
-          <ul className="lz-liste-dem">
-            {reponses.map((r) => (
-              <li key={r.id}>
-                <div className="lz-dem-tete">
-                  <strong>
-                    {r.notice.owner.firstName} {r.notice.owner.lastName} · Re : {r.notice.title}
-                  </strong>
-                  <span className="lz-statut lz-statut-nouvelle">Nouveau</span>
-                </div>
-                <small className="lz-dem-meta"><strong className="lz-date">{lastLogin.format(r.createdAt)}</strong></small>
-                <p className="lz-dem-message">{r.body}</p>
-                <div className="lz-archive-actions">
-                  <Link href={`/admin/clients/${r.notice.owner.id}/messages`} className="btn btn-outline btn-sm">
-                    Lire et répondre
-                  </Link>
-                  <form action={supprimerReponse} data-ok="Réponse supprimée.">
-                    <input type="hidden" name="reponseId" value={r.id} />
-                    <ConfirmButton message="Supprimer cette réponse du propriétaire ?" className="lz-lien lz-danger">Supprimer</ConfirmButton>
-                  </form>
-                </div>
-              </li>
-            ))}
-          </ul>
         </section>
       )}
 
