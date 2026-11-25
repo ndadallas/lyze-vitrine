@@ -6,6 +6,7 @@ import "@/styles/lz.css";
 import { useActionState, useState } from "react";
 import { ajouterDepense, modifierDepense, supprimerDepense } from "@/app/actions/espace";
 import { ConfirmButton } from "@/components/ConfirmButton";
+import { avecConfirmation, confirmer } from "@/components/Envoye";
 import { CATEGORIES_DEPENSE, CODES_DEPENSES, type DepenseItem } from "@/lib/espace";
 
 const MOIS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
@@ -28,7 +29,7 @@ export function Depenses({
   admin?: boolean;
 }) {
   const { t, locale, montant } = useT();
-  const [etat, action, envoi] = useActionState(ajouterDepense, undefined);
+  const [etat, action, envoi] = useActionState(avecConfirmation(ajouterDepense, t("Dépense ajoutée.")), undefined);
   const [filtre, setFiltre] = useState("tous");
   const [ouvert, setOuvert] = useState(false);
   const [edition, setEdition] = useState<string | null>(null);
@@ -135,7 +136,7 @@ export function Depenses({
                       <button type="button" className="lz-lien" onClick={() => setEdition(edition === d.id ? null : d.id)}>
                         {edition === d.id ? "Fermer" : "Modifier"}
                       </button>
-                      <form action={supprimerDepense}>
+                      <form action={supprimerDepense} data-ok={t("Dépense supprimée.")}>
                         <input type="hidden" name="expenseId" value={d.id} />
                         <ConfirmButton message={`Supprimer « ${d.libelle} » ?`} className="lz-lien lz-danger">
                           {t("Supprimer")}
@@ -168,7 +169,10 @@ function ModifierDepense({ d, onFini }: { d: DepenseItem; onFini: () => void }) 
   const { t, locale, montant } = useT();
   const [etat, action, envoi] = useActionState(async (prev: Awaited<ReturnType<typeof modifierDepense>>, fd: FormData) => {
     const r = await modifierDepense(prev, fd);
-    if (r?.ok) onFini();
+    if (r?.ok) {
+      confirmer(t("Dépense modifiée."));
+      onFini();
+    }
     return r;
   }, undefined);
   return (

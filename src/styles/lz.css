@@ -394,3 +394,11 @@ aside.side { overflow-y: auto; overscroll-behavior: contain; }
 /* Archives et documents reçus (tableau de bord de la gérante) */
 .lz-archive-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-top: 8px; }
 .lz-archive-actions form { display: contents; }
+
+/* 2026-11-25 : conversations clôturées archivées dans la fiche du client (vue gérante) */
+.lz-archives-client { margin-top: 24px; }
+.lz-archives-client > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px; }
+.lz-archives-client > summary::-webkit-details-marker { display: none; }
+.lz-archives-client > summary::before { content: ""; width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); transition: transform .2s; }
+.lz-archives-client[open] > summary::before { transform: rotate(45deg); }
+.lz-archives-client .lz-liste-dem { margin-top: 12px; opacity: .85; }

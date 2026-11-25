@@ -5,6 +5,7 @@ import "@/styles/lz.css";
 import { useActionState } from "react";
 import { deleteOwner, resetOwnerPassword, setOwnerActive, updateOwner } from "@/app/(gestion)/admin/actions";
 import { ConfirmButton } from "@/components/ConfirmButton";
+import { avecConfirmation } from "@/components/Envoye";
 import { MotDePasse } from "@/components/MotDePasse";
 
 export type CompteClient = {
@@ -25,8 +26,8 @@ export type CompteClient = {
 
 /** Vue gérante, rubrique « Mon compte » du client : ses infos et ses accès (mêmes actions que l'ancienne fiche client). */
 export function CompteClientAdmin({ compte: c }: { compte: CompteClient }) {
-  const [infos, actionInfos, envoiInfos] = useActionState(updateOwner, undefined);
-  const [mdp, actionMdp, envoiMdp] = useActionState(resetOwnerPassword, undefined);
+  const [infos, actionInfos, envoiInfos] = useActionState(avecConfirmation(updateOwner, "Informations enregistrées."), undefined);
+  const [mdp, actionMdp, envoiMdp] = useActionState(avecConfirmation(resetOwnerPassword, "Nouveau mot de passe créé."), undefined);
 
   return (
     <section className="panneau lz-section" id="compte">
@@ -119,7 +120,7 @@ export function CompteClientAdmin({ compte: c }: { compte: CompteClient }) {
       </form>
 
       <div className="lz-zone-suppr lz-actions-resa">
-        <form action={setOwnerActive}>
+        <form action={setOwnerActive} data-ok={c.active ? "Compte désactivé." : "Compte réactivé."}>
           <input type="hidden" name="userId" value={c.id} />
           <input type="hidden" name="active" value={c.active ? "false" : "true"} />
           {c.active ? (
@@ -130,7 +131,7 @@ export function CompteClientAdmin({ compte: c }: { compte: CompteClient }) {
             <button type="submit" className="lz-lien">Réactiver le compte</button>
           )}
         </form>
-        <form action={deleteOwner}>
+        <form action={deleteOwner} data-ok="Client supprimé.">
           <input type="hidden" name="userId" value={c.id} />
           <ConfirmButton
             message={`Supprimer définitivement ${c.firstName} ${c.lastName}, ses biens, photos et réservations ? Cette action est irréversible.`}

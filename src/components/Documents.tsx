@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { supprimerDocument } from "@/app/actions/espace";
 import { ConfirmButton } from "@/components/ConfirmButton";
+import { confirmer } from "@/components/Envoye";
 import {
   CATEGORIES_DOC,
   CODES_CATEGORIES,
@@ -84,6 +85,7 @@ export function Documents({
         return;
       }
       form.reset();
+      confirmer(admin ? "Document ajouté." : t("Document envoyé à Lyze."));
       setOk(true);
       setOuvert(false);
       router.refresh();
@@ -174,7 +176,7 @@ export function Documents({
               <span className="lz-doc-actions">
                 <a className="lz-lien" href={documentUrl(d.id)} target="_blank" rel="noopener">{t("Ouvrir")}</a>
                 {!lectureSeule && (admin || !d.parLyze) && (
-                  <form action={supprimerDocument}>
+                  <form action={supprimerDocument} data-ok={t("Document supprimé.")}>
                     <input type="hidden" name="documentId" value={d.id} />
                     <ConfirmButton message={t("Supprimer « {titre} » ?", { titre: d.titre })} className="lz-lien lz-danger">
                       {t("Supprimer")}

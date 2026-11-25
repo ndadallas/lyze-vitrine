@@ -6,7 +6,7 @@ import "@/styles/lz.css";
 import { useActionState, useEffect } from "react";
 import { envoyerAvis, marquerReponsesLues, repondreAvis, supprimerAvis } from "@/app/actions/espace";
 import { ConfirmButton } from "@/components/ConfirmButton";
-import { Envoye } from "@/components/Envoye";
+import { avecConfirmation } from "@/components/Envoye";
 import type { AvisItem } from "@/lib/espace";
 
 const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
@@ -34,7 +34,10 @@ function Avis({ a, nouveau }: { a: AvisItem; nouveau?: boolean }) {
 /** Fil de réponses sous un message + champ « Répondre » (comme un échange de mails). `cote` = qui lit. */
 function Fil({ a, cote, nomClient }: { a: AvisItem; cote: "admin" | "proprio"; nomClient?: string }) {
   const { t, locale } = useT();
-  const [etat, action, envoi] = useActionState(repondreAvis, undefined);
+  const [etat, action, envoi] = useActionState(
+    avecConfirmation(repondreAvis, (f) => (f.get("cloturer") ? "Conversation clôturée et archivée." : t("Réponse envoyée."))),
+    undefined,
+  );
   const auteur = (deLyze: boolean) => (deLyze ? (cote === "admin" ? "Vous (Lyze)" : "Lyze") : cote === "admin" ? (nomClient ?? "Le propriétaire") : t("Vous"));
 
   return (
@@ -53,7 +56,6 @@ function Fil({ a, cote, nomClient }: { a: AvisItem; cote: "admin" | "proprio"; n
           ))}
         </ol>
       )}
-      <Envoye ok={etat?.error ? undefined : etat?.ok} texte={t("Réponse envoyée.")} />
       {a.cloture && (
         <p className="lz-fil-cloture">
           {t("Conversation clôturée par Lyze le {date}.", { date: dateLongue(a.cloture, locale) })}
@@ -98,8 +100,10 @@ export function MessagesProprio({ avis, nonLus }: { avis: AvisItem[]; nonLus: st
 
 /** Admin (fiche client) : écrire un message au propriétaire + messages déjà envoyés avec leurs fils. */
 export function MessagesAdmin({ ownerId, nomClient, biens, avis }: { ownerId: string; nomClient: string; biens: { id: string; nom: string }[]; avis: AvisItem[] }) {
-  const { t, locale } = useT();
-  const [etat, action, envoi] = useActionState(envoyerAvis, undefined);
+  const { t } = useT();
+  const [etat, action, envoi] = useActionState(avecConfirmation(envoyerAvis, "Message envoyé au propriétaire."), undefined);
+  const enCours = avis.filter((a) => !a.cloture);
+  const archives = avis.filter((a) => a.cloture);
   const aLire = avis.some((a) => a.reponses.some((r) => !r.deLyze && !r.lu));
   // la gérante a ouvert les messages : les réponses du client deviennent « lues »
   useEffect(() => {
@@ -108,7 +112,6 @@ export function MessagesAdmin({ ownerId, nomClient, biens, avis }: { ownerId: st
 
   return (
     <div className="lz-demandes">
-      <Envoye ok={etat?.error ? undefined : etat?.ok} texte="Message envoyé au propriétaire." />
       <form action={action} className="lz-form lz-nouvelle" key={etat?.ok}>
         <span className="titre-p">{t("Nouveau message")}</span>
         <input type="hidden" name="ownerId" value={ownerId} />
@@ -152,29 +155,39 @@ export function MessagesAdmin({ ownerId, nomClient, biens, avis }: { ownerId: st
 
       <div className="lz-suivi">
         <span className="titre-p">{t("Messages envoyés")}</span>
-        {avis.length === 0 ? (
-          <p className="lz-vide">{t("Aucun message envoyé à ce client.")}</p>
-        ) : (
-          <ul className="lz-liste-dem">
-            {avis.map((a) => {
-              const nouvelles = a.reponses.filter((r) => !r.deLyze && !r.lu).length;
-              return (
-                <li key={a.id} className={nouvelles ? "lz-avis-nouveau" : undefined}>
-                  <Avis a={a} nouveau={nouvelles > 0} />
-                  <small className="lz-dem-meta">{a.lu ? `Lu le ${dateLongue(a.lu, locale)}` : "Pas encore lu"}</small>
-                  <Fil a={a} cote="admin" nomClient={nomClient} />
-                  <form action={supprimerAvis}>
-                    <input type="hidden" name="avisId" value={a.id} />
-                    <ConfirmButton message="Supprimer ce message et ses réponses ? Il disparaîtra aussi de l’espace du propriétaire." className="lz-lien lz-danger">
-                      {t("Supprimer")}
-                    </ConfirmButton>
-                  </form>
-                </li>
-              );
-            })}
-          </ul>
-        )}
+        {enCours.length === 0 ? <p className="lz-vide">{t("Aucun message en cours avec ce client.")}</p> : <ListeAvisAdmin avis={enCours} nomClient={nomClient} />}
       </div>
+      {/* Conversations clôturées : archivées dans la fiche du client (demande 2026-11-25) */}
+      {archives.length > 0 && (
+        <details className="lz-suivi lz-archives-client">
+          <summary className="titre-p">Archives ({archives.length})</summary>
+          <ListeAvisAdmin avis={archives} nomClient={nomClient} />
+        </details>
+      )}
     </div>
+  );
+}
+
+function ListeAvisAdmin({ avis, nomClient }: { avis: AvisItem[]; nomClient: string }) {
+  const { t, locale } = useT();
+  return (
+    <ul className="lz-liste-dem">
+      {avis.map((a) => {
+        const nouvelles = a.reponses.filter((r) => !r.deLyze && !r.lu).length;
+        return (
+          <li key={a.id} className={nouvelles ? "lz-avis-nouveau" : undefined}>
+            <Avis a={a} nouveau={nouvelles > 0} />
+            <small className="lz-dem-meta">{a.lu ? `Lu le ${dateLongue(a.lu, locale)}` : "Pas encore lu"}</small>
+            <Fil a={a} cote="admin" nomClient={nomClient} />
+            <form action={supprimerAvis} data-ok="Message supprimé.">
+              <input type="hidden" name="avisId" value={a.id} />
+              <ConfirmButton message="Supprimer ce message et ses réponses ? Il disparaîtra aussi de l’espace du propriétaire." className="lz-lien lz-danger">
+                {t("Supprimer")}
+              </ConfirmButton>
+            </form>
+          </li>
+        );
+      })}
+    </ul>
   );
 }

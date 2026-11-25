@@ -6,7 +6,7 @@ import "@/styles/lz.css";
 import { useActionState, useState } from "react";
 import { annulerDemande, envoyerDemande, traiterDemande } from "@/app/actions/espace";
 import { ConfirmButton } from "@/components/ConfirmButton";
-import { Envoye } from "@/components/Envoye";
+import { avecConfirmation } from "@/components/Envoye";
 import {
   CODES_STATUTS,
   CODES_TYPES_DEMANDE,
@@ -41,13 +41,12 @@ function Resume({ d }: { d: DemandeItem }) {
 /** Espace propriétaire : nouvelle demande + suivi des demandes envoyées. */
 export function DemandesProprio({ demandes, biens }: { demandes: DemandeItem[]; biens: { id: string; nom: string }[] }) {
   const { t, locale } = useT();
-  const [etat, action, envoi] = useActionState(envoyerDemande, undefined);
+  const [etat, action, envoi] = useActionState(avecConfirmation(envoyerDemande, t("Demande envoyée. Barka vous répond sous 24 h.")), undefined);
   const [type, setType] = useState<TypeDemande>("USAGE_PERSO");
   const dates = type === "USAGE_PERSO";
 
   return (
     <div className="lz-demandes">
-      <Envoye ok={etat?.error ? undefined : etat?.ok} texte={t("Demande envoyée. Barka vous répond sous 24 h.")} />
       <form action={action} className="lz-form lz-nouvelle" key={etat?.error ? "e" : etat?.ok}>
         <span className="titre-p">{t("Nouvelle demande")}</span>
         <div className="lz-types" role="radiogroup" aria-label={t("Type de demande")}>
@@ -123,7 +122,7 @@ export function DemandesProprio({ demandes, biens }: { demandes: DemandeItem[]; 
                   </p>
                 )}
                 {d.statut === "NOUVELLE" && (
-                  <form action={annulerDemande}>
+                  <form action={annulerDemande} data-ok={t("Demande annulée.")}>
                     <input type="hidden" name="demandeId" value={d.id} />
                     <ConfirmButton message={t("Retirer cette demande ?")} className="lz-lien lz-danger">
                       {t("Retirer la demande")}
@@ -142,7 +141,7 @@ export function DemandesProprio({ demandes, biens }: { demandes: DemandeItem[]; 
 /** Admin : une demande avec son traitement (statut, réponse, blocage des dates). */
 export function DemandeAdmin({ d, client }: { d: DemandeItem; client?: { nom: string; lien: string } }) {
   const { t, locale } = useT();
-  const [etat, action, envoi] = useActionState(traiterDemande, undefined);
+  const [etat, action, envoi] = useActionState(avecConfirmation(traiterDemande, "Demande enregistrée."), undefined);
   const blocable = d.type === "USAGE_PERSO" && d.statut !== "TRAITEE" && d.statut !== "REFUSEE";
 
   return (
@@ -151,7 +150,6 @@ export function DemandeAdmin({ d, client }: { d: DemandeItem; client?: { nom: st
         <a className="lz-lien lz-dem-client" href={client.lien}>{client.nom}</a>
       )}
       <Resume d={d} />
-      <Envoye ok={etat?.error ? undefined : etat?.ok} texte="Demande enregistrée." />
       <form action={action} className="lz-form lz-traiter">
         <input type="hidden" name="demandeId" value={d.id} />
         <div className="lz-grille">

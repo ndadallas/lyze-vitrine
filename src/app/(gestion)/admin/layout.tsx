@@ -5,6 +5,7 @@ import { IconUsers } from "@/components/icons";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { LangueProvider } from "@/components/Langue";
+import { Confirmations } from "@/components/Envoye";
 import { deviseCourante } from "@/lib/langue-serveur";
 
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
@@ -41,6 +42,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
     <LangueProvider langue="fr" devise={devise} tauxEur={tauxEur}>
     <div className="shell">
+      <Confirmations />
       <Sidebar home="/admin">
         <NavLink href="/admin" exact icon={<IconUsers />}>
           Tableau de bord

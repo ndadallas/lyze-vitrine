@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { deletePhoto, reorderPhotos } from "@/app/actions/photos";
+import { confirmer } from "@/components/Envoye";
 
 export type PhotoItem = { id: string; url: string };
 
@@ -69,6 +70,7 @@ export function PhotoManager({ propertyId, initial }: { propertyId: string; init
           ? { type: "erreur", texte: `Non ajoutées : ${refusees.join(", ")}.` }
           : { type: "ok", texte: "Photos ajoutées." },
       );
+      if (!refusees.length) confirmer("Photos ajoutées.");
       router.refresh();
     } catch {
       setMessage({ type: "erreur", texte: "Connexion perdue pendant l'envoi, réessayez." });
@@ -134,6 +136,7 @@ export function PhotoManager({ propertyId, initial }: { propertyId: string; init
         setPhotos(r.photos ?? avant);
         setMessage({ type: "erreur", texte: r.error });
       } else {
+        confirmer("Ordre des photos enregistré.");
         router.refresh();
       }
     });
@@ -150,6 +153,7 @@ export function PhotoManager({ propertyId, initial }: { propertyId: string; init
         setMessage({ type: "erreur", texte: r.error });
       } else {
         if (r.photos) setPhotos(r.photos);
+        confirmer("Photo supprimée.");
         router.refresh();
       }
     });

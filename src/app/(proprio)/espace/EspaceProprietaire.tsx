@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { logout } from "@/app/actions/auth";
 import { ajouterBien, basculerPublication, supprimerBien } from "@/app/actions/espace";
 import { ConfirmButton } from "@/components/ConfirmButton";
+import { Confirmations, confirmer } from "@/components/Envoye";
 import { Depenses } from "@/components/Depenses";
 import { DemandeAdmin, DemandesProprio } from "@/components/Demandes";
 import { MessagesAdmin, MessagesProprio } from "@/components/Messages";
@@ -185,6 +186,7 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
 
   return (
     <div className="app">
+      <Confirmations />
       <aside className="side">
         <a className="logo" href={admin ? "/admin" : "/"}><img src="/assets/img/logo-lyze-creme.png" alt="Lyze Conciergerie" width={599} height={200} />{/* eslint-disable-line @next/next/no-img-element */}</a>
         <span className="role">{admin ? "VUE GÉRANTE" : t("Espace propriétaire").toUpperCase()}</span>
@@ -289,7 +291,7 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
               </label>
               <ChoixMois mois={mois} aujourdhui={aujourdhui} onMois={changerMois} />
               {admin && (
-                <form action={basculerPublication}>
+                <form action={basculerPublication} data-ok={bien.fiche.published ? "Bien retiré du site." : "Bien affiché sur le site."}>
                   <input type="hidden" name="propertyId" value={bien.id} />
                   <button type="submit" className={`lz-bouton lz-petit${bien.fiche.published ? " lz-bouton-clair" : ""}`}>
                     {bien.fiche.published ? "Retirer du site" : "Afficher ce bien sur le site"}
@@ -425,7 +427,7 @@ export function EspaceProprietaire({ admin, nom, salutation, avis, aujourdhui, b
               {!admin && <FicheLecture fiche={bien.fiche} />}
               {admin && <FicheBienForm key={bien.id} propertyId={bien.id} fiche={bien.fiche} />}
               {admin && (
-              <form action={supprimerBien} className="lz-zone-suppr">
+              <form action={supprimerBien} className="lz-zone-suppr" data-ok="Bien supprimé.">
                 <input type="hidden" name="propertyId" value={bien.id} />
                 <ConfirmButton
                   message={`Supprimer « ${bien.nom} » avec ses photos, son calendrier et ses dépenses ? C'est définitif.`}
@@ -620,8 +622,10 @@ function FicheLecture({ fiche }: { fiche: FicheBien }) {
 /** Ajout d'un bien par le propriétaire (nom + ville), dépliable. */
 function AjoutBien({ ouvertAuDepart = false, ownerId }: { ouvertAuDepart?: boolean; ownerId: string }) {
   const [ouvert, setOuvert] = useState(ouvertAuDepart);
+  const { t } = useT();
   const [etat, action, envoi] = useActionState(async (prev: Awaited<ReturnType<typeof ajouterBien>>, fd: FormData) => {
     const r = await ajouterBien(prev, fd);
+    if (r?.ok) confirmer(t("Bien ajouté."));
     if (r?.ok && !ouvertAuDepart) setOuvert(false);
     return r;
   }, undefined);

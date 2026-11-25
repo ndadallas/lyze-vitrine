@@ -5,7 +5,9 @@ import { nights, overlapNights } from "@/lib/stats";
 import { PLATEFORMES } from "@/lib/plateformes";
 import { CATEGORIES_DEPENSE } from "@/lib/espace";
 import { deviseCourante } from "@/lib/langue-serveur";
-import { classeur, type Cellule } from "@/lib/xlsx";
+import { classeur, type Rapport, type Valeur } from "@/lib/xlsx";
+
+const capitale = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 /**
  * Relevé de revenus d'un client en .xlsx, pour la gérante (demande 2026-11-22).
@@ -39,15 +41,11 @@ export async function GET(request: Request) {
 
   const { devise, tauxEur } = await deviseCourante();
   const m = (mad: number) => (devise === "EUR" ? mad / tauxEur : mad);
-  const unite = devise === "EUR" ? "€" : "MAD";
-  const g = (v: string | number): Cellule => ({ v, gras: true });
-  const date = (d: Date) => toDayString(d).split("-").reverse().join("/");
-
   const resas = biens.flatMap((b) => b.bookings.map((r) => ({ ...r, bien: b.name })));
   const depenses = biens.flatMap((b) => b.expenses.map((e) => ({ ...e, bien: b.name })));
 
   // Feuille 1 : mois par mois
-  const lignesMois: Cellule[][] = [];
+  const lignesMois: Valeur[][] = [];
   const total = { nuits: 0, ca: 0, frais: 0, com: 0, dep: 0, dispo: 0 };
   for (let d = debut; d < fin; d = addMonths(d, 1)) {
     const f = addMonths(d, 1);
@@ -63,48 +61,86 @@ export async function GET(request: Request) {
     }
     l.dep = depenses.filter((e) => e.date >= d && e.date < f).reduce((s, e) => s + e.amount, 0);
     const dispo = daysInMonth(d) * biens.length;
-    lignesMois.push([formatMonth(d), l.nuits, `${dispo ? Math.round((l.nuits / dispo) * 100) : 0} %`, m(l.ca), m(l.frais), m(l.com), m(l.dep), m(l.ca - l.frais - l.com - l.dep)]);
+    lignesMois.push([capitale(formatMonth(d)), l.nuits, dispo ? l.nuits / dispo : 0, m(l.ca), m(l.frais), m(l.com), m(l.dep), m(l.ca - l.frais - l.com - l.dep)]);
     total.nuits += l.nuits; total.ca += l.ca; total.frais += l.frais; total.com += l.com; total.dep += l.dep; total.dispo += dispo;
   }
-  const periode = mois ? formatMonth(debut) : `Année ${annee}`;
-  const releve: Cellule[][] = [
-    [g("Lyze Conciergerie : relevé de revenus")],
+  const periode = mois ? capitale(formatMonth(debut)) : `Année ${annee}`;
+  const titre = "Lyze Conciergerie";
+  const sousTitre = `Relevé de revenus · ${periode}`;
+  const infos: [string, string][] = [
     ["Propriétaire", `${owner.firstName} ${owner.lastName}`],
     ["Période", periode],
-    ["Bien(s)", biens.map((b) => b.name).join(", ")],
-    ["Montants en", unite],
-    ["Édité le", date(new Date())],
-    [],
-    ["Mois", "Nuits", "Occupation", "Chiffre d'affaires", "Frais plateformes", "Commission Lyze", "Dépenses", "Net propriétaire"].map(g),
-    ...lignesMois,
-    [g("Total"), g(total.nuits), g(`${total.dispo ? Math.round((total.nuits / total.dispo) * 100) : 0} %`), g(m(total.ca)), g(m(total.frais)), g(m(total.com)), g(m(total.dep)), g(m(total.ca - total.frais - total.com - total.dep))],
-    [],
-    ["Net = chiffre d'affaires - frais de plateforme (Airbnb, Booking...) - commission Lyze - dépenses. Séjour à cheval sur deux mois : réparti au prorata des nuits."],
+    [biens.length > 1 ? "Biens" : "Bien", biens.map((b) => b.name).join(", ")],
+    ["Devise", devise === "EUR" ? `Euro (1 € = ${tauxEur} MAD)` : "Dirham marocain (MAD)"],
+    ["Édité le", toDayString(new Date()).split("-").reverse().join("/")],
   ];
+
+  const releve: Rapport = {
+    nom: "Relevé",
+    titre,
+    sousTitre,
+    infos,
+    colonnes: [
+      { titre: "Mois", type: "texte", largeur: 20 },
+      { titre: "Nuits", type: "entier", largeur: 9 },
+      { titre: "Occupation", type: "pourcent", largeur: 12 },
+      { titre: "Chiffre d'affaires", type: "montant", largeur: 18 },
+      { titre: "Frais plateformes", type: "montant", largeur: 18 },
+      { titre: "Commission Lyze", type: "montant", largeur: 18 },
+      { titre: "Dépenses", type: "montant", largeur: 15 },
+      { titre: "Net propriétaire", type: "montant", largeur: 19, fort: true },
+    ],
+    lignes: lignesMois,
+    total: ["Total", total.nuits, total.dispo ? total.nuits / total.dispo : 0, m(total.ca), m(total.frais), m(total.com), m(total.dep), m(total.ca - total.frais - total.com - total.dep)],
+    note: "Net propriétaire = chiffre d'affaires − frais de plateforme (Airbnb, Booking…) − commission Lyze − dépenses. Un séjour à cheval sur deux mois est réparti au prorata des nuits.",
+  };
 
   // Feuille 2 : séjours (part de la période)
-  const sejours: Cellule[][] = [
-    ["Bien", "Plateforme", "Voyageur", "Arrivée", "Départ", "Nuits sur la période", "Chiffre d'affaires", "Frais plateforme", "Commission Lyze", "Net"].map(g),
-    ...resas.map((r) => {
+  const sejours: Rapport = {
+    nom: "Séjours",
+    titre,
+    sousTitre: `Détail des séjours · ${periode}`,
+    infos: infos.slice(0, 1),
+    colonnes: [
+      { titre: "Bien", type: "texte", largeur: 22 },
+      { titre: "Plateforme", type: "texte", largeur: 14 },
+      { titre: "Voyageur", type: "texte", largeur: 22 },
+      { titre: "Arrivée", type: "date", largeur: 12 },
+      { titre: "Départ", type: "date", largeur: 12 },
+      { titre: "Nuits sur la période", type: "entier", largeur: 12 },
+      { titre: "Chiffre d'affaires", type: "montant", largeur: 18 },
+      { titre: "Frais plateforme", type: "montant", largeur: 17 },
+      { titre: "Commission Lyze", type: "montant", largeur: 17 },
+      { titre: "Net", type: "montant", largeur: 17, fort: true },
+    ],
+    lignes: resas.map((r) => {
       const n = overlapNights(r, debut, fin);
       const p = n / (nights(r) || 1);
-      return [r.bien, r.platform === "OTHER" && r.platformOther ? r.platformOther : PLATEFORMES[r.platform].nom, r.guestName ?? "", date(r.startDate), date(r.endDate), n, m(r.amount * p), m(r.fees * p), m(r.commission * p), m((r.amount - r.fees - r.commission) * p)];
+      return [r.bien, r.platform === "OTHER" && r.platformOther ? r.platformOther : PLATEFORMES[r.platform].nom, r.guestName ?? "", r.startDate, r.endDate, n, m(r.amount * p), m(r.fees * p), m(r.commission * p), m((r.amount - r.fees - r.commission) * p)];
     }),
-  ];
-  if (sejours.length === 1) sejours.push(["Aucun séjour sur la période."]);
+    vide: "Aucun séjour sur la période.",
+  };
+  if (resas.length) sejours.total = ["Total", null, null, null, null, total.nuits, m(total.ca), m(total.frais), m(total.com), m(total.ca - total.frais - total.com)];
 
   // Feuille 3 : dépenses
-  const feuilleDep: Cellule[][] = [
-    ["Date", "Bien", "Catégorie", "Libellé", "Montant"].map(g),
-    ...depenses.map((e) => [date(e.date), e.bien, CATEGORIES_DEPENSE[e.category], e.label, m(e.amount)]),
-  ];
-  if (feuilleDep.length === 1) feuilleDep.push(["Aucune dépense sur la période."]);
+  const feuilleDep: Rapport = {
+    nom: "Dépenses",
+    titre,
+    sousTitre: `Dépenses · ${periode}`,
+    infos: infos.slice(0, 1),
+    colonnes: [
+      { titre: "Date", type: "date", largeur: 12 },
+      { titre: "Bien", type: "texte", largeur: 22 },
+      { titre: "Catégorie", type: "texte", largeur: 24 },
+      { titre: "Libellé", type: "texte", largeur: 38 },
+      { titre: "Montant", type: "montant", largeur: 16, fort: true },
+    ],
+    lignes: depenses.map((e) => [e.date, e.bien, CATEGORIES_DEPENSE[e.category], e.label, m(e.amount)]),
+    vide: "Aucune dépense sur la période.",
+  };
+  if (depenses.length) feuilleDep.total = ["Total", null, null, null, m(total.dep)];
 
-  const fichier = classeur([
-    { nom: "Relevé", largeurs: [22, 10, 12, 18, 18, 18, 14, 18], lignes: releve },
-    { nom: "Séjours", largeurs: [22, 14, 22, 12, 12, 12, 18, 16, 16, 14], lignes: sejours },
-    { nom: "Dépenses", largeurs: [12, 22, 28, 36, 14], lignes: feuilleDep },
-  ]);
+  const fichier = classeur([releve, sejours, feuilleDep], devise);
   const nom = `Releve Lyze - ${owner.firstName} ${owner.lastName} - ${mois ? `${annee}-${String(mois).padStart(2, "0")}` : annee}.xlsx`;
   return new Response(new Uint8Array(fichier), {
     headers: {

@@ -2,6 +2,7 @@
 
 import { useT } from "@/components/Langue";
 import { useActionState } from "react";
+import { avecConfirmation } from "@/components/Envoye";
 import { changerMotDePasse, modifierProfil } from "@/app/actions/profil";
 import { ChampTelephone } from "@/components/ChampTelephone";
 import { MotDePasse } from "@/components/MotDePasse";
@@ -24,8 +25,8 @@ function Message({ state, ok }: { state: { error?: string; ok?: number } | undef
 
 export function MonCompte({ compte }: { compte: CompteEspace }) {
   const { t } = useT();
-  const [profil, actionProfil, envoiProfil] = useActionState(modifierProfil, undefined);
-  const [mdp, actionMdp, envoiMdp] = useActionState(changerMotDePasse, undefined);
+  const [profil, actionProfil, envoiProfil] = useActionState(avecConfirmation(modifierProfil, t("Coordonnées enregistrées.")), undefined);
+  const [mdp, actionMdp, envoiMdp] = useActionState(avecConfirmation(changerMotDePasse, t("Mot de passe modifié.")), undefined);
   const [indicatif, ...reste] = compte.phone.split(" ");
 
   return (

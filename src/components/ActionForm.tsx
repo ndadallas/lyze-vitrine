@@ -3,6 +3,7 @@
 import { startTransition, useActionState, useEffect, useRef, type ReactNode } from "react";
 import type { ActionState } from "@/app/(gestion)/admin/actions";
 import { CredentialsCard } from "@/components/CredentialsCard";
+import { avecConfirmation } from "@/components/Envoye";
 
 type Action = (prev: ActionState, formData: FormData) => Promise<ActionState>;
 
@@ -25,7 +26,7 @@ export function ActionForm({
   confirmMessage?: string;
   children?: ReactNode;
 }) {
-  const [state, formAction, pending] = useActionState(action, undefined);
+  const [state, formAction, pending] = useActionState(avecConfirmation(action, "C’est enregistré."), undefined);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {

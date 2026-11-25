@@ -6,6 +6,7 @@ import "@/styles/lz.css";
 import { useActionState, useState } from "react";
 import { enregistrerResa, supprimerResa } from "@/app/actions/espace";
 import { ConfirmButton } from "@/components/ConfirmButton";
+import { confirmer } from "@/components/Envoye";
 import { parseDay } from "@/lib/dates";
 import { CHOIX_PLATEFORMES, LogoPlateforme, PLATEFORMES } from "@/lib/plateformes";
 import { nights } from "@/lib/stats";
@@ -46,6 +47,7 @@ export function EditeurResa({
   const [etat, action, envoi] = useActionState(async (prev: Awaited<ReturnType<typeof enregistrerResa>>, fd: FormData) => {
     const r = await enregistrerResa(prev, fd);
     if (r?.ok) {
+      confirmer(t(fd.get("bookingId") ? "Réservation modifiée." : "Réservation enregistrée."));
       setModif(false);
       onFini();
     }
@@ -130,7 +132,7 @@ export function EditeurResa({
             >
               {t("Modifier")}
             </button>
-            <form action={supprimerResa}>
+            <form action={supprimerResa} data-ok={t("Réservation supprimée.")}>
               <input type="hidden" name="bookingId" value={resa.id} />
               <ConfirmButton message="Supprimer cette ligne du calendrier ?" className="lz-lien lz-danger">
                 {t("Supprimer")}

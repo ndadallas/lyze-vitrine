@@ -321,4 +321,15 @@ export const TRADUCTIONS: Record<string, [string, string, string, string, string
   "Réponse trop longue (3000 caractères maximum).": ["Reply too long (3,000 characters max).", "الرد طويل جدًا (3000 حرف كحد أقصى).", "Risposta troppo lunga (massimo 3000 caratteri).", "Respuesta demasiado larga (3000 caracteres como máximo).", "Antwort zu lang (maximal 3000 Zeichen)."],
   "Session expirée, reconnectez-vous.": ["Session expired, please sign in again.", "انتهت الجلسة، سجّل الدخول من جديد.", "Sessione scaduta, accedi di nuovo.", "Sesión caducada, vuelve a iniciar sesión.", "Sitzung abgelaufen, bitte erneut anmelden."],
   "Message introuvable.": ["Message not found.", "الرسالة غير موجودة.", "Messaggio non trovato.", "Mensaje no encontrado.", "Nachricht nicht gefunden."],
+  // Bandeaux de confirmation (2026-11-25)
+  "Bien ajouté.": ["Property added.", "تمت إضافة العقار.", "Immobile aggiunto.", "Propiedad añadida.", "Objekt hinzugefügt."],
+  "Réservation enregistrée.": ["Booking saved.", "تم تسجيل الحجز.", "Prenotazione registrata.", "Reserva guardada.", "Buchung gespeichert."],
+  "Réservation modifiée.": ["Booking updated.", "تم تعديل الحجز.", "Prenotazione modificata.", "Reserva modificada.", "Buchung geändert."],
+  "Réservation supprimée.": ["Booking deleted.", "تم حذف الحجز.", "Prenotazione eliminata.", "Reserva eliminada.", "Buchung gelöscht."],
+  "Coordonnées enregistrées.": ["Contact details saved.", "تم حفظ بيانات الاتصال.", "Recapiti salvati.", "Datos de contacto guardados.", "Kontaktdaten gespeichert."],
+  "Dépense ajoutée.": ["Expense added.", "تمت إضافة المصروف.", "Spesa aggiunta.", "Gasto añadido.", "Ausgabe hinzugefügt."],
+  "Dépense modifiée.": ["Expense updated.", "تم تعديل المصروف.", "Spesa modificata.", "Gasto modificado.", "Ausgabe geändert."],
+  "Dépense supprimée.": ["Expense deleted.", "تم حذف المصروف.", "Spesa eliminata.", "Gasto eliminado.", "Ausgabe gelöscht."],
+  "Demande annulée.": ["Request cancelled.", "تم إلغاء الطلب.", "Richiesta annullata.", "Solicitud cancelada.", "Anfrage storniert."],
+  "Document supprimé.": ["Document deleted.", "تم حذف المستند.", "Documento eliminato.", "Documento eliminado.", "Dokument gelöscht."],
 };

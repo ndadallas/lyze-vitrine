@@ -281,11 +281,11 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                 </small>
                 {b.note && <p className="lz-dem-message">{b.note}</p>}
                 <div className="lz-actions-resa" style={{ marginTop: 6 }}>
-                  <form action={validerResa}>
+                  <form action={validerResa} data-ok="Réservation validée.">
                     <input type="hidden" name="bookingId" value={b.id} />
                     <button type="submit" className="lz-bouton lz-petit">Valider</button>
                   </form>
-                  <form action={refuserResa}>
+                  <form action={refuserResa} data-ok="Réservation refusée et supprimée.">
                     <input type="hidden" name="bookingId" value={b.id} />
                     <button type="submit" className="lz-lien lz-danger">Refuser</button>
                   </form>
@@ -328,7 +328,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                   {!m.mailSent && m.type !== "mdp" && " · mail non envoyé (clé Resend absente)"}
                 </small>
                 {m.body && <p className="lz-dem-message">{m.body}</p>}
-                <form action={basculerMessage}>
+                <form action={basculerMessage} data-ok="Message archivé.">
                   <input type="hidden" name="messageId" value={m.id} />
                   <button type="submit" className="lz-lien">Marquer comme traité (archiver)</button>
                 </form>
@@ -385,7 +385,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                   <small className="lz-dem-meta">Envoyée le <strong className="lz-date">{lastLogin.format(r.createdAt)}</strong></small>
                   <p className="lz-dem-message">{r.message}</p>
                   {r.reply && <p className="lz-dem-message"><strong>Réponse :</strong> {r.reply}</p>}
-                  <form action={supprimerDemande} className="lz-archive-actions">
+                  <form action={supprimerDemande} className="lz-archive-actions" data-ok="Demande supprimée.">
                     <input type="hidden" name="demandeId" value={r.id} />
                     <Link href={`/admin/clients/${r.owner.id}/demandes`} className="lz-lien">Voir dans sa fiche</Link>
                     <ConfirmButton message="Supprimer définitivement cette demande (aussi chez le propriétaire) ?" className="lz-lien lz-danger">Supprimer</ConfirmButton>
@@ -409,11 +409,11 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                   </small>
                   {m.body && <p className="lz-dem-message">{m.body}</p>}
                   <div className="lz-archive-actions">
-                    <form action={basculerMessage}>
+                    <form action={basculerMessage} data-ok="Message remis à traiter.">
                       <input type="hidden" name="messageId" value={m.id} />
                       <button type="submit" className="lz-lien">Remettre à traiter</button>
                     </form>
-                    <form action={supprimerMessageSite}>
+                    <form action={supprimerMessageSite} data-ok="Message supprimé.">
                       <input type="hidden" name="messageId" value={m.id} />
                       <ConfirmButton message="Supprimer définitivement ce message ?" className="lz-lien lz-danger">Supprimer</ConfirmButton>
                     </form>
@@ -435,7 +435,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                   <small className="lz-dem-meta">
                     Clôturée le <strong className="lz-date">{lastLogin.format(a.closedAt!)}</strong> · {a._count.replies} réponse{a._count.replies > 1 ? "s" : ""}
                   </small>
-                  <form action={supprimerAvis} className="lz-archive-actions">
+                  <form action={supprimerAvis} className="lz-archive-actions" data-ok="Conversation supprimée.">
                     <input type="hidden" name="avisId" value={a.id} />
                     <Link href={`/admin/clients/${a.owner.id}/messages`} className="lz-lien">Relire la conversation</Link>
                     <ConfirmButton message="Supprimer définitivement cette conversation (aussi chez le propriétaire) ?" className="lz-lien lz-danger">Supprimer</ConfirmButton>

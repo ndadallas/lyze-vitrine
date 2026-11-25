@@ -4,11 +4,12 @@ import "@/styles/lz.css";
 
 import { useActionState } from "react";
 import { enregistrerFiche } from "@/app/actions/espace";
+import { avecConfirmation } from "@/components/Envoye";
 import { ELECTROMENAGER, EQUIPEMENTS, TYPES_BIEN, type FicheBien } from "@/lib/espace";
 
 /** Fiche descriptive d'un bien : même formulaire dans l'espace propriétaire et dans l'admin. */
 export function FicheBienForm({ propertyId, fiche }: { propertyId: string; fiche: FicheBien }) {
-  const [etat, action, envoi] = useActionState(enregistrerFiche, undefined);
+  const [etat, action, envoi] = useActionState(avecConfirmation(enregistrerFiche, "Fiche enregistrée."), undefined);
   const num = (v: number | null) => (v === null ? "" : String(v));
 
   return (
