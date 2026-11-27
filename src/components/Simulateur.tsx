@@ -36,7 +36,7 @@ export function Simulateur() {
           <span className="saisie">
             <input type="number" min={0} max={10000} step={50} inputMode="numeric" value={prix}
               aria-label="Prix de la nuit en dirhams" onChange={(e) => setPrix(borne(+e.target.value, 0, 10000))} />
-            <small>MAD</small>
+            <small>DH</small>
           </span>
         </span>
         <input type="range" min={200} max={10000} step={50} value={prix} aria-label="Curseur du prix de la nuit"

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChoixDevise, useT } from "@/components/Langue";
+import { useT } from "@/components/Langue";
 import { useState } from "react";
 import { addMonths, daysInMonth, parseDay } from "@/lib/dates";
 import { nights, overlapNights } from "@/lib/stats";
@@ -99,10 +99,7 @@ export function Revenus({ biens, aujourdhui, depenses, titre = "Vos revenus", ex
   return (
     <section className="panneau revenus" id="releve">
       <span className="eyebrow eyebrow--brique">{t("Revenus")}</span>
-      <div className="lz-titre-devise">
-        <h2>{titre}</h2>
-        <ChoixDevise />
-      </div>
+      <h2>{titre}</h2>
       <p className="aide-p">{t("Net = chiffre d’affaires − frais de plateforme (Airbnb, Booking…) − commission Lyze Conciergerie − dépenses.")}</p>
 
       {biens.length > 1 && (

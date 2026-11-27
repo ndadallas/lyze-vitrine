@@ -44,7 +44,7 @@ const BORDERS = [
 /** Styles de cellule : clé lisible → index dans cellXfs. */
 function styles(devise: "MAD" | "EUR") {
   const fmts = [
-    `<numFmt numFmtId="164" formatCode="${esc(devise === "EUR" ? '#,##0.00" €";[Red]-#,##0.00" €"' : '#,##0" MAD";[Red]-#,##0" MAD"')}"/>`,
+    `<numFmt numFmtId="164" formatCode="${esc(devise === "EUR" ? '#,##0.00" €";[Red]-#,##0.00" €"' : '#,##0" DH";[Red]-#,##0" DH"')}"/>`,
     `<numFmt numFmtId="165" formatCode="dd/mm/yyyy"/>`,
   ];
   const xfs: string[] = [];

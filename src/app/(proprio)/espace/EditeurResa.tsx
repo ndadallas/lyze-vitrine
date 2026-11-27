@@ -193,7 +193,7 @@ export function EditeurResa({
             </label>
             <div className="lz-deux">
               <label className="lz-champ">
-                <span>{t("Prix de la nuit (MAD)")}</span>
+                <span>{t("Prix de la nuit (DH)")}</span>
                 <input name="nightPrice" type="number" min={0} step={1} inputMode="numeric" value={m.prixNuit} onChange={(e) => recalculer(e.target.value, du, au, plateforme)} />
               </label>
               <label className="lz-champ">

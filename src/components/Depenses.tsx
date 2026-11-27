@@ -87,7 +87,7 @@ export function Depenses({
               <input name="label" required maxLength={120} placeholder={t("Ex. remplacement du chauffe-eau")} />
             </label>
             <label className="lz-champ">
-              <span>{t("Montant (MAD)")}</span>
+              <span>{t("Montant (DH)")}</span>
               <input name="amount" type="number" min={1} step={1} inputMode="numeric" required />
             </label>
           </div>
@@ -196,7 +196,7 @@ function ModifierDepense({ d, onFini }: { d: DepenseItem; onFini: () => void }) 
           <input name="label" required maxLength={120} defaultValue={d.libelle} />
         </label>
         <label className="lz-champ">
-          <span>{t("Montant (MAD)")}</span>
+          <span>{t("Montant (DH)")}</span>
           <input name="amount" type="number" min={1} step={1} inputMode="numeric" required defaultValue={d.montant} />
         </label>
       </div>

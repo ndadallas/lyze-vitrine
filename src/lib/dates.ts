@@ -65,5 +65,5 @@ export const formatShortDate = (d: Date) => shortFmt.format(d);
 
 export function formatMAD(amount: number) {
   // Espace insécable classique : l'espace fine (U+202F) n'existe pas dans les polices du site.
-  return `${new Intl.NumberFormat("fr-FR").format(Math.round(amount)).replace(/ /g, " ")} MAD`;
+  return `${new Intl.NumberFormat("fr-FR").format(Math.round(amount)).replace(/ /g, " ")} DH`;
 }

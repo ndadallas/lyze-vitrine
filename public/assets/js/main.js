@@ -191,35 +191,13 @@
       ligneTotal.hidden = !(prix > 0 && nbNuits());
       if (!ligneTotal.hidden) resaForm.querySelector('[data-total]').textContent = enDevise(prix * nbNuits());
     };
-    // Choix MAD / € sur la fiche d'un bien (demande cliente 2026-11-23), même cookie que le simulateur ; prix enregistré en MAD
-    var deviseResa = (document.cookie.match(/(?:^|; )lyze_devise=(EUR|MAD)/) || [])[1] || 'MAD';
-    var enDevise = function (mad) {
-      return deviseResa === 'EUR' ? new Intl.NumberFormat(LOCALE).format(Math.round(mad / 10.8)) + ' €' : new Intl.NumberFormat(LOCALE).format(mad) + ' MAD';
-    };
+    // Prix en DH seulement (choix MAD / € retiré à la demande de la cliente le 2026-11-26 : taux de change trop variable)
+    var enDevise = function (dh) { return new Intl.NumberFormat(LOCALE).format(dh) + ' ' + (lang === 'ar' ? 'درهم' : 'DH'); };
     var prixResa = resaForm && resaForm.querySelector('.prix');
     if (prixResa) {
-      var uniteResa = prixResa.querySelector('small'), uniteMad = uniteResa.textContent, texteResa = prixResa.firstChild;
-      var choixResa = document.createElement('select');
-      choixResa.className = 'devise-choix';
-      choixResa.setAttribute('aria-label', 'MAD / €');
-      choixResa.innerHTML = '<option value="MAD">MAD</option><option value="EUR">€ EUR</option>';
-      var teteResa = document.createElement('div');
-      teteResa.className = 'resa-tete';
-      prixResa.before(teteResa);
-      teteResa.append(prixResa, choixResa);
-      var afficherPrix = function () {
-        var p = parseFloat(resaForm.dataset.prix);
-        if (p > 0) texteResa.textContent = enDevise(p).replace(/ (MAD|€)$/, '') + ' ';
-        uniteResa.textContent = deviseResa === 'EUR' ? uniteMad.replace(/MAD|درهم/, '€') : uniteMad;
-        choixResa.value = deviseResa;
-        majCarte();
-      };
-      choixResa.addEventListener('change', function () {
-        deviseResa = choixResa.value;
-        document.cookie = 'lyze_devise=' + deviseResa + '; path=/; max-age=31536000; samesite=lax';
-        afficherPrix();
-      });
-      afficherPrix();
+      var p0 = parseFloat(resaForm.dataset.prix);
+      if (p0 > 0) prixResa.firstChild.textContent = new Intl.NumberFormat(LOCALE).format(p0) + ' ';
+      majCarte();
     }
     if (resaForm) {
       var etatResa = resaForm.querySelector('.etat'), boutonResa = resaForm.querySelector('button[type="submit"]');
@@ -268,7 +246,7 @@
   /* Textes de l'interface selon la langue de la page (fr / en / ar) */
   var T = {
     fr: {
-      photo: 'Photo', devise: 'MAD', aucune: 'Cochez au moins une plateforme.',
+      photo: 'Photo', devise: 'DH', aucune: 'Cochez au moins une plateforme.',
       bruts: 'Revenus bruts', parAn: 'par an', fraisDe: 'Commission', comLyze: 'Commission Lyze Conciergerie', parNuit: 'sur les nuitées / an', recevez: 'Vous recevez',
       vousTouchez: 'vous touchez', envoi: 'Envoi…',
       ok: 'Merci, votre message est bien parti. Nous vous répondons rapidement.',
@@ -285,7 +263,7 @@
       }
     },
     en: {
-      photo: 'Photo', devise: 'MAD', aucune: 'Tick at least one platform.',
+      photo: 'Photo', devise: 'DH', aucune: 'Tick at least one platform.',
       bruts: 'Gross income', parAn: 'per year', fraisDe: 'Commission', comLyze: 'Lyze Conciergerie commission', parNuit: 'of nights / year', recevez: 'You receive',
       vousTouchez: 'you earn', envoi: 'Sending…',
       ok: 'Thank you, your message has been sent. We will get back to you shortly.',
@@ -319,7 +297,7 @@
       }
     },
     it: {
-      photo: 'Foto', devise: 'MAD', aucune: 'Seleziona almeno una piattaforma.',
+      photo: 'Foto', devise: 'DH', aucune: 'Seleziona almeno una piattaforma.',
       bruts: 'Ricavi lordi', parAn: 'all’anno', fraisDe: 'Commissione', comLyze: 'Commissione Lyze Conciergerie', parNuit: 'sulle notti / anno', recevez: 'Ricevi',
       vousTouchez: 'ricevi', envoi: 'Invio…',
       ok: 'Grazie, il tuo messaggio è stato inviato. Ti risponderemo al più presto.',
@@ -332,7 +310,7 @@
       }
     },
     es: {
-      photo: 'Foto', devise: 'MAD', aucune: 'Marca al menos una plataforma.',
+      photo: 'Foto', devise: 'DH', aucune: 'Marca al menos una plataforma.',
       bruts: 'Ingresos brutos', parAn: 'al año', fraisDe: 'Comisión', comLyze: 'Comisión Lyze Conciergerie', parNuit: 'sobre las noches / año', recevez: 'Recibes',
       vousTouchez: 'recibes', envoi: 'Enviando…',
       ok: 'Gracias, tu mensaje se ha enviado. Te responderemos lo antes posible.',
@@ -345,7 +323,7 @@
       }
     },
     de: {
-      photo: 'Foto', devise: 'MAD', aucune: 'Wählen Sie mindestens eine Plattform.',
+      photo: 'Foto', devise: 'DH', aucune: 'Wählen Sie mindestens eine Plattform.',
       bruts: 'Bruttoeinnahmen', parAn: 'pro Jahr', fraisDe: 'Provision', comLyze: 'Provision Lyze Conciergerie', parNuit: 'auf die Übernachtungen / Jahr', recevez: 'Sie erhalten',
       vousTouchez: 'Sie erhalten', envoi: 'Wird gesendet…',
       ok: 'Vielen Dank, Ihre Nachricht wurde gesendet. Wir melden uns schnell bei Ihnen.',
@@ -359,10 +337,7 @@
     }
   }[lang];
   var nombre = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 1 });
-  // Devise du simulateur (MAD / €), même cookie que l'espace propriétaire ; montants saisis et affichés dans la devise choisie
-  var devise = (document.cookie.match(/(?:^|; )lyze_devise=(EUR|MAD)/) || [])[1] || 'MAD';
-  var TAUX_EUR = 10.8; // MAD pour 1 €, indicatif (= défaut de LYZE_TAUX_EUR)
-  var mad = function (n) { return nombre.format(Math.round(n)) + ' ' + (devise === 'EUR' ? '€' : T.devise); };
+  var mad = function (n) { return nombre.format(Math.round(n)) + ' ' + T.devise; };
   var ici = document.currentScript ? document.currentScript.src : location.href;
 
   /* Hero : diaporama en fondu, avec points de navigation */
@@ -545,37 +520,7 @@
     }
     calcul.addEventListener('change', calculer);
     calcul.addEventListener('input', function (e) { if (e.target.closest('[data-plat-autre]')) calculer(); });
-    // Choix MAD / € (demandes cliente 2026-11-22) : menu déroulant à droite du titre, prix converti au changement
-    var titreCalcul = calcul.querySelector('.titre');
-    if (titreCalcul && nuits) {
-      var choix = document.createElement('select');
-      choix.className = 'devise-choix';
-      choix.setAttribute('aria-label', 'MAD / €');
-      choix.innerHTML = '<option value="MAD">MAD</option><option value="EUR">€ EUR</option>';
-      var teteCalcul = document.createElement('div');
-      teteCalcul.className = 'calcul-tete';
-      titreCalcul.before(teteCalcul);
-      teteCalcul.append(titreCalcul, choix);
-      var uniteSaisie = saisie.parentNode.querySelector('small');
-      var appliquer = function (d, convertir) {
-        var eur = d === 'EUR', pas = eur ? 5 : 50;
-        var v = +curseur.value || 0;
-        if (convertir && d !== devise) v = eur ? v / TAUX_EUR : v * TAUX_EUR;
-        devise = d;
-        curseur.min = eur ? 20 : 200; curseur.max = eur ? 1000 : 10000; curseur.step = pas;
-        saisie.max = curseur.max; saisie.step = pas;
-        curseur.value = saisie.value = Math.min(+curseur.max, Math.max(+curseur.min, Math.round(v / pas) * pas));
-        if (uniteSaisie) uniteSaisie.textContent = eur ? '€' : 'MAD';
-        choix.value = d;
-        calculer();
-      };
-      choix.addEventListener('change', function () {
-        document.cookie = 'lyze_devise=' + choix.value + '; path=/; max-age=31536000; samesite=lax';
-        appliquer(choix.value, true);
-      });
-      var depart = devise; devise = 'MAD'; // la page arrive en MAD : convertir si le cookie dit €
-      appliquer(depart, true);
-    } else calculer();
+    calculer();
   }
 
   /* Indicatifs téléphoniques de tous les pays (noms traduits par le navigateur) */

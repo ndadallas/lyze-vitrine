@@ -16,7 +16,6 @@ import { formatMontant } from "@/lib/devise";
 import { deviseCourante } from "@/lib/langue-serveur";
 import { nights, overlapNights } from "@/lib/stats";
 import { LogoPlateforme, type Plateforme } from "@/lib/plateformes";
-import { ChoixDevise } from "@/components/Langue";
 
 export const metadata: Metadata = { title: "Clients" };
 
@@ -181,10 +180,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
 
       {voir("ca") && (
         <section className="card card-pad stack" style={{ gap: 16 }} aria-labelledby="ca-title">
-          <div className="lz-titre-devise">
-            <h2 id="ca-title" style={{ fontSize: 20 }}>Chiffre d’affaires</h2>
-            <ChoixDevise />
-          </div>
+          <h2 id="ca-title" style={{ fontSize: 20 }}>Chiffre d’affaires</h2>
           {([["Mois en cours", caMois], ["12 derniers mois", ca12]] as const).map(([nom, r]) => (
             <div key={nom} className="ca-bloc">
               <h3>{nom}</h3>
@@ -284,7 +280,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                   </Link>
                   {" · "}
                   du {jourCourt.format(b.startDate)} au {jourCourt.format(b.endDate)}
-                  {b.kind === "RESERVED" && ` · ${b.amount.toLocaleString("fr-FR")} MAD`}
+                  {b.kind === "RESERVED" && ` · ${b.amount.toLocaleString("fr-FR")} DH`}
                   {b.guestName && ` · ${b.guestName}`}
                 </small>
                 {b.note && <p className="lz-dem-message">{b.note}</p>}

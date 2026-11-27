@@ -71,7 +71,7 @@ export async function GET(request: Request) {
     ["Propriétaire", `${owner.firstName} ${owner.lastName}`],
     ["Période", periode],
     [biens.length > 1 ? "Biens" : "Bien", biens.map((b) => b.name).join(", ")],
-    ["Devise", devise === "EUR" ? `Euro (1 € = ${tauxEur} MAD)` : "Dirham marocain (MAD)"],
+    ["Devise", devise === "EUR" ? `Euro (1 € = ${tauxEur} MAD)` : "Dirham marocain (DH)"],
     ["Édité le", toDayString(new Date()).split("-").reverse().join("/")],
   ];
 

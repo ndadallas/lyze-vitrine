@@ -65,7 +65,7 @@ export function FicheBienForm({ propertyId, fiche }: { propertyId: string; fiche
             <textarea name="description" rows={4} maxLength={2000} defaultValue={fiche.description} placeholder="3 à 4 phrases : l’ambiance, la vue, ce qu’on trouve à proximité…" />
           </label>
           <label className="lz-champ">
-            <span>Prix à partir de (MAD / nuit, facultatif)</span>
+            <span>Prix à partir de (DH / nuit, facultatif)</span>
             <input name="price" type="number" min={0} max={1000000} inputMode="numeric" defaultValue={num(fiche.price)} />
           </label>
         </div>

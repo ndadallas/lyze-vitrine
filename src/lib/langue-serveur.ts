@@ -1,7 +1,7 @@
 import "server-only";
 import { cookies } from "next/headers";
 import { COOKIE_LANGUE, estLangue, type Langue } from "@/lib/langue";
-import { COOKIE_DEVISE, TAUX_EUR_DEFAUT, estDevise, type Devise } from "@/lib/devise";
+import { TAUX_EUR_DEFAUT, type Devise } from "@/lib/devise";
 
 /** Langue de l'espace propriétaire : ?lang= (lien depuis une page du site en langue étrangère), sinon cookie, sinon français. */
 export async function langueCourante(param?: string | string[]): Promise<Langue> {
@@ -11,9 +11,8 @@ export async function langueCourante(param?: string | string[]): Promise<Langue>
   return estLangue(c) ? c : "fr";
 }
 
-/** Devise d'affichage choisie (cookie), MAD par défaut, et taux de conversion (MAD pour 1 €). */
+/** Devise d'affichage : toujours le dirham (choix MAD / € retiré le 2026-11-26, l'ancien cookie lyze_devise est ignoré). */
 export async function deviseCourante(): Promise<{ devise: Devise; tauxEur: number }> {
-  const c = (await cookies()).get(COOKIE_DEVISE)?.value;
   const taux = Number(process.env.LYZE_TAUX_EUR);
-  return { devise: estDevise(c) ? c : "MAD", tauxEur: taux > 0 ? taux : TAUX_EUR_DEFAUT };
+  return { devise: "MAD", tauxEur: taux > 0 ? taux : TAUX_EUR_DEFAUT };
 }

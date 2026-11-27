@@ -30,22 +30,22 @@ export const BookingSchema = z
     guestName: texteFacultatif,
     amount: z.coerce
       .number({ error: "Montant invalide." })
-      .int({ error: "Montant en MAD, sans centimes." })
+      .int({ error: "Montant en DH, sans centimes." })
       .min(0, { error: "Montant invalide." })
       .max(10_000_000),
     nightPrice: z.coerce
       .number({ error: "Prix de la nuit invalide." })
-      .int({ error: "Montant en MAD, sans centimes." })
+      .int({ error: "Montant en DH, sans centimes." })
       .min(0, { error: "Prix de la nuit invalide." })
       .max(10_000_000),
     fees: z.coerce
       .number({ error: "Frais invalides." })
-      .int({ error: "Montant en MAD, sans centimes." })
+      .int({ error: "Montant en DH, sans centimes." })
       .min(0, { error: "Frais invalides." })
       .max(10_000_000),
     commission: z.coerce
       .number({ error: "Commission invalide." })
-      .int({ error: "Montant en MAD, sans centimes." })
+      .int({ error: "Montant en DH, sans centimes." })
       .min(0, { error: "Commission invalide." })
       .max(10_000_000),
     note: texteFacultatif,

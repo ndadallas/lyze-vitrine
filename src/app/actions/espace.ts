@@ -321,7 +321,7 @@ const DepenseSchema = z.object({
   label: z.string().trim().min(1, { error: "Indiquez un libellé." }).max(120),
   amount: z.coerce
     .number({ error: "Montant invalide." })
-    .int({ error: "Montant en MAD, sans centimes." })
+    .int({ error: "Montant en DH, sans centimes." })
     .min(1, { error: "Montant invalide." })
     .max(10_000_000),
 });

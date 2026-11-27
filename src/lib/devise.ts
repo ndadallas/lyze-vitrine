@@ -11,5 +11,5 @@ export const estDevise = (v: unknown): v is Devise => v === "MAD" || v === "EUR"
 export function formatMontant(mad: number, devise: Devise = "MAD", tauxEur = TAUX_EUR_DEFAUT) {
   // espace insécable classique : l'espace fine (U+202F) n'existe pas dans les polices du site
   const n = (v: number) => new Intl.NumberFormat("fr-FR").format(Math.round(v)).replace(/\u202f/g, "\u00a0");
-  return devise === "EUR" ? `${n(mad / tauxEur)}\u00a0€` : `${n(mad)}\u00a0MAD`;
+  return devise === "EUR" ? `${n(mad / tauxEur)}\u00a0€` : `${n(mad)}\u00a0DH`;
 }
